@@ -83,14 +83,14 @@ class StaffController extends AdminController
     protected function form()
     {
         $form = new Form(new Employee());
-        $main_center = SubCenter::pluck('place_name','id');
-       $is_edit = request()->segment(3);
-    //    dd($is_edit) ;
-    if($is_edit =='create'){
-        $form->select('center_id', __('Select center'))->options($main_center)->rules('required');
-    }else{
-        $form->select('center_id', __('Select center'))->options($main_center)->rules('required')->disable();
-    }
+        $main_center = SubCenter::pluck('place_name', 'id');
+        $is_edit = request()->segment(3);
+        //    dd($is_edit) ;
+        if ($is_edit == 'create') {
+            $form->select('center_id', __('Select center'))->options($main_center)->rules('required');
+        } else {
+            $form->select('center_id', __('Select center'))->options($main_center)->readOnly();
+        }
         $form->text('staff_name', __('Staff name'))->rules('required');
         $form->image('image', __('Image'));
         $form->text('address', __('Address'))->rules('required');
@@ -111,12 +111,15 @@ class StaffController extends AdminController
         });
         $form->saving(function (Form $form) {
             //...
-        // print_r($form->staff_name);exit;
-        $new = new  Administrator();
-        $new->username = trim($form->staff_name);
-        $new->password ='$2y$12$4tvoJWDVQljke4kv.ns3L.KqRApq6Gp6wkx3j1MsASvCE.VKTTvCi';
-        $new->name = 'Staff Maintence';
-        $new->save();
+            // print_r($form->staff_name);exit;
+            $is_edit = request()->segment(3);
+            if ($is_edit == 'create') {
+                $new = new  Administrator();
+                $new->username = trim($form->staff_name);
+                $new->password = '$2y$12$4tvoJWDVQljke4kv.ns3L.KqRApq6Gp6wkx3j1MsASvCE.VKTTvCi';
+                $new->name = 'Staff Maintence';
+                $new->save();
+            }
         });
 
         return $form;

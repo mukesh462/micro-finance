@@ -1,5 +1,7 @@
 <?php
 
+use App\Admin\Controllers\CustomerController;
+use App\Admin\Controllers\DocumentController;
 use App\Admin\Controllers\MainController;
 use App\Admin\Controllers\StaffController;
 use App\Admin\Controllers\SubController;
@@ -21,4 +23,6 @@ Route::group([
     $router->resource('sub-centers', SubController::class);
     $router->resource('main-centers', MainController::class);
     $router->resource('employees', StaffController::class);
+    $router->resource('customers', CustomerController::class);
+    $router->resource('manage-documents', DocumentController::class);
 });
