@@ -25,4 +25,6 @@ Route::group([
     $router->resource('employees', StaffController::class);
     $router->resource('customers', CustomerController::class);
     $router->resource('manage-documents', DocumentController::class);
+    $router->resource('members', MemberController::class);
+
 });
