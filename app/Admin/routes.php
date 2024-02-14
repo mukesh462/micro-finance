@@ -4,6 +4,7 @@ use App\Admin\Controllers\CenterController;
 use App\Admin\Controllers\CustomerController;
 use App\Admin\Controllers\DocumentController;
 use App\Admin\Controllers\MainController;
+use App\Admin\Controllers\MemberController;
 use App\Admin\Controllers\StaffController;
 use App\Admin\Controllers\SubController;
 use App\Admin\Controllers\UsersController;
@@ -27,5 +28,6 @@ Route::group([
     $router->resource('customers', CustomerController::class);
     $router->resource('manage-documents', DocumentController::class);
     $router->resource('members', MemberController::class);
+    $router->get('index/create',"CustomerController@create_index");
 
 });

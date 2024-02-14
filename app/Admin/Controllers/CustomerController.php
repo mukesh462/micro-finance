@@ -6,8 +6,10 @@ use App\Admin\Actions\Post\ManageDocument;
 use App\Models\Customer;
 use App\Models\Employee;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 
 class CustomerController extends AdminController
@@ -48,6 +50,18 @@ class CustomerController extends AdminController
             $actions->add(new ManageDocument);
             // $actions->disableEdit();
             // $actions->disableView();
+        });
+        $grid->disableCreateButton();
+        $grid->tools(function ($tools) {
+            $tools->append('
+            
+       
+                <a href="http://localhost:8000/admin/index/create"  class="btn btn-sm btn-success pull-right" title="New">
+                    <i class="fa fa-plus"></i><span class="hidden-xs">&nbsp;&nbsp;New</span>
+                </a>
+          
+            
+                  ');
         });
         return $grid;
     }
@@ -92,8 +106,8 @@ class CustomerController extends AdminController
             $form->select('staff_id', __('Select Staff'))->options(Employee::pluck('staff_name', 'id'))->required();
             $form->hidden('added_by', __('Added by'))->value('Administrator');
             // $form->number('row_id', __('Row id'));
-        }else{
-            
+        } else {
+
             $form->hidden('added_by', __('Added by'))->value('Staff');
         }
         $form->hidden('center_id', __('Customer name'));
@@ -121,5 +135,29 @@ class CustomerController extends AdminController
 
 
         return $form;
+    }
+
+    public function create_index()
+    {
+        return Admin::content(function (Content $content) {
+    
+            // optional
+            $content->header(' Index');
+    
+            // optional
+            $content->description(' Create Index Member');
+    
+            // add breadcrumb since v1.5.7
+            // $content->breadcrumb(
+            //     ['text' => 'Dashboard', 'url' => '/admin'],
+            //     ['text' => 'User management', 'url' => '/admin/users'],
+            //     ['text' => 'Edit user']
+            // );
+    
+
+    
+            // Direct rendering view, Since v1.6.12
+            $content->view('create_index', ['data' => 'foo']);
+        });
     }
 }
