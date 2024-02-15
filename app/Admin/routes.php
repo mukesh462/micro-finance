@@ -10,6 +10,7 @@ use App\Admin\Controllers\ProductController;
 use App\Admin\Controllers\StaffController;
 use App\Admin\Controllers\SubController;
 use App\Admin\Controllers\UsersController;
+use App\Admin\Controllers\VoucherController;
 use Illuminate\Routing\Router;
 
 Admin::routes();
@@ -33,4 +34,5 @@ Route::group([
     $router->resource('products', ProductController::class);
     $router->resource('indexs', IndexController::class);
     $router->get('index/create', "CustomerController@create_index");
+    $router->resource('vouchers', VoucherController::class);
 });
