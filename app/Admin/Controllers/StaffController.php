@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\Center;
 use App\Models\Employee;
 use App\Models\SubCenter;
 use App\Models\User;
@@ -33,6 +34,10 @@ class StaffController extends AdminController
 
         $grid->column('id', __('Employee Id'));
         $grid->column('staff_name', __('Employee name'));
+        $grid->column('center_id', __('Center Name'))->display(function ($center_id) {
+            $center = Center::where('id', $center_id)->first();
+            return is_object($center) ? $center->center_name : "---";
+        });
         $grid->column('designation', __('Designation'))->display(function ($designation) {
             if ($designation == 1) {
                 return "Manager";
@@ -43,7 +48,7 @@ class StaffController extends AdminController
         $grid->column('doj', __('Date Of Joining'));
 
         $grid->disableColumnSelector();
-        $grid->disableFilter();
+        // $grid->disableFilter();
         $grid->disableExport();
         $grid->tools(function ($tools) {
             $tools->batch(function ($batch) {
@@ -105,7 +110,7 @@ class StaffController extends AdminController
             ];
             $form->text('user_name', __('User name'))->rules(function ($form) {
                 if (!$id = $form->model()->id) {
-                    return 'required|unique:employees,user_name';
+                    return 'required|unique:employees,user_name|unique:admin_users,username';
                 } else {
                     return 'required|unique:employees,user_name,' . $form->model()->id;
                 }
@@ -113,7 +118,6 @@ class StaffController extends AdminController
             $form->password('password', 'Password')->help('Note! Password must be atleast 8 characters with atleast 1 number and alphabets')->rules(function ($form) {
                 // If it is not an edit state, add field unique verification
                 return 'required|min:8|regex:/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/                ';
-
             });
             $form->switch('status', __('Login Status'))->states($states)->default(1)->rules('required');
         });
@@ -195,7 +199,7 @@ class StaffController extends AdminController
                     $admin_id = $new->id;
                 }
             }
-            $role_id = $form->model()->designation == 1 ? 2:3;
+            $role_id = $form->model()->designation == 1 ? 2 : 3;
             $role = Role::find($role_id);
             $user = Administrator::find($admin_id);
             if ($role && $user) {

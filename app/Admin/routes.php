@@ -1,5 +1,6 @@
 <?php
 
+use App\Admin\Controllers\CenterController;
 use App\Admin\Controllers\CustomerController;
 use App\Admin\Controllers\DocumentController;
 use App\Admin\Controllers\IndexController;
@@ -23,7 +24,7 @@ Route::group([
     $router->get('/', 'HomeController@index')->name('home');
     // $router->resource('users', UsersController::class);
     // $router->resource('pens', PenController::class);
-    $router->resource('sub-centers', SubController::class);
+    $router->resource('centers', CenterController::class);
     $router->resource('main-centers', MainController::class);
     $router->resource('employees', StaffController::class);
     $router->resource('customers', CustomerController::class);
@@ -31,4 +32,5 @@ Route::group([
     $router->resource('members', MemberController::class);
     $router->resource('products', ProductController::class);
     $router->resource('indexs', IndexController::class);
+    $router->get('index/create', "CustomerController@create_index");
 });

@@ -38,11 +38,14 @@ class SubController extends AdminController
         $grid->disableBatchActions();
         $grid->disableColumnSelector();
         $grid->disableExport();
+      
         $grid->actions(function ($actions) {
             $actions->disableDelete();
+        
             // $actions->disableEdit();
             // $actions->disableView();
         });
+        
         return $grid;
     }
 
