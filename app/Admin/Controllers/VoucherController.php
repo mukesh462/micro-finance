@@ -43,7 +43,7 @@ class VoucherController extends AdminController
             $actions->disableDelete();
             // $actions->disableEdit();
             $actions->disableView();
-        });
+                    });
         return $grid;
     }
 
@@ -90,10 +90,18 @@ class VoucherController extends AdminController
             // $tools->add('<a class="btn btn-sm btn-danger"><i class="fa fa-trash"></i>&nbsp;&nbsp;delete</a>');
         });
         $form->saving(function (Form $form) {
-            //    if($form->model()->id == null) {
-            //     $daybook = DayBook::where('date',$form->date)->first();
-            //     dd($daybook);
-            //    }
+               if($form->model()->id != null) {
+               // Convert the date string into a Carbon instance
+                $dateToCompare = Carbon::createFromFormat('d-m-Y',$form->model()->date)->startOfDay();
+                // Get the current date and time
+                $currentDate = Carbon::now()->startOfDay();
+                // dd($dateToCompare, $currentDate);
+
+                if ($dateToCompare->lt($currentDate)) {
+                    admin_error("Voucher Update Error", "Previous date voucher cannot be updated");
+                    return redirect()->back();
+                }
+               }
         });
         $form->saved(function (Form $form) {
             $daybook = DayBook::where('date', $form->model()->date)->first();
@@ -110,7 +118,7 @@ class VoucherController extends AdminController
                         $voucherHistory->save();
                         $daybook->closing_balance  =  $daybook->closing_balance + $update_amount;
                         $daybook->save();
-                        //   $update_amount = $form->model()->amount > $voucherHistory->amount? $form->model()->amount - $voucherHistory->amount: $voucherHistory->amount - $form->model()->amount;  
+                        //   $update_amount = $form->model()->amount > $voucherHistory->amount? $form->model()->amount - $voucherHistory->amount: $voucherHistory->amount - $form->model()->amount;
                     }else if(($form->model()->transaction_type == $voucherHistory->transaction_type) && ($form->model()->amount != $voucherHistory->amount) && ($form->model()->transaction_type == "debit")) {
                         if ($form->model()->amount > $voucherHistory->amount) {
                             $update_amount = $form->model()->amount - $voucherHistory->amount;
@@ -120,6 +128,37 @@ class VoucherController extends AdminController
                             $daybook->closing_balance  =  $daybook->closing_balance + $update_amount;
                         }
                         $daybook->save();
+                        $voucherHistory->amount = $form->model()->amount;
+                        $voucherHistory->save();
+                    }else if(($form->model()->transaction_type != $voucherHistory->transaction_type) && ($form->model()->transaction_type == "credit")) {
+                        if ($form->model()->amount == $voucherHistory->amount) {
+                            $update_amount = $form->model()->amount + $form->model()->amount;
+                            $daybook->closing_balance  =  $daybook->closing_balance + $update_amount;
+                        } else if($form->model()->amount > $voucherHistory->amount) {
+                            $update_amount = $voucherHistory->amount + $form->model()->amount;
+                            $daybook->closing_balance  =  $daybook->closing_balance + $update_amount;
+                        }else {
+                            $update_amount = $voucherHistory->amount + $form->model()->amount;
+                            $daybook->closing_balance  =  $daybook->closing_balance + $update_amount;
+                        }
+                        $daybook->save();
+                        $voucherHistory->transaction_type = $form->model()->transaction_type;
+                        $voucherHistory->amount = $form->model()->amount;
+                        $voucherHistory->save();
+                    }
+                    else if(($form->model()->transaction_type != $voucherHistory->transaction_type) && ($form->model()->transaction_type == "debit")) {
+                        if ($form->model()->amount == $voucherHistory->amount) {
+                            $update_amount = $form->model()->amount + $form->model()->amount;
+                            $daybook->closing_balance  =  $daybook->closing_balance - $update_amount;
+                        } else if($form->model()->amount > $voucherHistory->amount) {
+                            $update_amount = $voucherHistory->amount + $form->model()->amount;
+                            $daybook->closing_balance  =  $daybook->closing_balance - $update_amount;
+                        }else {
+                            $update_amount = $voucherHistory->amount + $form->model()->amount;
+                            $daybook->closing_balance  =  $daybook->closing_balance - $update_amount;
+                        }
+                        $daybook->save();
+                        $voucherHistory->transaction_type = $form->model()->transaction_type;
                         $voucherHistory->amount = $form->model()->amount;
                         $voucherHistory->save();
                     }
