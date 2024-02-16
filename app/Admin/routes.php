@@ -2,6 +2,7 @@
 
 use App\Admin\Controllers\CenterController;
 use App\Admin\Controllers\CustomerController;
+use App\Admin\Controllers\DayBookController;
 use App\Admin\Controllers\DocumentController;
 use App\Admin\Controllers\IndexController;
 use App\Admin\Controllers\MainController;
@@ -35,4 +36,5 @@ Route::group([
     $router->resource('indexs', IndexController::class);
     $router->get('index/create', "CustomerController@create_index");
     $router->resource('vouchers', VoucherController::class);
+    $router->resource('dayBookReport', DayBookController::class);
 });

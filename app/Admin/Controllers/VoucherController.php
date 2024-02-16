@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Actions\Post\DeleteVoucher;
 use App\Models\DayBook;
 use App\Models\Voucher;
 use App\Models\VoucherHistory;
@@ -10,6 +11,8 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use Carbon\Carbon;
+use Encore\Admin\Admin;
+use Illuminate\View\Component;
 
 class VoucherController extends AdminController
 {
@@ -41,6 +44,9 @@ class VoucherController extends AdminController
         $grid->disableExport();
         $grid->actions(function ($actions) {
             $actions->disableDelete();
+            // $actions->disableEdit();
+
+            $actions->add(new DeleteVoucher);
             // $actions->disableEdit();
             $actions->disableView();
                     });
@@ -207,5 +213,42 @@ class VoucherController extends AdminController
         });
 
         return $form;
+    }
+
+    public function dayBookReport() {
+     
+        // dd('hi');
+        // return view()
+        $grid = new Grid(new DayBook);
+       
+        // Grid::init(DayBook::class,function (Grid $grid){
+
+        // });
+    
+        // $grid = new Grid(new DayBook());
+        // $grid->header(function ($query) {
+        //     return 'header';
+        // });
+        
+        // $grid->footer(function ($query) {
+        //     return 'footer'; 
+        // });
+        // $grid->model()->orderBy('id', 'desc');
+
+        $grid->column('id', __('Id'));
+        // // $grid->column('date', __('Date'));
+        // $grid->column('opening_balance', __('Opening Balance'));
+        // $grid->column('closing_balance', __('Closing Balance'));
+        // // $grid->column('created_at', __('Created at'));
+        // // $grid->column('updated_at', __('Updated at'));
+        // $grid->disableBatchActions();
+        // $grid->disableColumnSelector();
+        // $grid->disableExport();
+        // $grid->actions(function ($actions) {
+        //     $actions->disableDelete();
+        //     // $actions->disableEdit();
+        //     $actions->disableView();
+        //             });
+        return $grid;
     }
 }
