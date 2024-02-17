@@ -3,11 +3,16 @@
 namespace App\Admin\Controllers;
 
 use App\Models\DayBook;
-use Encore\Admin\Admin;
+use App\Models\Voucher;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\Request as HttpRequest;
+use PDF;
 
 class DayBookController extends AdminController
 {
@@ -31,6 +36,10 @@ class DayBookController extends AdminController
         $grid->column('date', __('Date'));
         $grid->column('opening_balance', __('Opening balance'));
         $grid->column('closing_balance', __('Closing balance'));
+        $grid->column('View PDF')->display(function () {
+            return "<a href ='/admin/viewDayBookReport/$this->id' target='_blank'>View Pdf</a>";
+        });
+
         // $grid->column('created_at', __('Created at'));
         // $grid->column('updated_at', __('Updated at'));
         $grid->disableActions();
@@ -95,4 +104,28 @@ class DayBookController extends AdminController
 
     //     return $form;
     // }
+
+    public function viewDayBookReport(HttpRequest $request)
+    {
+        $dayBook = DayBook::where('id', $request->segment(3))->first();
+
+        if (is_object($dayBook)) {
+            // dd($dayBook);
+            $vouchers = Voucher::where('date', $dayBook->date)->get();
+            $data['daybook'] = $dayBook;
+            $data['vouchers'] = $vouchers;
+        } else {
+            return redirect()->back();
+        }
+
+        $pdf = PDF::loadView('day_book',['data' => $data]);
+
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="your_filename.pdf"',
+        ];
+
+        // Return the PDF content as a response
+        return response($pdf->output(), 200, $headers);
+    }
 }

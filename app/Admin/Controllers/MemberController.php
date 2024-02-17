@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\Center;
 use App\Models\Member;
 use Carbon\Carbon;
 use Encore\Admin\Controllers\AdminController;
@@ -30,19 +31,19 @@ class MemberController extends AdminController
         $grid = new Grid(new Member());
 
         $grid->column('id', __('Id'));
-        $grid->column('center_id', __('Center id'));
-        $grid->column('client_name', __('Client name'));
-        $grid->column('father_name', __('Father name'));
-        $grid->column('mother_name', __('Mother name'));
+        // $grid->column('center_id', __('Center id'));
+        $grid->column('client_name', __('Member name'));
+        // $grid->column('father_name', __('Father name'));
+        // $grid->column('mother_name', __('Mother name'));
         $grid->column('phone_number', __('Mobile'));
-        $grid->column('address', __('Address'));
-        $grid->column('city', __('City'));
-        $grid->column('state', __('State'));
-        $grid->column('pincode', __('Pincode'));
-        $grid->column('country', __('Country'));
-        $grid->column('dob', __('Dob'));
-        $grid->column('age', __('Age'));
-        $grid->column('gender', __('Gender'));
+        // $grid->column('address', __('Address'));
+        // $grid->column('city', __('City'));
+        // $grid->column('state', __('State'));
+        // $grid->column('pincode', __('Pincode'));
+        // $grid->column('country', __('Country'));
+        // $grid->column('dob', __('Dob'));
+        // $grid->column('age', __('Age'));
+        // $grid->column('gender', __('Gender'));
         // $grid->column('community', __('Community'));
         // $grid->column('religion', __('Religion'));
         // $grid->column('marital_status', __('Marital status'));
@@ -57,13 +58,13 @@ class MemberController extends AdminController
         // $grid->column('pancard_no', __('Pancard no'));
         // $grid->column('pancard_img', __('Pancard img'));
         // $grid->column('home_status', __('Home status'));
-        $grid->column('spouse_name', __('Spouse name'));
-        $grid->column('spouse_occupation', __('Spouse occupation'));
-        $grid->column('nominee_name', __('Nominee name'));
-        $grid->column('nominee_mobile', __('Nominee mobile'));
+        // $grid->column('spouse_name', __('Spouse name'));
+        // $grid->column('spouse_occupation', __('Spouse occupation'));
+        // $grid->column('nominee_name', __('Nominee name'));
+        // $grid->column('nominee_mobile', __('Nominee mobile'));
         // $grid->column('relation_with_client', __('Relation with client'));
         // $grid->column('nominee_dob', __('Nominee dob'));
-        $grid->column('no_of_children', __('No of children'));
+        // $grid->column('no_of_children', __('No of children'));
         $grid->status('Status')->display(function ($status) {
             if ($status == 1) {
                 return "<span class='label label-success'>Active</span>";
@@ -107,7 +108,7 @@ class MemberController extends AdminController
             // $filter->disableIdFilter();
             // Add a column filter
             // $filter->like('currency');
-            $filter->like('client_name');
+            $filter->like('client_name','Member Name');
             $filter->like('father_name');
             $filter->like('address');
             $filter->like('phone_number');
@@ -189,15 +190,16 @@ class MemberController extends AdminController
 
         $form->tab('Member Details', function (Form $form) {
             $checkId = Member::orderbydesc('id')->first();
+            $center = Center::pluck('center_name', 'id')->toArray();
             // dd(request()->segment(3));
             if (request()->segment(3) == 'create#tab-form-1' || request()->segment(3) == 'create') {
 
-                $form->display('Client ID')->value(is_object($checkId) ? $checkId->id + 1 : 1);
+                $form->display('Member ID')->value(is_object($checkId) ? $checkId->id + 1 : 1);
             }
-            $form->select('center_id', __('Select Center '))->options(['1' => 'main']);
-            $form->text('client_name', __('Client name'))->rules('required');
+            $form->select('center_id', __('Select Center '))->options($center);
+            $form->text('client_name', __('Member name'))->rules('required');
             $form->image('photo', __('Photo'))->uniqueName();
-            $form->date('dob', __('DOB'))->rules(['required', 'date', 'before_or_equal:' . date('Y-m-d', strtotime('-18 years')), 'after_or_equal:' . date('Y-m-d', strtotime('-58 years'))])->attribute(['id' => 'dob_date']);
+            $form->date('dob', __('DOB'))->rules(['required', 'date', 'before_or_equal:' . date('Y-m-d', strtotime('-18 years')), 'after_or_equal:' . date('Y-m-d', strtotime('-58 years'))])->attribute(['id' => 'dob_date'])->format('DD-MM-YYYY');
 
             // $form->date('dob', __('Dob'))->min(date('Y-m-d', strtotime('-18 years')))->max(date('Y-m-d', strtotime('+58 years')))->default(date('Y-m-d'));
             $form->text('age', __('Age'))->attribute(['id' => 'age'])->readonly()->disable();
@@ -240,7 +242,7 @@ class MemberController extends AdminController
             $form->text('nominee_mobile', __('Nominee mobile'))->rules('required');
             $client = ['Mother', 'Father', 'Wife', 'Husband', 'Brother', 'Sister', 'Other'];
             $form->select('relation_with_client', __('Relation with client'))->options(array_combine($client, $client));
-            $form->date('nominee_dob', __('Nominee dob'))->default(date('Y-m-d'))->rules(['required', 'date', 'before_or_equal:' . date('Y-m-d', strtotime('-18 years')), 'after_or_equal:' . date('Y-m-d', strtotime('-58 years'))]);
+            $form->date('nominee_dob', __('Nominee dob'))->default(date('Y-m-d'))->rules(['required', 'date', 'before_or_equal:' . date('Y-m-d', strtotime('-18 years')), 'after_or_equal:' . date('Y-m-d', strtotime('-58 years'))])->format('DD-MM-YYYY');
             $form->image('nominee_pan_img', __('Nominee Pancard Photo'))->rules('required')->uniqueName();
             $form->text('nominee_pan', __('Nominee Pancard No'))->rules('required');
             $form->image('nominee_aadhar_img', __('Nominee aadhar Card'))->uniqueName();
@@ -291,7 +293,23 @@ class MemberController extends AdminController
             // Add a button, the argument can be a string, or an instance of the object that implements the Renderable or Htmlable interface
             // $tools->add('<a class="btn btn-sm btn-danger"><i class="fa fa-trash"></i>&nbsp;&nbsp;delete</a>');
         });
-
+        Admin::script('
+        $(function () {
+            $("#dob_date").on("blur", function (e) {
+                var dateParts = $(this).val().split("-");
+                var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+                const current = new Date(formattedDate).getFullYear() - new Date().getFullYear();
+                $("#age").val(Math.abs(current));
+            });
+        
+            $(".numberic").on("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, "");
+            });
+        
+        
+        
+        });
+        ');
 
 
 
