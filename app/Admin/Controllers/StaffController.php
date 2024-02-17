@@ -48,6 +48,7 @@ class StaffController extends AdminController
         $grid->column('doj', __('Date Of Joining'));
 
         $grid->disableColumnSelector();
+        $grid->disableBatchActions();
         // $grid->disableFilter();
         $grid->disableExport();
         $grid->tools(function ($tools) {

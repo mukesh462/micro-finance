@@ -71,7 +71,7 @@ class CenterController extends AdminController
     protected function form()
     {
         $form = new Form(new Center());
-        $checkId = Center::latest()->first();
+        $checkId = Center::orderBy('id',"desc")->first();
         if (request()->segment(3) == 'create#tab-form-1' || request()->segment(3) == 'create') {
             $center = Center::pluck('employee_id')->toArray();
             $employees = Employee::where('status', 1)->whereNotIn('id', $center)->pluck('staff_name', 'id');
@@ -109,7 +109,7 @@ class CenterController extends AdminController
                     $employee->center_id = $form->model()->id;
                     $employee->save();
                 }
-                $centerId = Center::latest()->first();
+                $centerId = Center::orderBy('id',"desc")->first();
                 $newCenter = new CenterOwnerList();
                 $newCenter->center_id = is_object($centerId) ? $centerId->id + 1 : 1;
                 $newCenter->employee_id = $form->employee_id;

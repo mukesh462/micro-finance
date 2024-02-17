@@ -196,19 +196,3 @@ $('#totop').on('click', function (e) {
     }
 
 })(jQuery);
-$(document).ready(function () {
-    // console.log('sfsfsf')
-    $("#dob_date").on('blur', function (e) {
-        const current = new Date($(this).val()).getFullYear() - new Date().getFullYear();
-        console.log(current, 'wwrwrrw');
-        $('#age').val(Math.abs(current));
-    });
-
-    $('.numberic').on('input', function () {
-        this.value = this.value.replace(/[^0-9]/g, '');
-    });
-
-
-    $('.member-select').select2()
-
-});

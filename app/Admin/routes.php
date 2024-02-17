@@ -37,4 +37,5 @@ Route::group([
     $router->get('index/create', "CustomerController@create_index");
     $router->resource('vouchers', VoucherController::class);
     $router->resource('dayBookReport', DayBookController::class);
+    $router->get('viewDayBookReport/{id}', "DayBookController@viewDayBookReport");
 });
