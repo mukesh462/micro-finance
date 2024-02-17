@@ -209,6 +209,6 @@ $(document).ready(function () {
     });
 
 
-    $('.member-select').select2()
+    // $('.member-select').select2()
 
 });

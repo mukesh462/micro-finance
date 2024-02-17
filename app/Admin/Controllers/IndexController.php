@@ -10,6 +10,9 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class IndexController extends AdminController
 {
@@ -90,5 +93,67 @@ class IndexController extends AdminController
 
 
         return $form;
+    }
+    public function getData(Request $request)
+    {
+
+        // return $tagged;
+        $page = $request->input('page') ?? 1; // Get the requested page or default to 1
+
+        $cacheKey = 'select2_data_' . md5(json_encode($request->all()));
+
+        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($request, $page) {
+            $perPage = 10; // Adjust the number of items per page as needed
+            $offset = ($page - 1) * $perPage;
+            if ($request->tp == 'staff') {
+                $query = Employee::query();
+                // $query->whereIn('id', $tagged);
+
+                if ($request->has('q')) {
+                    $query->where(DB::raw("LOWER(staff_name)"), 'like', '%' . strtolower(strtolower($request->input('q'))) . '%');
+                }
+
+                $total = $query->count();
+
+                $results = $query->skip($offset)->take($perPage)->select('id', 'staff_name as text')->get();
+            } elseif ($request->tp == 'member') {
+                $query = Member::query();
+                // dd($request->input('data'));
+                if ($request->has('q')) {
+                    $query->where('staff_id', $request->input('data')['id'])->where(DB::raw("LOWER(client_name)"), 'like', '%' . strtolower($request->input('q')) . '%');
+                }
+
+                $total = $query->count();
+
+                $results = $query->skip($offset)->take($perPage)->select('id', 'client_name as text')->get();
+            } else if ($request->tp == 'product') {
+                $query = Product::query();
+                // dd($request->input('data'));
+                if ($request->has('q')) {
+                    $query->where(DB::raw("LOWER(plan_name)"), 'like', '%' . strtolower($request->input('q')) . '%');
+                }
+
+                $total = $query->count();
+
+                $results = $query->skip($offset)->take($perPage)->select('id', 'plan_name as text')->get();
+            } else {
+                //     $query = SubCategory::query();
+                //     if ($request->has('q')) {
+                //         $query->where(DB::raw("LOWER(name)"), 'like', '%' . strtolower($request->input('q')) . '%');
+                //     }
+
+                //     $total = $query->count();
+
+                //     $results = $query->skip($offset)->take($perPage)->select('id', 'name as text')->get();
+            }
+
+
+            return [
+                'results' => $results,
+                'total_count' => $total,
+            ];
+        });
+
+        return response()->json($data);
     }
 }
