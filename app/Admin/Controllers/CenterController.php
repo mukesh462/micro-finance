@@ -39,6 +39,11 @@ class CenterController extends AdminController
         // $grid->column('updated_at', __('Updated at'));
         $grid->disableBatchActions();
         $grid->disableColumnSelector();
+        $grid->filter(function ($filter) {
+            // Remove the default id filter
+            $filter->disableIdFilter();
+            $filter->like('center_name','Center Name');
+        });
         $grid->disableExport();
         $grid->actions(function ($actions) {
             $actions->disableDelete();

@@ -49,6 +49,11 @@ class StaffController extends AdminController
 
         $grid->disableColumnSelector();
         $grid->disableBatchActions();
+        $grid->filter(function ($filter) {
+            // Remove the default id filter
+            $filter->disableIdFilter();
+            $filter->like('Staff_name','Employee Name');
+        });
         // $grid->disableFilter();
         $grid->disableExport();
         $grid->tools(function ($tools) {

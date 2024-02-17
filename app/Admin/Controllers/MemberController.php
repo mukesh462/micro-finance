@@ -105,7 +105,7 @@ class MemberController extends AdminController
         $grid->disableExport();
         $grid->filter(function ($filter) {
             // Remove the default id filter
-            // $filter->disableIdFilter();
+            $filter->disableIdFilter();
             // Add a column filter
             // $filter->like('currency');
             $filter->like('client_name','Member Name');
@@ -301,13 +301,13 @@ class MemberController extends AdminController
                 const current = new Date(formattedDate).getFullYear() - new Date().getFullYear();
                 $("#age").val(Math.abs(current));
             });
-        
+
             $(".numberic").on("input", function () {
                 this.value = this.value.replace(/[^0-9]/g, "");
             });
-        
-        
-        
+
+
+
         });
         ');
 
