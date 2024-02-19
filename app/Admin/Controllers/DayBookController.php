@@ -31,7 +31,7 @@ class DayBookController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new DayBook());
-
+        $grid->model()->orderBy('id','desc');
         $grid->column('id', __('Id'));
         $grid->column('date', __('Date'));
         $grid->column('opening_balance', __('Opening balance'));

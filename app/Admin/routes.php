@@ -38,4 +38,6 @@ Route::group([
     $router->resource('vouchers', VoucherController::class);
     $router->resource('dayBookReport', DayBookController::class);
     $router->get('viewDayBookReport/{id}', "DayBookController@viewDayBookReport");
+    $router->get('getEmployees', "StaffController@getEmployees");
+
 });

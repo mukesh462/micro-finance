@@ -100,7 +100,7 @@
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Pariculars</th>
+                <th>Particulars</th>
                 <th>Credit</th>
                 <th>Debit</th>
             </tr>
