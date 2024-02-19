@@ -11,6 +11,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Encore\Admin\Widgets\Box;
 
 class CustomerController extends AdminController
 {
@@ -143,6 +144,7 @@ class CustomerController extends AdminController
     
             // optional
             $content->header(' Index');
+            // $content
     
             // optional
             $content->description(' Create Index Member');
@@ -157,7 +159,7 @@ class CustomerController extends AdminController
 
     
             // Direct rendering view, Since v1.6.12
-            $content->view('create_index', ['data' => 'foo']);
+            $content->body( new Box('create_index',view('create_index')));
         });
     }
 }

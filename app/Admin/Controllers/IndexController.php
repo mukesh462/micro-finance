@@ -43,7 +43,27 @@ class IndexController extends AdminController
         $grid->column('index_id', __('Index id'));
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));
-
+        $grid->disableBatchActions();
+        $grid->disableColumnSelector();
+        $grid->disableExport();
+        // $grid->actions(function ($actions) {
+        //     $actions->disableDelete();
+        //     $actions->add(new ManageDocument);
+        //     // $actions->disableEdit();
+        //     // $actions->disableView();
+        // });
+        $grid->disableCreateButton();
+        $grid->tools(function ($tools) {
+            $tools->append('
+            
+       
+                <a href="http://localhost:8000/admin/index/create"  class="btn btn-sm btn-success pull-right" title="New">
+                    <i class="fa fa-plus"></i><span class="hidden-xs">&nbsp;&nbsp;New</span>
+                </a>
+          
+            
+                  ');
+        });
         return $grid;
     }
 
