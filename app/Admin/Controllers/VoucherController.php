@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Admin\Actions\Post\DeleteVoucher;
 use App\Models\DayBook;
 use App\Models\Employee;
+use App\Models\Reason;
 use App\Models\Voucher;
 use App\Models\VoucherHistory;
 use Encore\Admin\Controllers\AdminController;
@@ -109,7 +110,14 @@ class VoucherController extends AdminController
             $form->display('Voucher Id')->value(is_object($checkId) ? $checkId->id + 1 : 1);
         }
         $form->date('date', __('Voucher Date'))->format('DD-MM-YYYY')->default(date('d-m-Y'))->readonly();
-        $form->select('transaction_type', __('Transaction type'))->options(["credit" => 'Credit', 'debit' => 'Debit'])->rules(['required']);
+        $form->select('transaction_type', __('Transaction type'))->options(["credit" => 'Credit', 'debit' => 'Debit'])->rules(['required'])->load('reason', '/admin/getReason');
+        $form->select('reason', __('Reason type'))->options(function ($id) {
+            $reason = Reason::find($id);
+            if ($reason) {
+                return [$reason->id => $reason->reason_name];
+            }
+            
+        })->rules(['required']);
         $form->text('amount', __('Amount'))->rules(['required'])->attribute(['id'=>"voucher-amount"]);
         $form->textarea('narration', __('Narration'))->rules(['required']);
         $form->tools(function (Form\Tools $tools) {

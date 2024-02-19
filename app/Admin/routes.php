@@ -8,6 +8,7 @@ use App\Admin\Controllers\IndexController;
 use App\Admin\Controllers\MainController;
 use App\Admin\Controllers\MemberController;
 use App\Admin\Controllers\ProductController;
+use App\Admin\Controllers\ReasonController;
 use App\Admin\Controllers\StaffController;
 use App\Admin\Controllers\SubController;
 use App\Admin\Controllers\UsersController;
@@ -39,5 +40,7 @@ Route::group([
     $router->resource('dayBookReport', DayBookController::class);
     $router->get('viewDayBookReport/{id}', "DayBookController@viewDayBookReport");
     $router->get('getEmployees', "StaffController@getEmployees");
+    $router->get('getReason', "ReasonController@getReason");
+    $router->resource('reasons', ReasonController::class);
 
 });

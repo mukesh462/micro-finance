@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\DayBook;
+use App\Models\Reason;
 use App\Models\Voucher;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Controllers\AdminController;
@@ -114,6 +115,26 @@ class DayBookController extends AdminController
             $vouchers = Voucher::where('date', $dayBook->date)->get();
             $data['daybook'] = $dayBook;
             $data['vouchers'] = $vouchers;
+            // $data['credit_sub_total'] = $dayBook->opening_balance;
+            // $data['debit_sub_total'] = 0;
+            $credit_sub_total = $dayBook->opening_balance;
+            $debit_sub_total = 0;
+            $grand_debit_sub_total = 0;
+
+            if(count($vouchers) > 0) {
+                foreach($vouchers as $voucher) {
+                    if($voucher->transaction_type == "credit") {
+                      $credit_sub_total = $credit_sub_total + $voucher->amount;
+                    }else{
+                      $debit_sub_total = $debit_sub_total + $voucher->amount;
+                    }
+                    $voucher->reason = Reason::where('id',$voucher->reason)->first()->reason_name;
+                }
+            }
+            $grand_debit_sub_total = $debit_sub_total + $dayBook->closing_balance;
+             $data['credit_sub_total'] = $credit_sub_total;
+            $data['debit_sub_total'] = $debit_sub_total;
+            $data['grand_debit_sub_total'] = $grand_debit_sub_total;
         } else {
             return redirect()->back();
         }
