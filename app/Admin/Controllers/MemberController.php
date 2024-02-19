@@ -11,6 +11,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\DB;
 
 class MemberController extends AdminController
 {
@@ -31,8 +32,12 @@ class MemberController extends AdminController
         $grid = new Grid(new Member());
 
         $grid->column('id', __('Id'));
-        // $grid->column('center_id', __('Center id'));
+       
         $grid->column('client_name', __('Member name'));
+        $grid->column('center_id', __('Center Name'))->display(function ($center_id) {
+            $center = Center::where('id', $center_id)->first();
+            return is_object($center) ? "00".$center_id."-".$center->center_name : "---";
+        });
         // $grid->column('father_name', __('Father name'));
         // $grid->column('mother_name', __('Mother name'));
         $grid->column('phone_number', __('Mobile'));
@@ -80,15 +85,15 @@ class MemberController extends AdminController
         // $grid->column('ifsc_number', __('Ifsc number'));
         // $grid->column('branch_name', __('Branch name'));
         // $grid->column('photo', __('Photo'));
-        $grid->photo()->display(function ($image) {
-            if ($image != '') {
-                $env = getenv('APP_URL') . '/uploads/' . $image;
-                return "<img src='$env'  width='50' height='50'/>";
-            } else {
-                $dummy = "default.jpg";
-                return '<img src="/uploads/images/' . $dummy . '"  width="50"/>';
-            }
-        });
+        // $grid->photo()->display(function ($image) {
+        //     if ($image != '') {
+        //         $env = getenv('APP_URL') . '/uploads/' . $image;
+        //         return "<img src='$env'  width='50' height='50'/>";
+        //     } else {
+        //         $dummy = "default.jpg";
+        //         return '<img src="/uploads/images/' . $dummy . '"  width="50"/>';
+        //     }
+        // });
         // $grid->column('nominee_pan', __('Nominee pan'));
         // $grid->column('nominee_pan_img', __('Nominee pan img'));
         // $grid->column('nominee_aadhar', __('Nominee aadhar'));
@@ -105,14 +110,19 @@ class MemberController extends AdminController
         $grid->disableExport();
         $grid->filter(function ($filter) {
             // Remove the default id filter
+            $center = Center::select(DB::raw('CONCAT("00",id, " - ", center_name) as center_name'),'id')
+            ->pluck('center_name', 'id');
+
             $filter->disableIdFilter();
             // Add a column filter
             // $filter->like('currency');
-            $filter->like('client_name','Member Name');
-            $filter->like('father_name');
-            $filter->like('address');
-            $filter->like('phone_number');
-            $filter->equal('status', 'Status')->select([1 => 'Active', 0 => 'In Active']);
+            // $filter->like('client_name', 'Member Name');
+            // $filter->like('father_name');
+            // $filter->like('address');
+            // $filter->like('phone_number');
+            // $filter->equal('status', 'Status')->select([1 => 'Active', 0 => 'In Active']);
+            $filter->like('center_id', 'Center Name')->select($center);
+
         });
         return $grid;
     }
@@ -187,10 +197,16 @@ class MemberController extends AdminController
     {
         $form = new Form(new Member());
 
-
         $form->tab('Member Details', function (Form $form) {
+
             $checkId = Member::orderbydesc('id')->first();
-            $center = Center::pluck('center_name', 'id')->toArray();
+            // $center = Center::pluck('center_name', 'id')->toArray();
+            $center = Center::select(DB::raw('CONCAT("00",id, " - ", center_name) as center_name'),'id')
+                ->pluck('center_name', 'id');
+
+            // $center = Center::pluck('center_name', 'id')->map(function ($center_name, $id) {
+            //     return "00" . $id . ' - ' . $center_name;
+            // })->toArray();
             // dd(request()->segment(3));
             if (request()->segment(3) == 'create#tab-form-1' || request()->segment(3) == 'create') {
 
@@ -199,14 +215,15 @@ class MemberController extends AdminController
             $form->select('center_id', __('Select Center '))->options($center);
             $form->text('client_name', __('Member name'))->rules('required');
             $form->image('photo', __('Photo'))->uniqueName();
-            $form->date('dob', __('DOB'))->rules(['required', 'date', 'before_or_equal:' . date('Y-m-d', strtotime('-18 years')), 'after_or_equal:' . date('Y-m-d', strtotime('-58 years'))])->attribute(['id' => 'dob_date'])->format('DD-MM-YYYY');
+            $form->date('dob', __('DOB'))->rules(['required', 'date', 'before_or_equal:' . date('Y-m-d', strtotime('-18 years')), 'after_or_equal:' . date('Y-m-d', strtotime('-60 years'))])->attribute(['id' => 'dob_date'])->format('DD-MM-YYYY');
 
             // $form->date('dob', __('Dob'))->min(date('Y-m-d', strtotime('-18 years')))->max(date('Y-m-d', strtotime('+58 years')))->default(date('Y-m-d'));
             $form->text('age', __('Age'))->attribute(['id' => 'age'])->readonly()->disable();
             $form->select('gender', __('Gender'))->options(['Male' => 'Male', 'Female' => 'Female', 'Other' => 'Other']);
+
+
             $form->text('phone_number', __('Mobile'))->rules('required');
-            $form->text('father_name', __('Father name'))->rules('required');
-            $form->text('mother_name', __('Mother name'))->rules('required');
+          
             $form->text('address', __('Address'))->rules('required');
             $form->text('city', __('City'));
             $form->text('pincode', __('Pincode'))->attribute(['class' => 'numberic form-control']);
@@ -223,35 +240,46 @@ class MemberController extends AdminController
             $form->text('monthly_income', __('Monthly income'))->attribute(['class' => 'numberic form-control form-control'])->rules('required');
             $form->text('monthly_expenses', __('Monthly expenses'))->attribute(['class' => 'numberic form-control'])->rules('required');
             $form->select('home_status', __('Home status'))->options(array_combine($home_sts, $home_sts))->default('Own')->rules('required');
-            $form->text('spouse_name', __('Spouse name'))->rules('required');
-            $form->text('spouse_occupation', __('Spouse occupation'))->rules('required');
-            $form->number('no_of_children', __('No of children'))->default(0)->min(0)->max(10)->rules('required');
+        
             $form->date('date_of_joined', __('Date of joined'))->default(date('Y-m-d'))->rules('required');
             $form->select('status', __('Member status'))->options([1 => 'Active', 0 => 'In Active'])->default(1)->rules('required');
+        })->tab('Member Family Details', function (Form $form) {
+            $form->text('father_name', __('Father Name'))->rules('required');
+            $form->text('mother_name', __('Mother Name'))->rules('required');
+            $form->text('spouse_name', __('Spouse Name'))->rules('required');
+            $form->text('spouse_occupation', __('Spouse Occupation'))->rules('required');
+            $form->number('no_of_adult', __('Number of Adult'))->default(0)->rules('required')->attribute(['id'=>'adult'])->min(0)->max(10);
+            $form->number('no_of_children', __('Number of children'))->default(0)->rules('required')->attribute(['id'=>'child'])->min(0)->max(10);
+            $form->text('total_family_members', __('Total Family Members'))->default(0)->rules('required')->attribute(['id'=>'total_member'])->readonly();
         })->tab('Member Document', function (Form $form) {
             $form->image('smartcard_img', __('SmartCard Photo'))->rules('required')->uniqueName();
             $form->text('smartcard_no', __('SmartCard No'))->rules('required');
             $form->image('voterid_img', __('VoterID Photo'))->rules('required')->uniqueName();
             $form->text('voter_id', __('Voter ID'))->rules('required');
             $form->image('aadhar_img', __('Aadhar Card Photo'))->rules('required')->uniqueName();
-            $form->text('aadhar_no', __('Aadhar Card No'))->rules('required')->attribute(['class' => 'form-control numberic']);
-            $form->image('pancard_img', __('Pancard Photo'))->rules('required')->uniqueName();
-            $form->text('pancard_no', __('Pancard No'))->rules('required');
+            $form->text('aadhar_no', __('Aadhar Card Number'))->rules('required')->attribute(['class' => 'form-control numberic']);
+            $form->image('pancard_img', __('PAN Card Photo'))->uniqueName();
+            $form->text('pancard_no', __('PAN Card Number'));
         })->tab('Nominee Details', function (Form $form) {
             $form->text('nominee_name', __('Nominee name'))->rules('required');
             $form->text('nominee_mobile', __('Nominee mobile'))->rules('required');
             $client = ['Mother', 'Father', 'Wife', 'Husband', 'Brother', 'Sister', 'Other'];
-            $form->select('relation_with_client', __('Relation with client'))->options(array_combine($client, $client));
+            $form->select('relation_with_client', __('Relation with Member'))->options(array_combine($client, $client));
             $form->date('nominee_dob', __('Nominee dob'))->default(date('Y-m-d'))->rules(['required', 'date', 'before_or_equal:' . date('Y-m-d', strtotime('-18 years')), 'after_or_equal:' . date('Y-m-d', strtotime('-58 years'))])->format('DD-MM-YYYY');
-            $form->image('nominee_pan_img', __('Nominee Pancard Photo'))->rules('required')->uniqueName();
-            $form->text('nominee_pan', __('Nominee Pancard No'))->rules('required');
-            $form->image('nominee_aadhar_img', __('Nominee aadhar Card'))->uniqueName();
-            $form->text('nominee_aadhar', __('Nominee aadhar No'))->attribute(['class' => 'numeric form-control']);
+            $form->image('nominee_aadhar_img', __('Nominee Aadhar Card'))->rules('required')->uniqueName();
+            $form->text('nominee_aadhar', __('Nominee Aadhar Number'))->attribute(['class' => 'numeric form-control'])->rules('required');
+            $form->image('nominee_voter_img', __('Nominee voter Photo'))->uniqueName();
+            $form->text('nominee_voter_id', __('Nominee voter Number'))->attribute(['class' => 'numeric form-control']);
+            // $form->image('nominee_pan_img', __('Nominee PAN Card Photo'))->rules('required')->uniqueName();
+            // $form->text('nominee_pan', __('Nominee PAN Card Number'))->rules('required');
+            $form->image('nominee_other_img', __('Nominee Other Photo'))->uniqueName();
+            $form->text('nominee_other_id', __('Nominee Other Number'));
         })
             ->tab('Bank Details', function (Form $form) {
-                $form->text('bank_name', __('Bank name'));
-                $form->text('account_number', __('Account number'));
-                $form->text('ifsc_number', __('Ifsc Code'));
+                $form->text('account_holder_name', __('Account Holder name'));
+                $form->text('account_number', __('Account Number'));
+                $form->text('bank_name', __('Bank Name'));
+                $form->text('ifsc_number', __('IFSC Code'));
                 $form->text('branch_name', __('Branch Name'));
             });
         $form->hidden('inactive_time');
@@ -265,7 +293,7 @@ class MemberController extends AdminController
         $form->footer(function ($footer) {
 
             // disable reset btn
-            // $footer->disableReset();
+            $footer->disableReset();
 
             // disable submit btn
             // $footer->disableSubmit();
@@ -305,6 +333,28 @@ class MemberController extends AdminController
             $(".numberic").on("input", function () {
                 this.value = this.value.replace(/[^0-9]/g, "");
             });
+            // $("#adult").on("input", function () {
+            //     this.value = this.value.replace(/[^0-9]/g, "");
+            // });
+            // $("#child").on("input", function () {
+            //     this.value = this.value.replace(/[^0-9]/g, "");
+            // });
+            $("#adult").on("change",function(){
+                this.value = this.value.replace(/[^0-9]/g, "");
+                var adult = parseInt($("#adult").val()) 
+                var child = parseInt($("#child").val())
+                console.log(adult,child)
+                var total = adult + child
+                $("#total_member").val(total)
+            })
+            $("#child").on("change",function(){
+                this.value = this.value.replace(/[^0-9]/g, "");
+                var adult = parseInt($("#adult").val()) 
+                var child = parseInt($("#child").val())
+                console.log(adult,child)
+                var total = adult + child
+                $("#total_member").val(total)
+            })
 
 
 

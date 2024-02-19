@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Admin\Actions\Post\DeleteVoucher;
 use App\Models\DayBook;
 use App\Models\Employee;
+use App\Models\Reason;
 use App\Models\Voucher;
 use App\Models\VoucherHistory;
 use Encore\Admin\Controllers\AdminController;
@@ -43,17 +44,17 @@ class VoucherController extends AdminController
         $grid->column('date', __('Date'));
         $grid->column('transaction_type', __('Transaction type'));
         $grid->column('amount', __('Amount'));
-        $grid->column('added_by', __('Added By'));
-        $grid->column('user_id', __('Employee Name'))->display(function($user_id){
-            if($this->added_by == "admin") {
-                $admin = Administrator::where('id',$user_id)->first();
-                return is_object($admin) ? $admin->username:"---";
-            }
-            else {
-                $admin = Employee::where('id',$user_id)->first();
-                return is_object($admin) ? $admin->user_name:"---";
-            }
-        });
+        // $grid->column('added_by', __('Added By'));
+        // $grid->column('user_id', __('Employee Name'))->display(function($user_id){
+        //     if($this->added_by == "admin") {
+        //         $admin = Administrator::where('id',$user_id)->first();
+        //         return is_object($admin) ? $admin->username:"---";
+        //     }
+        //     else {
+        //         $admin = Employee::where('id',$user_id)->first();
+        //         return is_object($admin) ? $admin->user_name:"---";
+        //     }
+        // });
         // $grid->column('narration', __('Narration'));
 
         // $grid->column('created_at', __('Created at'));
@@ -109,8 +110,15 @@ class VoucherController extends AdminController
             $form->display('Voucher Id')->value(is_object($checkId) ? $checkId->id + 1 : 1);
         }
         $form->date('date', __('Voucher Date'))->format('DD-MM-YYYY')->default(date('d-m-Y'))->readonly();
-        $form->select('transaction_type', __('Transaction type'))->options(["credit" => 'Credit', 'debit' => 'Debit'])->rules(['required']);
-        $form->decimal('amount', __('Amount'))->rules(['required']);
+        $form->select('transaction_type', __('Transaction type'))->options(["credit" => 'Credit', 'debit' => 'Debit'])->rules(['required'])->load('reason', '/admin/getReason');
+        $form->select('reason', __('Reason type'))->options(function ($id) {
+            $reason = Reason::find($id);
+            if ($reason) {
+                return [$reason->id => $reason->reason_name];
+            }
+            
+        })->rules(['required']);
+        $form->text('amount', __('Amount'))->rules(['required'])->attribute(['id'=>"voucher-amount"]);
         $form->textarea('narration', __('Narration'))->rules(['required']);
         $form->tools(function (Form\Tools $tools) {
             // $tools->disableList();
@@ -248,6 +256,12 @@ class VoucherController extends AdminController
             $footer->disableReset();
         });
 
+        Admin::script('
+
+        $("#voucher-amount").on("input", function () {
+            this.value = this.value.replace(/[^\d.]+/g, "").replace(/(?:\.\d*)\./, ". ");
+        });
+        ');
         return $form;
     }
 
@@ -268,7 +282,7 @@ class VoucherController extends AdminController
         // });
 
         // $grid->footer(function ($query) {
-        //     return 'footer'; 
+        //     return 'footer';
         // });
         // $grid->model()->orderBy('id', 'desc');
 

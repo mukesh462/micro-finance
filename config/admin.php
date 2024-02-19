@@ -11,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name' => 'Micro Finance',
+    'name' => 'laravel',
 
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => 'Micro Finance',
+    'logo' => 'laravel',
 
     /*
     |--------------------------------------------------------------------------
@@ -275,7 +275,7 @@ return [
     |    "skin-red", "skin-red-light", "skin-black", "skin-black-light".
     |
     */
-    'skin' => env('ADMIN_SKIN', 'skin-red-light'),
+    'skin' => env('ADMIN_SKIN', 'skin-blue-light'),
 
     /*
     |--------------------------------------------------------------------------

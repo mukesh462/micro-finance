@@ -29,7 +29,9 @@ class CenterController extends AdminController
     {
         $grid = new Grid(new Center());
 
-        $grid->column('id', __('Center Id'));
+        $grid->column('id', __('Center Id'))->display(function ($id) {
+            return "00".$id;
+        });
         $grid->column('center_name', __('Center Name'));
         $grid->column('employee_id', __('Employee Name'))->display(function ($employee_id) {
             $employee = Employee::where('id', $employee_id)->first();
@@ -77,20 +79,34 @@ class CenterController extends AdminController
     {
         $form = new Form(new Center());
         $checkId = Center::orderBy('id',"desc")->first();
+        $employees = Employee::where('status', 1)->pluck('staff_name', 'id');
+//         $form->html('
+
+//         <label for="employee_id" class="col-sm-2 asterisk control-label">Select Employee</label>
+
+//             // <div class="col-sm-8" data-select2-id="select2-data-57-c1vq">
+//             <select type="text" class="member-select form-control" id="staff"
+//             placeholder="Select Member">
+//  </select>
+//             // </div>
+
+//    ');
+        // if (request()->segment(3) == 'create#tab-form-1' || request()->segment(3) == 'create') {
+            // $center = Center::pluck('employee_id')->toArray();
+            // $employees = Employee::where('status', 1)->whereNotIn('id', $center)->pluck('staff_name', 'id');
+        // } else {
+            // $center = Center::whereNot('id', request()->segment(3))->pluck('employee_id')->toArray();
+            // $employees = Employee::where('status', 1)->whereNotIn('id', $center)->pluck('staff_name', 'id');
+        // }
         if (request()->segment(3) == 'create#tab-form-1' || request()->segment(3) == 'create') {
-            $center = Center::pluck('employee_id')->toArray();
-            $employees = Employee::where('status', 1)->whereNotIn('id', $center)->pluck('staff_name', 'id');
-        } else {
-            $center = Center::whereNot('id', request()->segment(3))->pluck('employee_id')->toArray();
-            $employees = Employee::where('status', 1)->whereNotIn('id', $center)->pluck('staff_name', 'id');
-        }
-        if (request()->segment(3) == 'create#tab-form-1' || request()->segment(3) == 'create') {
-            $form->display('Center Id')->value(is_object($checkId) ? $checkId->id + 1 : 1);
+            $form->display('Center Id')->value(is_object($checkId) ? "00".$checkId->id + 1 : "001");
+        }else{
+
         }
         $form->text('center_name', __('Center Name'))->rules('required');
         $form->text('center_address', __('Center Address'))->rules('required');
         $form->select('employee_id', __('Select Employee'))->options($employees)->rules('required');
-        $form->date('formation_date', __('Formation Date'))->format('DD-MM-YYYY')->default(date('d-m-Y'))->readonly();
+        $form->date('formation_date', __('Formation Date'))->format('DD-MM-YYYY')->default(date('d-m-Y'))->rules(['required', 'date']);
         $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "meeting-date"]);
         $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "day-id"])->readonly();
         $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
@@ -109,27 +125,27 @@ class CenterController extends AdminController
 
             // }
             if ($form->model()->id == null) {
-                $employee = Employee::where('id', $form->model()->employee_id)->first();
-                if (is_object($employee)) {
-                    $employee->center_id = $form->model()->id;
-                    $employee->save();
-                }
+                // $employee = Employee::where('id', $form->model()->employee_id)->first();
+                // if (is_object($employee)) {
+                //     $employee->center_id = $form->model()->id;
+                //     $employee->save();
+                // }
                 $centerId = Center::orderBy('id',"desc")->first();
                 $newCenter = new CenterOwnerList();
                 $newCenter->center_id = is_object($centerId) ? $centerId->id + 1 : 1;
                 $newCenter->employee_id = $form->employee_id;
                 $newCenter->save();
             } else if ($form->model()->employee_id != $form->employee_id) {
-                $employee = Employee::where('id', $form->model()->employee_id)->first();
-                if (is_object($employee)) {
-                    $employee->center_id = NULL;
-                    $employee->save();
-                }
-                $employee1 = Employee::where('id', $form->employee_id)->first();
-                if (is_object($employee1)) {
-                    $employee1->center_id = $form->model()->id;
-                    $employee1->save();
-                }
+                // $employee = Employee::where('id', $form->model()->employee_id)->first();
+                // if (is_object($employee)) {
+                //     $employee->center_id = NULL;
+                //     $employee->save();
+                // }
+                // $employee1 = Employee::where('id', $form->employee_id)->first();
+                // if (is_object($employee1)) {
+                //     $employee1->center_id = $form->model()->id;
+                //     $employee1->save();
+                // }
                 $newCenter = new CenterOwnerList();
                 $newCenter->center_id = $form->model()->id;
                 $newCenter->employee_id = $form->employee_id;
@@ -137,11 +153,11 @@ class CenterController extends AdminController
             }
         });
         $form->saved(function (Form $form) {
-            $employee = Employee::where('id', $form->model()->employee_id)->first();
-            if (is_object($employee)) {
-                $employee->center_id = $form->model()->id;
-                $employee->save();
-            }
+            // $employee = Employee::where('id', $form->model()->employee_id)->first();
+            // if (is_object($employee)) {
+            //     $employee->center_id = $form->model()->id;
+            //     $employee->save();
+            // }
         });
         $form->footer(function ($footer) {
             $footer->disableViewCheck();
@@ -149,7 +165,50 @@ class CenterController extends AdminController
             $footer->disableCreatingCheck();
             $footer->disableReset();
         });
-        Admin::script('$(function(){
+        // Admin::css("/select2/dist/css/select2.min.css");
+        // Admin::js('/jquery/jquery.min.js');
+        // Admin::js('/select2/dist/js/select2.min.js');
+        Admin::script('
+        const addSelectData = (id, type = "staff", data = {}) => {
+            console.log(id,"val")
+                $("#" + id).select2({
+                    ajax: {
+                        url: "/admin/getEmployees",
+                        dataType: "json",
+                        delay: 250,
+                        data: function(params) {
+                            return {
+                                q: params.term,
+                                page: params.page || 1,
+                                tp: type,
+                                data
+
+                            };
+                        },
+                        processResults: function(data, params) {
+                            params.page = params.page || 1;
+                            var mappedResults = data.results.map(function(item) {
+                                return {
+                                    id: item.id,
+                                    text: item.staff_name
+                                };
+                            });
+                            return {
+                                results: mappedResults,
+                                pagination: {
+                                    more: (params.page * 10) < data
+                                        .total_count
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    minimumInputLength: 3,
+                });
+            }
+        $(function(){
+                addSelectData("staff");
+
                   $("#meeting-date").on("blur",function(){
                     var value = $("#meeting-date").val();
                     var dateParts = value.split("-");
@@ -159,7 +218,9 @@ class CenterController extends AdminController
                     var daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
                     $("#day-id").val(daysOfWeek[dayNumber])
                   });
-        })');
+        })
+
+       ');
         return $form;
     }
 }
