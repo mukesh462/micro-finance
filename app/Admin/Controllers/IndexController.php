@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\Center;
 use App\Models\Employee;
 use App\Models\IndexMember;
 use App\Models\Member;
@@ -125,7 +126,7 @@ class IndexController extends AdminController
         $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($request, $page) {
             $perPage = 10; // Adjust the number of items per page as needed
             $offset = ($page - 1) * $perPage;
-            if ($request->tp == 'staff') {
+            if ($request->tp == 'employee') {
                 $query = Employee::query();
                 // $query->whereIn('id', $tagged);
 
@@ -140,7 +141,7 @@ class IndexController extends AdminController
                 $query = Member::query();
                 // dd($request->input('data'));
                 if ($request->has('q')) {
-                    $query->where('staff_id', $request->input('data')['id'])->where(DB::raw("LOWER(client_name)"), 'like', '%' . strtolower($request->input('q')) . '%');
+                    $query->where('staff_id', $request->input('data')['id']??0)->where(DB::raw("LOWER(client_name)"), 'like', '%' . strtolower($request->input('q')) . '%');
                 }
 
                 $total = $query->count();
@@ -155,8 +156,19 @@ class IndexController extends AdminController
 
                 $total = $query->count();
 
-                $results = $query->skip($offset)->take($perPage)->select('id', 'plan_name as text')->get();
-            } else {
+                $results = $query->skip($offset)->take($perPage)->select('id', 'plan_name as text','plan_amount as value')->get();
+            }elseif ($request->tp == 'center') {
+                $query = Center::query();
+                // dd($request->input('data'));
+                if ($request->has('q')) {
+                    $query->where(DB::raw("LOWER(center_name)"), 'like', '%' . strtolower($request->input('q')) . '%');
+                }
+
+                $total = $query->count();
+
+                $results = $query->skip($offset)->take($perPage)->select('id',DB::raw("CONCAT('00',id,'-',center_name) AS text"))->get();
+            }
+             else {
                 //     $query = SubCategory::query();
                 //     if ($request->has('q')) {
                 //         $query->where(DB::raw("LOWER(name)"), 'like', '%' . strtolower($request->input('q')) . '%');
