@@ -28,7 +28,7 @@ class ProductController extends AdminController
         $grid = new Grid(new Product());
 
         $grid->column('id', __('Id'));
-        $grid->column('plan_name', __('Plan Type'));
+        $grid->column('plan_name', __('Loan Type'));
         $grid->column('plan_amount', __('Loan amount'));
         $grid->column('interest_amount', __('Interest amount'))->display(function($interest_amount){
             if($this->interest_type == 1) {
@@ -159,12 +159,12 @@ class ProductController extends AdminController
           if(is_object($loan))
           {
             if($loan->plan_type == 1){
-                $plan_name = $loan->plan_duration." Weeks";
+                $plan_name = $loan->plan_duration."-Weeks";
             }else if($loan->plan_type == 2){
-                $plan_name = $loan->plan_duration." days";
+                $plan_name = $loan->plan_duration."-14 days";
 
             }else {
-                $plan_name = $loan->plan_duration." Months";
+                $plan_name = $loan->plan_duration."-Months";
 
             }
             $loan->plan_name = $plan_name;
