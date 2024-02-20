@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Center;
+use App\Models\Employee;
 use App\Models\Member;
 use Carbon\Carbon;
 use Encore\Admin\Controllers\AdminController;
@@ -32,11 +33,11 @@ class MemberController extends AdminController
         $grid = new Grid(new Member());
 
         $grid->column('id', __('Id'));
-       
+
         $grid->column('client_name', __('Member name'));
         $grid->column('center_id', __('Center Name'))->display(function ($center_id) {
             $center = Center::where('id', $center_id)->first();
-            return is_object($center) ? "00".$center_id."-".$center->center_name : "---";
+            return is_object($center) ? "00" . $center_id . "-" . $center->center_name : "---";
         });
         // $grid->column('father_name', __('Father name'));
         // $grid->column('mother_name', __('Mother name'));
@@ -110,8 +111,8 @@ class MemberController extends AdminController
         $grid->disableExport();
         $grid->filter(function ($filter) {
             // Remove the default id filter
-            $center = Center::select(DB::raw('CONCAT("00",id, " - ", center_name) as center_name'),'id')
-            ->pluck('center_name', 'id');
+            $center = Center::select(DB::raw('CONCAT("00",id, " - ", center_name) as center_name'), 'id')
+                ->pluck('center_name', 'id');
 
             $filter->disableIdFilter();
             // Add a column filter
@@ -122,7 +123,6 @@ class MemberController extends AdminController
             // $filter->like('phone_number');
             // $filter->equal('status', 'Status')->select([1 => 'Active', 0 => 'In Active']);
             $filter->like('center_id', 'Center Name')->select($center);
-
         });
         return $grid;
     }
@@ -201,9 +201,9 @@ class MemberController extends AdminController
 
             $checkId = Member::orderbydesc('id')->first();
             // $center = Center::pluck('center_name', 'id')->toArray();
-            $center = Center::select(DB::raw('CONCAT("00",id, " - ", center_name) as center_name'),'id')
+            $center = Center::select(DB::raw('CONCAT("00",id, " - ", center_name) as center_name'), 'id')
                 ->pluck('center_name', 'id');
-
+            $staff = Employee::where('status', 1)->pluck('staff_name', 'id');
             // $center = Center::pluck('center_name', 'id')->map(function ($center_name, $id) {
             //     return "00" . $id . ' - ' . $center_name;
             // })->toArray();
@@ -212,7 +212,9 @@ class MemberController extends AdminController
 
                 $form->display('Member ID')->value(is_object($checkId) ? $checkId->id + 1 : 1);
             }
-            $form->select('center_id', __('Select Center '))->options($center);
+            $form->select('center_id', __('Select Center '))->options($center)->required();
+            $form->select('staff_id', __('Select Employee '))->options($staff)->required();
+
             $form->text('client_name', __('Member name'))->rules('required');
             $form->image('photo', __('Photo'))->uniqueName();
             $form->date('dob', __('DOB'))->rules(['required', 'date', 'before_or_equal:' . date('Y-m-d', strtotime('-18 years')), 'after_or_equal:' . date('Y-m-d', strtotime('-60 years'))])->attribute(['id' => 'dob_date'])->format('DD-MM-YYYY');
@@ -223,7 +225,7 @@ class MemberController extends AdminController
 
 
             $form->text('phone_number', __('Mobile'))->rules('required');
-          
+
             $form->text('address', __('Address'))->rules('required');
             $form->text('city', __('City'));
             $form->text('pincode', __('Pincode'))->attribute(['class' => 'numberic form-control']);
@@ -240,7 +242,7 @@ class MemberController extends AdminController
             $form->text('monthly_income', __('Monthly income'))->attribute(['class' => 'numberic form-control form-control'])->rules('required');
             $form->text('monthly_expenses', __('Monthly expenses'))->attribute(['class' => 'numberic form-control'])->rules('required');
             $form->select('home_status', __('Home status'))->options(array_combine($home_sts, $home_sts))->default('Own')->rules('required');
-        
+
             $form->date('date_of_joined', __('Date of joined'))->default(date('Y-m-d'))->rules('required');
             $form->select('status', __('Member status'))->options([1 => 'Active', 0 => 'In Active'])->default(1)->rules('required');
         })->tab('Member Family Details', function (Form $form) {
@@ -248,9 +250,9 @@ class MemberController extends AdminController
             $form->text('mother_name', __('Mother Name'))->rules('required');
             $form->text('spouse_name', __('Spouse Name'))->rules('required');
             $form->text('spouse_occupation', __('Spouse Occupation'))->rules('required');
-            $form->number('no_of_adult', __('Number of Adult'))->default(0)->rules('required')->attribute(['id'=>'adult'])->min(0)->max(10);
-            $form->number('no_of_children', __('Number of children'))->default(0)->rules('required')->attribute(['id'=>'child'])->min(0)->max(10);
-            $form->text('total_family_members', __('Total Family Members'))->default(0)->rules('required')->attribute(['id'=>'total_member'])->readonly();
+            $form->number('no_of_adult', __('Number of Adult'))->default(0)->rules('required')->attribute(['id' => 'adult'])->min(0)->max(10);
+            $form->number('no_of_children', __('Number of children'))->default(0)->rules('required')->attribute(['id' => 'child'])->min(0)->max(10);
+            $form->text('total_family_members', __('Total Family Members'))->default(0)->rules('required')->attribute(['id' => 'total_member'])->readonly();
         })->tab('Member Document', function (Form $form) {
             $form->image('smartcard_img', __('SmartCard Photo'))->rules('required')->uniqueName();
             $form->text('smartcard_no', __('SmartCard No'))->rules('required');

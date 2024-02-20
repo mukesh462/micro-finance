@@ -30,7 +30,7 @@ class CenterController extends AdminController
         $grid = new Grid(new Center());
 
         $grid->column('id', __('Center Id'))->display(function ($id) {
-            return "00".$id;
+            return "00" . $id;
         });
         $grid->column('center_name', __('Center Name'));
         $grid->column('employee_id', __('Employee Name'))->display(function ($employee_id) {
@@ -44,7 +44,7 @@ class CenterController extends AdminController
         $grid->filter(function ($filter) {
             // Remove the default id filter
             $filter->disableIdFilter();
-            $filter->like('center_name','Center Name');
+            $filter->like('center_name', 'Center Name');
         });
         $grid->disableExport();
         $grid->actions(function ($actions) {
@@ -78,30 +78,29 @@ class CenterController extends AdminController
     protected function form()
     {
         $form = new Form(new Center());
-        $checkId = Center::orderBy('id',"desc")->first();
+        $checkId = Center::orderBy('id', "desc")->first();
         $employees = Employee::where('status', 1)->pluck('staff_name', 'id');
-//         $form->html('
+        //         $form->html('
 
-//         <label for="employee_id" class="col-sm-2 asterisk control-label">Select Employee</label>
+        //         <label for="employee_id" class="col-sm-2 asterisk control-label">Select Employee</label>
 
-//             // <div class="col-sm-8" data-select2-id="select2-data-57-c1vq">
-//             <select type="text" class="member-select form-control" id="staff"
-//             placeholder="Select Member">
-//  </select>
-//             // </div>
+        //             // <div class="col-sm-8" data-select2-id="select2-data-57-c1vq">
+        //             <select type="text" class="member-select form-control" id="staff"
+        //             placeholder="Select Member">
+        //  </select>
+        //             // </div>
 
-//    ');
+        //    ');
         // if (request()->segment(3) == 'create#tab-form-1' || request()->segment(3) == 'create') {
-            // $center = Center::pluck('employee_id')->toArray();
-            // $employees = Employee::where('status', 1)->whereNotIn('id', $center)->pluck('staff_name', 'id');
+        // $center = Center::pluck('employee_id')->toArray();
+        // $employees = Employee::where('status', 1)->whereNotIn('id', $center)->pluck('staff_name', 'id');
         // } else {
-            // $center = Center::whereNot('id', request()->segment(3))->pluck('employee_id')->toArray();
-            // $employees = Employee::where('status', 1)->whereNotIn('id', $center)->pluck('staff_name', 'id');
+        // $center = Center::whereNot('id', request()->segment(3))->pluck('employee_id')->toArray();
+        // $employees = Employee::where('status', 1)->whereNotIn('id', $center)->pluck('staff_name', 'id');
         // }
         if (request()->segment(3) == 'create#tab-form-1' || request()->segment(3) == 'create') {
-            $form->display('Center Id')->value(is_object($checkId) ? "00".$checkId->id + 1 : "001");
-        }else{
-
+            $form->display('Center Id')->value(is_object($checkId) ? "00" . $checkId->id + 1 : "001");
+        } else {
         }
         $form->text('center_name', __('Center Name'))->rules('required');
         $form->text('center_address', __('Center Address'))->rules('required');
@@ -130,7 +129,7 @@ class CenterController extends AdminController
                 //     $employee->center_id = $form->model()->id;
                 //     $employee->save();
                 // }
-                $centerId = Center::orderBy('id',"desc")->first();
+                $centerId = Center::orderBy('id', "desc")->first();
                 $newCenter = new CenterOwnerList();
                 $newCenter->center_id = is_object($centerId) ? $centerId->id + 1 : 1;
                 $newCenter->employee_id = $form->employee_id;

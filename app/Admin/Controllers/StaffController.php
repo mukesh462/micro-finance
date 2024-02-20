@@ -53,7 +53,7 @@ class StaffController extends AdminController
         $grid->filter(function ($filter) {
             // Remove the default id filter
             $filter->disableIdFilter();
-            $filter->like('Staff_name','Employee Name');
+            $filter->like('Staff_name', 'Employee Name');
         });
         // $grid->disableFilter();
         $grid->disableExport();
@@ -103,16 +103,16 @@ class StaffController extends AdminController
     {
         $form = new Form(new Employee());
         $form->tab('Employee Info', function ($form) {
-            $checkId = Employee::orderBy('id',"desc")->first();
+            $checkId = Employee::orderBy('id', "desc")->first();
             if (request()->segment(3) == 'create#tab-form-1' || request()->segment(3) == 'create') {
                 $form->display('Employee Id')->value(is_object($checkId) ? $checkId->id + 1 : 1);
-            }else{
-                $form->text('id','Employee Id')->readonly();
+            } else {
+                $form->text('id', 'Employee Id')->readonly();
             }
             $form->text('staff_name', __('Employee name'))->rules('required');
 
             $form->select('designation', __('Designation'))->options([1 => 'Manager', 2 => 'Field Officer'])->rules(['required']);
-            $form->radio('gender', __('Gender'))->options(["Male" => 'Male', "Female" => 'Female',"Other"=>'Other'])->default("Male")->rules('required');
+            $form->radio('gender', __('Gender'))->options(["Male" => 'Male', "Female" => 'Female', "Other" => 'Other'])->default("Male")->rules('required');
             $form->date('dob', __('Date of birth'))->format('DD-MM-YYYY')->rules(['required', 'date', 'before:' . date('d-m-Y')])->attribute(['id' => 'do-date']);
             $form->date('doj', __('Date of Joining'))->format('DD-MM-YYYY')->rules(['required', 'date']);
         })->tab('Login Credentials', function ($form) {
@@ -228,17 +228,18 @@ class StaffController extends AdminController
         return $form;
     }
 
-    public function getEmployees(Request $request){
+    public function getEmployees(Request $request)
+    {
 
-         // Retrieve parameters from the request
-         $q = $request->input('q', ''); // Search term
-         $page = $request->input('page', 1); // Current page number
-         $limit = 10; // Number of records per page
+        // Retrieve parameters from the request
+        $q = $request->input('q', ''); // Search term
+        $page = $request->input('page', 1); // Current page number
+        $limit = 10; // Number of records per page
 
-         // Calculate the offset
-         $offset = ($page - 1) * $limit;
+        // Calculate the offset
+        $offset = ($page - 1) * $limit;
 
-         // Query data with limit and offset
+        // Query data with limit and offset
         //  $data = Employee::where('staff_name', 'like', '%' . $q . '%')
         //      ->offset($offset)
         //      ->limit($limit)
@@ -247,17 +248,17 @@ class StaffController extends AdminController
         //  // Count total records for pagination
         //  $totalCount = Employee::where('column', 'like', '%' . $q . '%')->count();
 
-         $query = Employee::where('staff_name', 'like', '%' . $q . '%');
-         $totalCount = $query->count();
-         $data = $query->offset(($page - 1) * $limit)->limit($limit)->get();
+        $query = Employee::where('staff_name', 'like', '%' . $q . '%');
+        $totalCount = $query->count();
+        $data = $query->offset(($page - 1) * $limit)->limit($limit)->get();
 
-         // Prepare response data
-         $response = [
-             'results' => $data,
-             'total_count' => $totalCount
-         ];
+        // Prepare response data
+        $response = [
+            'results' => $data,
+            'total_count' => $totalCount
+        ];
 
-         // Return JSON response
-         return response()->json($response);
+        // Return JSON response
+        return response()->json($response);
     }
 }
