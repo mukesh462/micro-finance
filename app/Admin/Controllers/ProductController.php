@@ -30,7 +30,13 @@ class ProductController extends AdminController
         $grid->column('id', __('Id'));
         $grid->column('plan_name', __('Plan Type'));
         $grid->column('plan_amount', __('Loan amount'));
-        $grid->column('interest_amount', __('Interest amount'));
+        $grid->column('interest_amount', __('Interest amount'))->display(function($interest_amount){
+            if($this->interest_type == 1) {
+                return $interest_amount." %";
+            }else{
+                return "Rs ".$interest_amount;
+            }
+        });
         // $grid->column('plan_type', __('Plan type'));
         // $grid->column('plan_description', __('Plan description'));
         // $grid->column('plan_duration', __('Plan duration'));
