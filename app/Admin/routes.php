@@ -42,5 +42,6 @@ Route::group([
     $router->get('getEmployees', "StaffController@getEmployees");
     $router->get('getReason', "ReasonController@getReason");
     $router->resource('reasons', ReasonController::class);
+    $router->get('singleCollection', "DayBookController@singleCollection");
 
 });

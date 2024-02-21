@@ -11,6 +11,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Encore\Admin\Widgets\Box;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Http\Request as HttpRequest;
 use PDF;
@@ -149,4 +150,16 @@ class DayBookController extends AdminController
         // Return the PDF content as a response
         return response($pdf->output(), 200, $headers);
     }
+    public function singleCollection(HttpRequest $request)
+    {
+        return Admin::content(function (Content $content) {
+
+            // optional
+            // $content->header(' Collection');
+
+            // $content->description('Single Member collection');
+            $content->body( new Box('Single Collection',view('single_collection')));
+        });
+    }
+
 }
