@@ -213,7 +213,7 @@ class MemberController extends AdminController
                 $form->display('Member ID')->value(is_object($checkId) ? $checkId->id + 1 : 1);
             }
             $form->select('center_id', __('Select Center '))->options($center)->required();
-            $form->select('staff_id', __('Select Employee '))->options($staff)->required();
+            $form->hidden('staff_id', __('Select Employee '));
 
             $form->text('client_name', __('Member name'))->rules('required');
             $form->image('photo', __('Photo'))->uniqueName();
@@ -254,11 +254,11 @@ class MemberController extends AdminController
             $form->number('no_of_children', __('Number of children'))->default(0)->rules('required')->attribute(['id' => 'child'])->min(0)->max(10);
             $form->text('total_family_members', __('Total Family Members'))->default(0)->rules('required')->attribute(['id' => 'total_member'])->readonly();
         })->tab('Member Document', function (Form $form) {
-            $form->image('smartcard_img', __('SmartCard Photo'))->rules('required')->uniqueName();
+            // $form->image('smartcard_img', __('SmartCard Photo'))->rules('required')->uniqueName();
             $form->text('smartcard_no', __('SmartCard No'))->rules('required');
-            $form->image('voterid_img', __('VoterID Photo'))->rules('required')->uniqueName();
+            // $form->image('voterid_img', __('VoterID Photo'))->rules('required')->uniqueName();
             $form->text('voter_id', __('Voter ID'))->rules('required');
-            $form->image('aadhar_img', __('Aadhar Card Photo'))->rules('required')->uniqueName();
+            // $form->image('aadhar_img', __('Aadhar Card Photo'))->rules('required')->uniqueName();
             $form->text('aadhar_no', __('Aadhar Card Number'))->rules('required')->attribute(['class' => 'form-control numberic']);
             $form->image('pancard_img', __('PAN Card Photo'))->uniqueName();
             $form->text('pancard_no', __('PAN Card Number'));
@@ -268,7 +268,7 @@ class MemberController extends AdminController
             $client = ['Mother', 'Father', 'Wife', 'Husband', 'Brother', 'Sister', 'Other'];
             $form->select('relation_with_client', __('Relation with Member'))->options(array_combine($client, $client));
             $form->date('nominee_dob', __('Nominee dob'))->default(date('Y-m-d'))->rules(['required', 'date', 'before_or_equal:' . date('Y-m-d', strtotime('-18 years')), 'after_or_equal:' . date('Y-m-d', strtotime('-58 years'))])->format('DD-MM-YYYY');
-            $form->image('nominee_aadhar_img', __('Nominee Aadhar Card'))->rules('required')->uniqueName();
+            // $form->image('nominee_aadhar_img', __('Nominee Aadhar Card'))->rules('required')->uniqueName();
             $form->text('nominee_aadhar', __('Nominee Aadhar Number'))->attribute(['class' => 'numeric form-control'])->rules('required');
             $form->image('nominee_voter_img', __('Nominee voter Photo'))->uniqueName();
             $form->text('nominee_voter_id', __('Nominee voter Number'))->attribute(['class' => 'numeric form-control']);
@@ -291,6 +291,7 @@ class MemberController extends AdminController
             if ($form->status == 0) {
                 $form->inactive_time = date('Y-m-d H:i:s');
             }
+            $form->staff_id = Center::find($form->center_id)->employee_id;
         });
         $form->footer(function ($footer) {
 
