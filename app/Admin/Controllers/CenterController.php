@@ -5,11 +5,14 @@ namespace App\Admin\Controllers;
 use App\Models\Center;
 use App\Models\CenterOwnerList;
 use App\Models\Employee;
+use App\Models\Member;
 use Encore\Admin\Admin;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CenterController extends AdminController
 {
@@ -221,5 +224,58 @@ class CenterController extends AdminController
 
        ');
         return $form;
+    }
+
+    public function getCenter(Request $request)
+    {
+
+        // Retrieve parameters from the request
+        $q = $request->input('q', ''); // Search term
+        $page = $request->input('page', 1); // Current page number
+        $limit = 10; // Number of records per page
+
+        // Calculate the offset
+        $offset = ($page - 1) * $limit;
+
+        // Query data with limit and offset
+        //  $data = Employee::where('staff_name', 'like', '%' . $q . '%')
+        //      ->offset($offset)
+        //      ->limit($limit)
+        //      ->get();
+
+        //  // Count total records for pagination
+        //  $totalCount = Employee::where('column', 'like', '%' . $q . '%')->count();
+        // $query = Center::where('center_name', 'like', '%' . $q . '%')->join('employees', 'centers.employee_id', '=', 'employees.center_id')->select('centers.id as centerId', 'centers.center_name', 'employees.id as employeeId', 'employees.staff_name');
+        $query = Center::select(DB::raw('CONCAT("00",id, " - ", center_name) as center_name'), 'id')->where('center_name', 'like', '%' . $q . '%');
+        $totalCount = $query->count();
+        $data = $query->offset(($page - 1) * $limit)->limit($limit)->get();
+
+        // foreach($data as $key=>$value) {
+        //     $data[$key]['member'] = Member::select('id','client_name')->where('center_id',$value->centerId)->get();
+        // }
+
+        // Prepare response data
+        $response = [
+            'results' => $data,
+            'total_count' => $totalCount
+        ];
+
+        // Return JSON response
+        return response()->json($response);
+    }
+
+    public function getDetails(Request $request)
+    {
+
+        // Retrieve parameters from the request
+        $id = $request->input('center_id'); // Search term
+        $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
+        $data['member'] = Member::select('id', 'client_name')->where('center_id', $id)->get();
+        // Prepare response data
+        $response = [
+            'results' => $data,
+        ];
+        // Return JSON response
+        return response()->json($response);
     }
 }

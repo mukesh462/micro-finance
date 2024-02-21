@@ -43,6 +43,10 @@ Route::group([
     $router->get('getReason', "ReasonController@getReason");
     $router->resource('reasons', ReasonController::class);
     $router->get('singleCollection', "DayBookController@singleCollection");
+    $router->get('getCenter', "CenterController@getCenter");
+    $router->post('getDetails', "CenterController@getDetails");
+
+
     $router->post('addIndex', [IndexController::class, 'addIndex'])->name('add.index');
     $router->get('indexes/{id}/edits', [IndexController::class, 'EditViewIndex']);
     $router->post('editIndex', [IndexController::class, 'editIndex'])->name('edit.index');
