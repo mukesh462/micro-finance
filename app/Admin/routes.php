@@ -34,8 +34,8 @@ Route::group([
     $router->resource('manage-documents', DocumentController::class);
     $router->resource('members', MemberController::class);
     $router->resource('products', ProductController::class);
-    $router->resource('indexs', IndexController::class);
-    $router->get('index/create', "CustomerController@create_index");
+    $router->resource('indexes', IndexController::class);
+    $router->get('indexes/create', "CustomerController@create_index");
     $router->resource('vouchers', VoucherController::class);
     $router->resource('dayBookReport', DayBookController::class);
     $router->get('viewDayBookReport/{id}', "DayBookController@viewDayBookReport");
@@ -43,5 +43,8 @@ Route::group([
     $router->get('getReason', "ReasonController@getReason");
     $router->resource('reasons', ReasonController::class);
     $router->get('singleCollection', "DayBookController@singleCollection");
-
+    $router->post('addIndex', [IndexController::class, 'addIndex'])->name('add.index');
+    $router->get('indexes/{id}/edits', [IndexController::class, 'EditViewIndex']);
+    $router->post('editIndex', [IndexController::class, 'editIndex'])->name('edit.index');
+    $router->get('indexes/{id}/view', [IndexController::class, 'ViewIndex']);
 });

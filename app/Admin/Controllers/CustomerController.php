@@ -141,25 +141,26 @@ class CustomerController extends AdminController
     public function create_index()
     {
         return Admin::content(function (Content $content) {
-    
+
             // optional
             $content->header(' Index');
             // $content
-    
+
             // optional
             $content->description(' Create Index Member');
-    
+
             // add breadcrumb since v1.5.7
             // $content->breadcrumb(
             //     ['text' => 'Dashboard', 'url' => '/admin'],
             //     ['text' => 'User management', 'url' => '/admin/users'],
             //     ['text' => 'Edit user']
             // );
-    
+            $value = new Box('', view('create_index', ['type' => 'create']));
 
-    
+
+
             // Direct rendering view, Since v1.6.12
-            $content->body( new Box('create_index',view('create_index')));
+            $content->body($value->render());
         });
     }
 }

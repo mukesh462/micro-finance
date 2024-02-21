@@ -2,15 +2,21 @@
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Actions\Post\IndexPage;
+use App\Admin\Actions\Post\IndexView;
 use App\Models\Center;
 use App\Models\Employee;
+use App\Models\Index;
 use App\Models\IndexMember;
 use App\Models\Member;
 use App\Models\Product;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Encore\Admin\Widgets\Box;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -31,19 +37,38 @@ class IndexController extends AdminController
      */
     protected function grid()
     {
-        $grid = new Grid(new IndexMember());
+        $grid = new Grid(new Index());
 
         $grid->column('id', __('Id'));
-        $grid->column('member_id', __('Member id'));
-        $grid->column('plan_id', __('Plan id'));
-        $grid->column('loan_purpose', __('Loan purpose'));
-        $grid->column('plan_amount', __('Plan amount'));
-        $grid->column('staff_id', __('Staff id'));
-        $grid->column('loan_status', __('Loan status'));
-        $grid->column('center_id', __('Center id'));
-        $grid->column('index_id', __('Index id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
+        $grid->index_no('Index No');
+        $grid->column('index_date', __('Index Date'));
+        $grid->index_status('Status')->display(function ($status) {
+            if ($status == 1) {
+                return "<span class='label label-info'>Index Created</span>";
+            } else {
+                return "<span class='label label-success'>Index Disbursement</span>";
+            }
+        });
+        $grid->actions(function ($actions) {
+            $actions->disableDelete();
+            // $actions->disableEdit();
+
+            $actions->add(new IndexPage);
+            $actions->add(new IndexView);
+
+            $actions->disableEdit();
+            $actions->disableView();
+        });
+
+        // $grid->column('plan_id', __('Plan id'));
+        // $grid->column('loan_purpose', __('Loan purpose'));
+        // $grid->column('plan_amount', __('Plan amount'));
+        // $grid->column('staff_id', __('Staff id'));
+        // $grid->column('loan_status', __('Loan status'));
+        // $grid->column('center_id', __('Center id'));
+        // $grid->column('index_id', __('Index id'));
+        // $grid->column('created_at', __('Created at'));
+        // $grid->column('updated_at', __('Updated at'));
         $grid->disableBatchActions();
         $grid->disableColumnSelector();
         $grid->disableExport();
@@ -56,13 +81,9 @@ class IndexController extends AdminController
         $grid->disableCreateButton();
         $grid->tools(function ($tools) {
             $tools->append('
-            
-       
-                <a href="http://localhost:8000/admin/index/create"  class="btn btn-sm btn-success pull-right" title="New">
+                <a href="http://localhost:8000/admin/indexes/create"  class="btn btn-sm btn-success pull-right" title="New">
                     <i class="fa fa-plus"></i><span class="hidden-xs">&nbsp;&nbsp;New</span>
                 </a>
-          
-            
                   ');
         });
         return $grid;
@@ -141,7 +162,7 @@ class IndexController extends AdminController
                 $query = Member::query();
                 // dd($request->input('data'));
                 if ($request->has('q')) {
-                    $query->where('staff_id', $request->input('data')['id']??0)->where(DB::raw("LOWER(client_name)"), 'like', '%' . strtolower($request->input('q')) . '%');
+                    $query->where('staff_id', $request->input('data')['id'] ?? 0)->where(DB::raw("LOWER(client_name)"), 'like', '%' . strtolower($request->input('q')) . '%');
                 }
 
                 $total = $query->count();
@@ -156,8 +177,8 @@ class IndexController extends AdminController
 
                 $total = $query->count();
 
-                $results = $query->skip($offset)->take($perPage)->select('id', 'plan_name as text','plan_amount as value')->get();
-            }elseif ($request->tp == 'center') {
+                $results = $query->skip($offset)->take($perPage)->select('id', "plan_name as text")->get();
+            } elseif ($request->tp == 'center') {
                 $query = Center::query();
                 // dd($request->input('data'));
                 if ($request->has('q')) {
@@ -166,9 +187,8 @@ class IndexController extends AdminController
 
                 $total = $query->count();
 
-                $results = $query->skip($offset)->take($perPage)->select('id',DB::raw("CONCAT('00',id,'-',center_name) AS text"))->get();
-            }
-             else {
+                $results = $query->skip($offset)->take($perPage)->select('id', DB::raw("CONCAT('00',id,'-',center_name) AS text"))->get();
+            } else {
                 //     $query = SubCategory::query();
                 //     if ($request->has('q')) {
                 //         $query->where(DB::raw("LOWER(name)"), 'like', '%' . strtolower($request->input('q')) . '%');
@@ -187,5 +207,167 @@ class IndexController extends AdminController
         });
 
         return response()->json($data);
+    }
+    public function getemployee(Request $request)
+    {
+        $getEmp = Center::where('id', $request->id)->first();
+        // dd(request()->input('id'));
+        $data = Employee::find($getEmp->employee_id);
+        return response()->json($data);
+    }
+    function getproduct(Request $request)
+    {
+        $getEmp = Product::where('id', $request->id)->first();
+        // dd(request()->input('id'));
+
+        return response()->json($getEmp);
+    }
+    public function addIndex(Request $request)
+    {
+
+
+        $dataList = json_decode($request->data);
+        if (count($dataList) > 0) {
+            $createIndex = new Index();
+            $countCheck = Index::where('index_date', date('Y-m-d'))->count();
+            $createIndex->index_date = date('Y-m-d');
+            $row_id = $countCheck == 0 ? 1 : $countCheck + 1;
+            $createIndex->index_no = date('Ymd') . $row_id;
+            $createIndex->center_id = $dataList[0]->center;
+            $createIndex->save();
+            // dd($dataList);
+            foreach ($dataList as $key => $value) {
+                $createMember = new IndexMember();
+                $createMember->member_id = $value->member;
+                $createMember->plan_id = $value->plan;
+                $createMember->loan_purpose = $value->purpose;
+                $createMember->plan_amount = $value->amount;
+                $createMember->staff_id = $value->employee_id;
+                $createMember->center_id = $value->center;
+                $createMember->index_id = $createIndex->id;
+                $createMember->save();
+            }
+        }
+
+        admin_toastr('Index Added Successfully');
+        return redirect(admin_url('/indexes'));
+    }
+    function EditViewIndex($id, Request $request)
+    {
+        $getIndexMember = IndexMember::where('index_id', $id)->get();
+
+        foreach ($getIndexMember as $key => $value) {
+            # code...
+            $center = Center::where('id', $value->center_id)->first();
+            $getemp = Employee::where('id', $value->center_id)->first();
+            $plan = Product::where('id', $value->plan_id)->first();
+            $member = Member::where('id', $value->member_id)->first();
+            $getIndexMember[$key]['sn'] = $key + 1;
+
+            $getIndexMember[$key]['center_name'] = '00' . $center->id . '-' . $center->center_name;
+            $getIndexMember[$key]['product_name'] = $plan->plan_name;
+            $getIndexMember[$key]['member_name'] = $member->client_name;
+            $getIndexMember[$key]['emp_name'] = $getemp->staff_name;
+            $getIndexMember[$key]['purpose'] = $value->loan_purpose;
+            $getIndexMember[$key]['amount'] = $value->plan_amount;
+            $getIndexMember[$key]['plan'] = $plan->id;
+            $getIndexMember[$key]['member'] = $value->member_id;
+            $getIndexMember[$key]['staff_id'] = $getemp->id;
+            $getIndexMember[$key]['center_id'] = $center->id;
+        }
+        // return $getIndexMember;
+        return Admin::content(function (Content $content) use ($getIndexMember) {
+
+            // optional
+            $content->header(' Index');
+            // $content
+
+            // optional
+            $content->description(' Edit Index Member');
+
+            // add breadcrumb since v1.5.7
+            // $content->breadcrumb(
+            //     ['text' => 'Dashboard', 'url' => '/admin'],
+            //     ['text' => 'User management', 'url' => '/admin/users'],
+            //     ['text' => 'Edit user']
+            // );
+
+
+
+            // Direct rendering view, Since v1.6.12
+            $content->body(new Box('', view('create_index', ['data' => $getIndexMember, 'type' => 'edit'])));
+        });
+    }
+    public function editIndex(Request $request)
+    {
+        $dataList = json_decode($request->data);
+        // dd($dataList);
+        if (count($dataList) > 0) {
+            $ids = [];
+            foreach ($dataList as $key => $value) {
+                if (isset($value->id)) {
+                    array_push($ids, $value->id);
+                    $createMember = IndexMember::where('id', $value->id)->first();
+                    $createMember->member_id = $value->member;
+                    $createMember->plan_id = $value->plan;
+                    $createMember->loan_purpose = $value->purpose;
+                    $createMember->plan_amount = $value->amount;
+                    // $createMember->staff_id = $value->employee_id;
+                    // $createMember->center_id = $value->center;
+                    $createMember->index_id = $request->index_id;
+                    $createMember->save();
+                } else {
+                    $createMember = new IndexMember();
+                    $createMember->member_id = $value->member;
+                    $createMember->plan_id = $value->plan;
+                    $createMember->loan_purpose = $value->purpose;
+                    $createMember->plan_amount = $value->amount;
+                    $createMember->staff_id = $value->employee_id;
+                    $createMember->center_id = $value->center;
+                    $createMember->index_id = $request->index_id;
+                    $createMember->save();
+                    array_push($ids, $createMember->id);
+                }
+            }
+            IndexMember::whereNotIn('id', $ids)->where('index_id', $request->index_id)->delete();
+        } else {
+            admin_toastr('Need one member to Edit', 'error');
+            return admin_url('/indexes');
+        }
+        admin_toastr('Index Member Updated');
+        return redirect(admin_url('/indexes'));
+    }
+    function ViewIndex($id)
+    {
+        $getIndexMember = IndexMember::where('index_id', $id)->get();
+
+        foreach ($getIndexMember as $key => $value) {
+            # code...
+            $center = Center::where('id', $value->center_id)->first();
+            $getemp = Employee::where('id', $value->center_id)->first();
+            $plan = Product::where('id', $value->plan_id)->first();
+            $member = Member::where('id', $value->member_id)->first();
+            $getIndexMember[$key]['sn'] = $key + 1;
+
+            $getIndexMember[$key]['center_name'] = '00' . $center->id . '-' . $center->center_name;
+            $getIndexMember[$key]['product_name'] = $plan->plan_name;
+            $getIndexMember[$key]['member_name'] = $member->client_name;
+            $getIndexMember[$key]['emp_name'] = $getemp->staff_name;
+            $getIndexMember[$key]['purpose'] = $value->loan_purpose;
+            $getIndexMember[$key]['amount'] = $value->plan_amount;
+            $getIndexMember[$key]['plan'] = $plan->id;
+            $getIndexMember[$key]['member'] = $value->member_id;
+            $getIndexMember[$key]['staff_id'] = $getemp->id;
+            $getIndexMember[$key]['center_id'] = $center->id;
+        }
+        // return $getIndexMember;
+        return Admin::content(function (Content $content) use ($getIndexMember) {
+
+            $content->header(' Index');
+            $content->description(' View Index Member');
+
+
+            $content->body(new Box('', view('create_index', ['data' => $getIndexMember, 'type' => 'view'])));
+        });
     }
 }

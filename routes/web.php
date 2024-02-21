@@ -19,3 +19,5 @@ Route::get('/', function () {
 });
 
 Route::get('/get-data', [IndexController::class, 'getData'])->name('get.data');
+Route::get('/get-employee', [IndexController::class, 'getemployee'])->name('get.employee');
+Route::get('/get-product', [IndexController::class, 'getproduct'])->name('get.product');
