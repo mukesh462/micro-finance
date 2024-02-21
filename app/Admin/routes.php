@@ -43,5 +43,8 @@ Route::group([
     $router->get('getReason', "ReasonController@getReason");
     $router->resource('reasons', ReasonController::class);
     $router->get('singleCollection', "DayBookController@singleCollection");
+    $router->get('getCenter', "CenterController@getCenter");
+    $router->post('getDetails', "CenterController@getDetails");
+
 
 });

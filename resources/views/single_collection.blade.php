@@ -1,331 +1,286 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- <link href="{{ asset('/select2/dist/css/select2.min.css') }}" rel="stylesheet" /> -->
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link href="{{ asset('/select2/dist/css/select2.min.css') }}" rel="stylesheet" />
+<style>
+    .addbtn {
+        margin-top: 25px;
+    }
 
-    <style>
-        .addbtn {
-            margin-top: 25px;
-        }
+    .select2 {
+        width: 100% !important;
+    }
 
-        .table-view {
-            margin-top: 5%;
-        }
+    .mb {
+        margin-bottom: 10px;
+    }
 
-        .select2 {
-            width: 100% !important;
-        }
-
-        .select2-selection .select2-selection--single {
-            padding: 3px;
-        }
-
-        .mb {
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-
-<body>
+    .container {
+        max-width: 100%;
+    }
+</style>
 
 
-    <div class="container">
-        <div id="container">
+
+<div class="container">
+    <div id="container">
+        <form id="myForm">
             <div class="row">
                 <div class="col-12 col-md-4 col-lg-4 mb">
-                    <label for="center" class="" id="Center-error">Select Center</label>
-                    <select type="text" class="form-control" id="Center" placeholder="Select Member"></select>
+                    <label for="center" class="" id="center-error">Select Center
+                    </label>
+                    <select type="text" class="form-control select2" id="mySelect" placeholder="Select Center" name="center">
+                        <!-- <option value="" disabled selected>Select an option...</option> -->
+                    </select>
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
-                    <!-- <label for="staff">Select Employee</label> -->
-                    <label for="employee" class="" id="Employee-error">Employee Name</label>
-                    <input type="text" class="form-control" id="purpose" placeholder="employee" readonly disabled/>
-                    <!-- <select type="text" class="form-control" id="Employee" disabled
-                        placeholder="Select Employee"></select> -->
+                    <label for="employee" class="" id="employee_error">Employee Name</label>
+                    <input type="text" class="form-control" id="employee_name" placeholder="Employee Name" readonly disabled />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
-                    <label for="member" class="" id="Member-error">Select Member</label>
-                    <select type="text" class="form-control" placeholder="Select Member">
-                       <option aria-readonly="true">Select Member</option>
+                    <label for="member" class="" id="member_error">Select Member</label>
+                    <select type="text" class="form-control" placeholder="Select Member" id="member_list" name="member">
+                        <option aria-readonly="true" value="">Select Member</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-4 col-lg-4 mb">
+                    <label for="member" class="" id="loan_error">Select Loan Acc No</label>
+                    <select type="text" class="form-control" placeholder="Select Loan" id="loan_list">
+                        <option aria-readonly="true" value="">Select Loan Acc Number</option>
+                        <option  value="2">Example</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="member" class="" id="Product-error">Disbursal Date</label>
-
-                    <!-- <select type="text" class="form-control" id="Product" placeholder="Select Member"></select> -->
-                    <!-- <span class='text-danger' id="product-error" style='display:none'> Product is required </span> -->
-                    <input type="text" class="form-control" id="purpose" placeholder="Disbursal Date" readonly disabled/>
+                    <input type="text" class="form-control" id="purpose" placeholder="Disbursal Date" readonly disabled />
                 </div>
 
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Loan Amount</label>
-                    <input type="text" class="form-control" id="loan-amount" placeholder="Loan Amount" readonly disabled/>
+                    <input type="text" class="form-control" id="loan-amount" placeholder="Loan Amount" readonly disabled />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Due Weeks</label>
-                    <input type="text" class="form-control" id="loan-amount" placeholder="Due Weeks" readonly disabled/>
+                    <input type="text" class="form-control" id="loan-amount" placeholder="Due Weeks" readonly disabled />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Collection Weeks</label>
-                    <input type="text" class="form-control" id="collection-Weeks" placeholder="Collection Weeks" readonly disabled/>
+                    <input type="text" class="form-control" id="collection-Weeks" placeholder="Collection Weeks" readonly disabled />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Opening Arr. Price</label>
-                    <input type="text" class="form-control" id="arr-price" placeholder="Opening Arr. Price" readonly disabled/>
+                    <input type="text" class="form-control" id="arr-price" placeholder="Opening Arr. Price" readonly disabled />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Opening Arr. Interest</label>
-                    <input type="text" class="form-control" id="arr-int" placeholder="Opening Arr. Interest" readonly disabled/>
+                    <input type="text" class="form-control" id="arr-int" placeholder="Opening Arr. Interest" readonly disabled />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Loan Outstanding</label>
-                    <input type="text" class="form-control" id="loan-outstanding" placeholder="Loan Outstanding" readonly disabled/>
+                    <input type="text" class="form-control" id="loan-outstanding" placeholder="Loan Outstanding" readonly disabled />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
-                    <label for="purpose">Collection Type</label>
+                    <label for="collection-type" id="collection-error">Collection Type</label>
                     <select type="text" class="form-control" id="collection-type" placeholder="Collection Type">
-                       <option>Collection Type</option>
-                       <option>Cash in hand</option>
-                       <option>Bank</option>
+                        <option value="">Collection Type</option>
+                        <option value="Cash in hand">Cash in hand</option>
+                        <option value="Bank">Bank</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
-                    <label for="purpose">Loan Collected</label>
-                    <input type="text" class="form-control" id="loan-collected" placeholder="Loan Collected"/>
+                    <label for="purpose" id="amount-error">Loan Collected</label>
+                    <input type="text" class="form-control" id="loan-collected" placeholder="Loan Collected" />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Total Collected</label>
-                    <input type="text" class="form-control" id="total-collected" placeholder="Total Collected" readonly disabled/>
+                    <input type="text" class="form-control" id="total-collected" placeholder="Total Collected" readonly disabled />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 addbtn" style="">
-                    <button id="add-btn" class="btn btn-primary mt-2 d-block">
+                    <button type="submit" id="add-btn" class="btn btn-primary mt-2 d-block">
                         <i class="fa fa-save"></i>&nbsp; Save
                     </button>
-                    <button id="reset-btn" class="btn btn-warning mt-2 d-block">
+                    <button type="button" id="reset-btn" class="btn btn-warning mt-2 d-block">
                         <i class="fa fa-refresh"></i> Reset
                     </button>
                 </div>
             </div>
-        </div>
-        <br />
-        <!-- <button class="remove-btn">Remove</button> -->
+        </form>
     </div>
+    <br />
+    <!-- <button class="remove-btn">Remove</button> -->
+</div>
 
-    <script src="/jquery/jquery.min.js"></script>
-    <script src="{{ asset('/select2/dist/js/select2.min.js') }}"></script>
+<!-- <script src="/jquery/jquery.min.js"></script>
+<script src="{{ asset('/select2/dist/js/select2.min.js') }}"></script> -->
 
-    <script>
-        let finalObj = [];
-        let row_id = 1;
-        const checkField = (data) => {
-            var status;
-            data.forEach((element) => {
-                if (element.value == "" || element.value == null) {
-                    // console.log(member);
-                    dispalyErrorMessage(element.id);
-                    status = false;
-                } else {
-                    status = true;
-                }
-            });
-            return status;
-            // console.log(id, 'sddsd');
-        };
-        const removeError = (e) => {
-            console.log(e.id, "sdsds");
+<script>
+    $(document).ready(function() {
+        $('.select2').select2();
+    });
 
-            $("#" + e.id + "-error").css({
-                color: "black",
-            });
-            $("#" + e.id + "-error").text("Select " + e.id);
-        };
-
-        $(document).ready(function () {
-            // Add button click event
-            // $("#add-btn").click(function () {
-            //     var center = $("#Center").val();
-            //     var employee = $("#Employee").val();
-            //     var member = $("#Member").val();
-            //     var plan = $("#Product").val();
-            //     var purpose = $("#purpose").val();
-            //     // console.log(employee, 'emp');
-            //     const valObj = [
-            //         {
-            //             value: center,
-            //             id: "Center",
-            //         },
-            //         {
-            //             value: employee,
-            //             id: "Employee",
-            //         },
-            //         {
-            //             value: member,
-            //             id: "Member",
-            //         },
-            //         {
-            //             value: plan,
-            //             id: "Product",
-            //         },
-            //     ];
-            //     if (checkField(valObj)) {
-            //         let onblur = {
-            //             sn: row_id,
-            //             center,
-            //             plan,
-            //             purpose,
-            //             employee,
-            //         };
-            //         finalObj.push(onblur);
-            //         var newRow =
-            //             "<tr>" +
-            //             "<td>" +
-            //             onblur.sn +
-            //             "</td>" +
-            //             "<td>" +
-            //             $("#Center  option:selected").text() +
-            //             "</td>" +
-            //             "<td>" +
-            //             $("#Employee option:selected").text() +
-            //             "</td>" +
-            //             "<td>" +
-            //             $("#Member option:selected").text() +
-            //             "</td>" +
-            //             "<td>" +
-            //             $("#Product option:selected").text() +
-            //             "</td>" +
-            //             "<td>" +
-            //             purpose +
-            //             "</td>" +
-            //             `<td ><button class="remove-btn btn btn-danger btn-sm "  data-id='${row_id}' ><i class="fa fa-trash"></i> Remove</button></td>` +
-            //             "</tr>";
-
-            //         $("#table-body").append(newRow);
-            //         row_id++;
-
-            //         // Clear input fields
-            //         // $('.').val('');
-            //         // $('.plan-select').val('');
-            //         // $('.purpose-field').val('');
-            //         // $('.employee-select').val('');
-            //     }
-
-            //     $("#data-table").on("click", ".remove-btn", function () {
-            //         $(this).closest("tr").remove(); // Remove the closest table row
-            //         var fl = $(this).data("id"); // Use data() method to get the value of data-id
-            //         finalObj = finalObj.filter((e) => e.sn != fl);
-            //         console.log(fl, "hftdf");
-            //     });
-            // });
-
-            // Remove button click event
-        });
-        $("#staff").on("change", function (event) {
-            const selected = $(this).val();
-            addSelectData("Member", "member", {
-                id: selected,
-            });
-            $("#member").removeAttr("disabled");
-
-            console.log("chage", selected);
-        });
-        const addSelectData = (id, type = "staff", data = {}) => {
-            $("#" + id).select2({
-                ajax: {
-                    url: "{{ route('get.data') }}",
-                    dataType: "json",
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            q: params.term, // search term
-                            page: params.page || 1, // page number
-                            tp: type,
-                            data,
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-
-                        return {
-                            results: data.results,
-                            pagination: {
-                                more: params.page * 10 < data.total_count, // Adjust the limit per page as needed
-                            },
-                        };
-                    },
-                    cache: true, // Enable caching on the client side
+    // Initialize Select2 with AJAX
+    $(document).ready(function() {
+        // Initialize Select2 with AJAX and pagination
+        $('#mySelect').select2({
+            placeholder: 'Search for Center',
+            minimumInputLength: 3, // Minimum number of characters before making the AJAX call
+            ajax: {
+                url: '/admin/getCenter', // Replace with your actual API endpoint
+                dataType: 'json',
+                delay: 250, // Delay in milliseconds before making the request
+                data: function(params) {
+                    return {
+                        q: params.term, // Search term
+                        page: params.page || 1 // Page number (initialize to 1)
+                    };
                 },
-                minimumInputLength: 2,
-                placeholder: "Select " + id,
-                templateResult: function (data) {
-                    if (!data.id) {
-                        return data.text;
+                processResults: function(data, params) {
+                    // Format the data as Select2 expects
+                    var more = (params.page * 10) < data.total_count; // Adjust 10 based on your API's page size
+                    var formattedResults = data.results.map(function(item) {
+                        return {
+                            id: item.id,
+                            text: item.center_name // adjust the property names accordingly
+                        };
+                    });
+                    return {
+                        results: formattedResults,
+                        pagination: {
+                            more: params.page * 10 < data.total_count
+                        }
+                    };
+                },
+                templateResult: function(data) {
+                    // Custom template for results
+                    if (data.loading) {
+                        return result.text;
                     }
-                    var html = '<div >' + data.text + '</div>';
-                    html += '<div class="additional-attribute">' + data.value + '</div>';
-                    return $(html);
+                    return 'No Center found';
+                },
+
+                cache: true // Cache AJAX requests for faster results
+            }
+        });
+    });
+
+    $("#mySelect").on("change", function() {
+        // $(this).attr("disabled", true);
+        center_id = $(this).val();
+        console.log(center_id, "ihhxgfh");
+        let postData = {
+            center_id: center_id,
+        };
+
+        // jQuery AJAX POST call
+        $.ajax({
+            url: '/admin/getDetails', // replace with your API endpoint
+            method: 'POST',
+            contentType: 'application/json', // set content type to JSON
+            data: JSON.stringify(postData), // convert data to JSON format
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // include CSRF token in headers
+            },
+            success: function(data) {
+                if (data.results.member.length > 0) {
+                    $.each(data.results.member, function(index, option) {
+                        $('#member_list').append($('<option>', {
+                            value: option.id,
+                            text: option.client_name
+                        }));
+                    });
+                } else {
+                    var selectElement = $('#member_list');
+                    // Remove all existing options
+                    selectElement.find('option[value!=""]').remove();
                 }
-
-                // Other options...
-            });
-        };
-
-        addSelectData("Employee", "employee");
-        addSelectData("Product", "product", {
-            tes: "efef",
+                if (data.results.employee != null) {
+                    $('#employee_name').val(data.results.employee.staff_name);
+                }
+                console.log(data, "respo")
+                // Handle successful response
+                // $('#result').text(JSON.stringify(data, null, 2));
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error('AJAX request failed: ' + status + ', ' + error);
+            }
         });
 
-        addSelectData("Center", "center");
+        // addSelectData("Center", "center", {
+        //     id: $(this).val(),
+        // });
+    });
 
-        const validateAdd = () => {
-            const staff = $("#staff");
-            const plan = $("#product");
-            const member = $("#member");
-        };
+    function displayValidationMessage(id, message, color) {
+        $('#' + id).text(message).css('color', color);
+    }
 
-        var dispalyErrorMessage = (errorMessageId) => {
-            var errorMessageNewId = "#" + errorMessageId;
-            $(errorMessageNewId + "-error").css({
-                color: "red",
-            });
-            console.log(errorMessageId, "erferf");
+    $('#myForm').submit(function(event) {
+        // Prevent the default form submission
+        event.preventDefault();
+        //  console.log(event)
+        // Perform validation
+        // var name = $('input[name="name"]').val();
+        // var email = $('input[name="email"]').val();
+        let center = $('#mySelect').val();
+        if (center == "" || center == null) {
+            $('#center-error').text('');
+            displayValidationMessage('center-error',"Select center", 'red');
+            return;
+        }else
+        {
+            displayValidationMessage('center-error',"Select center", 'black');
+        }
 
-            $(errorMessageNewId + "-error").text(
-                "Select  " + errorMessageId + " is required"
-            );
-        };
-        $("#reset-btn").click(function () {
-            $("#myModal").modal("show");
-        });
-        $(document).on("select2:open", (e) => {
-            removeError(e.target);
-            // console.log(e.target.id, 'sffsfsf');
-            document
-                .querySelector(
-                    ".select2-container--open .select2-search__field"
-                )
-                .focus();
-        });
-        $("#Center").on("change", function () {
-            $(this).attr("disabled", true);
-            console.log("ihhxgfh");
-            center_id = $(this).val();
-            $("#Employee").removeAttr("disabled");
-            addSelectData("Member", "member", {
-                id: $(this).val(),
-            });
-        });
-        $("#reset-form").on("click", function () {
-            $("#myModal").modal("hide");
-            $("#Center").val("");
-            finalObj = [];
-            $("#Center").attr("disabled", false);
-            $("#table-body").html();
-        });
-    </script>
-</body>
+        let member = $('#member_list').val();
+        if (member == "" || member == null) {
+            $('#member_error').text('');
+            displayValidationMessage('member_error',"Select Member", 'red');
+            return;
+        }else
+        {
+            displayValidationMessage('member_error',"Select Member", 'black');
+        }
+        let loan = $('#loan_list').val();
+        if (loan == "" || loan == null) {
+            $('#loan_error').text('');
+            displayValidationMessage('loan_error',"Select Loan Acc No", 'red');
+            return;
+        }else
+        {
+            displayValidationMessage('loan_error',"Select Loan Acc No", 'black');
+        }
 
-</html>
+        let colection = $('#collection-type').val();
+        if (colection == "" || colection == null) {
+            $('#collection-error').text('');
+            displayValidationMessage('collection-error',"Select Collection Type", 'red');
+            return;
+        }else
+        {
+            displayValidationMessage('collection-error',"Select Collection Type", 'black');
+        }
+
+        let collected = $('#loan-collected').val();
+        if (collected == "" || collected == null) {
+            $('#amount-error').text('');
+            displayValidationMessage('amount-error',"Enter Collected Amount", 'red');
+            return;
+        }else
+        {
+            displayValidationMessage('amount-error',"Loan Collected", 'black');
+        }
+        // if (name === '' || email === '') {
+        //     alert('Please fill in all fields.');
+        //     return false; // Prevent form submission
+        // }
+
+        // If validation passes, submit the form
+        // You can add additional validation checks here if needed
+
+        // Submit the form
+        // this.submit();
+    });
+    $('#reset-btn').click(function() {
+          window.location.reload(); 
+        // $('#myForm')[0].reset(); // Reset the form
+    });
+</script>
