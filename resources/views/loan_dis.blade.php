@@ -1,4 +1,4 @@
-<style>
+{{-- <style>
     .container {
         max-width: 100%;
     }
@@ -233,4 +233,12 @@
 
 <script>
     $('#index').select2()
-</script>
+</script> --}}
+
+
+@if($type =='create')
+@livewire('task-manager', ['mode' => 'create'])
+
+@else
+@livewire('task-manager', ['mode' => 'edit', 'editId' => $id])
+@endif

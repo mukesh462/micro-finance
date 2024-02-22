@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Admin\Controllers\IndexController;
+use App\Livewire\TaskManager;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +22,4 @@ Route::get('/', function () {
 Route::get('/get-data', [IndexController::class, 'getData'])->name('get.data');
 Route::get('/get-employee', [IndexController::class, 'getemployee'])->name('get.employee');
 Route::get('/get-product', [IndexController::class, 'getproduct'])->name('get.product');
+Route::get('/admin/per', TaskManager::class);

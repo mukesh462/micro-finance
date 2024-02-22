@@ -13,6 +13,7 @@ use App\Admin\Controllers\StaffController;
 use App\Admin\Controllers\SubController;
 use App\Admin\Controllers\UsersController;
 use App\Admin\Controllers\VoucherController;
+
 use Illuminate\Routing\Router;
 
 Admin::routes();
@@ -46,9 +47,11 @@ Route::group([
     $router->get('getCenter', "CenterController@getCenter");
     $router->post('getDetails', "CenterController@getDetails");
 
-
+ $router->get('pens/create', [IndexController::class, 'Disbursement']);
+  $router->get('pens/{id}/edit', [IndexController::class, 'editt']);
     $router->post('addIndex', [IndexController::class, 'addIndex'])->name('add.index');
     $router->get('indexes/{id}/edits', [IndexController::class, 'EditViewIndex']);
     $router->post('editIndex', [IndexController::class, 'editIndex'])->name('edit.index');
     $router->get('indexes/{id}/view', [IndexController::class, 'ViewIndex']);
+    // $router->get('/per', TaskManager::class);
 });

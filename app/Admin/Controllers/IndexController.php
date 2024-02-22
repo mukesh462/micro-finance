@@ -370,4 +370,24 @@ class IndexController extends AdminController
             $content->body(new Box('', view('create_index', ['data' => $getIndexMember, 'type' => 'view'])));
         });
     }
+    public function Disbursement()  {
+        return Admin::content(function (Content $content)  {
+
+            $content->header(' Loan');
+            $content->description('Laon Disbursement');
+
+
+            $content->body(new Box('', view('loan_dis',['type'=> 'create'])));
+        });
+    }
+    public function editt($id)  {
+        return Admin::content(function (Content $content) use ($id) {
+
+            $content->header(' Loan');
+            $content->description('Laon Disbursement end');
+
+
+            $content->body(new Box('', view('loan_dis',['id'=>$id,'type'=>'edit'])));
+        });
+    }
 }
