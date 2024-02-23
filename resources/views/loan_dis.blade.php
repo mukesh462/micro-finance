@@ -236,9 +236,8 @@
 </script> --}}
 
 
-@if($type =='create')
-@livewire('task-manager', ['mode' => 'create'])
-
+@if ($type == 'create')
+    @livewire('task-manager')
 @else
-@livewire('task-manager', ['mode' => 'edit', 'editId' => $id])
+    @livewire('task-manager', ['editId' => $id])
 @endif

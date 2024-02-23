@@ -7,6 +7,7 @@ use App\Admin\Controllers\DocumentController;
 use App\Admin\Controllers\IndexController;
 use App\Admin\Controllers\MainController;
 use App\Admin\Controllers\MemberController;
+use App\Admin\Controllers\PenController;
 use App\Admin\Controllers\ProductController;
 use App\Admin\Controllers\ReasonController;
 use App\Admin\Controllers\StaffController;
@@ -27,7 +28,7 @@ Route::group([
 
     $router->get('/', 'HomeController@index')->name('home');
     // $router->resource('users', UsersController::class);
-    // $router->resource('pens', PenController::class);
+    $router->resource('pens', PenController::class);
     $router->resource('centers', CenterController::class);
     $router->resource('main-centers', MainController::class);
     $router->resource('employees', StaffController::class);
@@ -47,8 +48,8 @@ Route::group([
     $router->get('getCenter', "CenterController@getCenter");
     $router->post('getDetails', "CenterController@getDetails");
 
- $router->get('pens/create', [IndexController::class, 'Disbursement']);
-  $router->get('pens/{id}/edit', [IndexController::class, 'editt']);
+    $router->get('pens/create', [IndexController::class, 'Disbursement']);
+    $router->get('pens/{id}/edits', [IndexController::class, 'editt']);
     $router->post('addIndex', [IndexController::class, 'addIndex'])->name('add.index');
     $router->get('indexes/{id}/edits', [IndexController::class, 'EditViewIndex']);
     $router->post('editIndex', [IndexController::class, 'editIndex'])->name('edit.index');
