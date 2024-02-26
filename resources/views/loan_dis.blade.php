@@ -1,4 +1,4 @@
-{{-- <style>
+<style>
     .container {
         max-width: 100%;
     }
@@ -117,6 +117,7 @@
         margin-left: 60px;
         background-color: #8ce196;
     }
+
 </style>
 <div class="container">
     <div class="row">
@@ -124,9 +125,9 @@
             <label for="">Select
                 Center
             </label>
-            <select name="" class="form-control" id="index_select">
-                <option value="">Test</option>
-                <option value="">Test</option>
+            <select name="" class="form-control" id="center_select">
+
+
 
             </select>
         </div>
@@ -134,9 +135,14 @@
             <label for="">Select
                 Index
             </label>
+            {{-- @php
+                $getProduct = \App\Models\Product::get();
+                @endphp --}}
             <select name="" class="form-control" id="index_select">
-                <option value="">Test</option>
-                <option value="">Test</option>
+                <option selected>--- Select Index ---</option>
+                {{-- @foreach($getProduct as $key => $value)
+                    <option value='{{$value->id}}'>{{$value->index_no}}</option>
+                @endforeach --}}
 
             </select>
         </div>
@@ -230,14 +236,70 @@
 </div>
 
 
-
+<script src="{{ asset('/select2/dist/js/select2.min.js') }}"></script>
 <script>
-    $('#index').select2()
-</script> --}}
+    const addSelectData = (id, type = "staff", data = {}) => {
+        $("#" + id).select2({
+            ajax: {
+                url: "{{ route('get.data') }}"
+                , dataType: "json"
+                , delay: 250
+                , data: function(params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page || 1, // page number
+                        tp: type
+                        , data
+                    , };
+                }
+                , processResults: function(data, params) {
+                    params.page = params.page || 1;
 
+                    return {
+                        results: data.results
+                        , pagination: {
+                            more: params.page * 10 < data
+                                .total_count, // Adjust the limit per page as needed
+                        }
+                    , };
+                }
+                , cache: true, // Enable caching on the client side
+            }
+            , minimumInputLength: 2
+            , placeholder: "Select " + id,
+            // templateResult: function (data) {
+            //     if (!data.id) {
+            //         return data.text;
+            //     }
+            //     var html = '<div >' + data.text + '</div>';
+            //     html += '<div class="additional-attribute">' + data.value + '</div>';
+            //     return $(html);
+            // }
 
-@if ($type == 'create')
-    @livewire('task-manager')
-@else
-    @livewire('task-manager', ['editId' => $id])
-@endif
+            // Other options...
+        });
+    };
+    $('#center_select').on('change', function() {
+        console.log($(this).val(), 'hkjh')
+        $.ajax({
+            url: "/get-data"
+            , data: {
+                id: $(this).val()
+                , tp: 'index'
+            }
+            , success: function({
+                results
+            }) {
+                $('#index_select').html('')
+                results.forEach((e) => {
+                    $('#index_select').append(`<option value='${e.id}'>${e.text}</option>`);
+                })
+            }
+        });
+
+    })
+    addSelectData('center_select', 'center')
+
+    $('#index_select').select2()
+
+</script>

@@ -178,7 +178,9 @@ class IndexController extends AdminController
 
                 $total = $query->count();
 
-                $results = $query->skip($offset)->take($perPage)->select('id', "plan_name as text")->get();
+                // $results = $query->skip($offset)->take($perPage)->select('id', "plan_name as text")->get();
+                $results = $query->select('id', "plan_name as text")->get();
+
             } elseif ($request->tp == 'center') {
                 $query = Center::query();
                 // dd($request->input('data'));
@@ -189,15 +191,16 @@ class IndexController extends AdminController
                 $total = $query->count();
 
                 $results = $query->skip($offset)->take($perPage)->select('id', DB::raw("CONCAT('00',id,'-',center_name) AS text"))->get();
-            } else {
-                //     $query = SubCategory::query();
-                //     if ($request->has('q')) {
-                //         $query->where(DB::raw("LOWER(name)"), 'like', '%' . strtolower($request->input('q')) . '%');
-                //     }
+            } else if($request->tp ='index') {
+                // dd($request->id);
 
-                //     $total = $query->count();
+                    $query = Index::query();
+                    $query->where('center_id',$request->id);
+                    $total = $query->count();
 
-                //     $results = $query->skip($offset)->take($perPage)->select('id', 'name as text')->get();
+                    $results = $query->select('id', 'index_no as text')->get();
+            }else{
+
             }
 
 
@@ -235,6 +238,8 @@ class IndexController extends AdminController
             $row_id = $countCheck == 0 ? 1 : $countCheck + 1;
             $createIndex->index_no = date('Ymd') . $row_id;
             $createIndex->center_id = $dataList[0]->center;
+            $createIndex->staff_id = $dataList[0]->employee_id;
+
             $createIndex->save();
             // dd($dataList);
             foreach ($dataList as $key => $value) {
@@ -371,15 +376,26 @@ class IndexController extends AdminController
             $content->body(new Box('', view('create_index', ['data' => $getIndexMember, 'type' => 'view'])));
         });
     }
+    // public function Disbursement()
+    // {
+    //     return Admin::content(function (Content $content) {
+
+    //         $content->header(' Loan');
+    //         $content->description('Laon Disbursement');
+
+
+    //         $content->body(new Box('', view('loan_dis', ['type' => 'create'])));
+    //     });
+    // }
     public function Disbursement()
     {
         return Admin::content(function (Content $content) {
 
             $content->header(' Loan');
-            $content->description('Laon Disbursement');
+            $content->description('Loan Disbursement');
 
 
-            $content->body(new Box('', view('loan_dis', ['type' => 'create'])));
+            $content->body(new Box('', view('loan_dis')));
         });
     }
     public function editt($id)
