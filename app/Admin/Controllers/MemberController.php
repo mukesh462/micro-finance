@@ -10,7 +10,9 @@ use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Encore\Admin\Widgets\Box;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -367,5 +369,17 @@ class MemberController extends AdminController
 
 
         return $form;
+    }
+    public function Memberform()
+    {
+        return Admin::content(function (Content $content) {
+
+            // $content->header(' Loan');
+            // $content->description('Laon Disbursement end');
+
+
+
+            $content->body(new Box('', view('test', ['type' => 'create'])));
+        });
     }
 }

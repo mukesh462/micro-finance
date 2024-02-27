@@ -57,5 +57,5 @@ Route::group([
     $router->get('indexes/{id}/view', [IndexController::class, 'ViewIndex']);
     $router->post('loan_disbrusment', [IndexController::class, 'loan_disbrusment']);
 
-    // $router->get('/per', TaskManager::class);
+    $router->get('member/create', [MemberController::class, 'Memberform']);
 });
