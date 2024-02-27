@@ -22,20 +22,18 @@
     .container {
         max-width: 100%;
     }
-
 </style>
 <!-- <div class="mb" style="width: 100%;margin: auto;"> -->
 
 <div class="btn-group ">
-    <a href="{{ admin_url('/indexes') }}" class="btn btn-sm btn-default"><i class="fa fa-list"></i><span class="hidden-xs">&nbsp;List</span></a>
+    <a href="{{ admin_url('/indexes') }}" class="btn btn-sm btn-default"><i class="fa fa-list"></i><span
+            class="hidden-xs">&nbsp;List</span></a>
 </div>
 <!-- </div> -->
 
 
 <div class="bs-example">
-    <!-- Button HTML (to Trigger Modal) -->
 
-    <!-- Modal HTML -->
     <div id="myModal" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -69,64 +67,68 @@
 
 
 @if ($type != 'view')
-<div class="container" style="margin-top: 10px;">
-    <div id="container">
-        <div class="row">
-            <div class="col-12 col-md-4 col-lg-4 mb">
-                <label for="center" class="" id="Center-error">Select Center</label>
-                @if ($type == 'create')
-                <select class="form-control" id="Center" placeholder="Select Member"></select>
-                @else
-                <input class="form-control" id="Center" disabled data-id="{{ $data[0]->center_id }}" value="{{ $data[0]->center_name }}" placeholder="Select Member"></i>
-                @endif
-            </div>
-            <div class="col-12 col-md-4 col-lg-4 mb">
-                <!-- <label for="staff">Select Employee</label> -->
-                <label for="employee" class="" id="Employee-error"> Employee</label>
-                @if ($type == 'create')
-                <input type="text" class="form-control" id="Employee" disabled placeholder=" Employee"></>
-                @else
-                <input type="text" class="form-control" value="{{ $data[0]->emp_name }}" data-id="{{ $data[0]->staff_id }}" id="Employee" disabled placeholder=" Employee"></>
-                @endif
-            </div>
-            <div class="col-12 col-md-4 col-lg-4 mb">
-                <label for="member" class="" id="Member-error">Select Member</label>
-                <select type="text" class="form-control" id="Member" placeholder="Select Member"></select>
-            </div>
-            <div class="col-12 col-md-4 col-lg-4">
-                <label for="member" class="" id="Product-error">Select Product</label>
-                @php
-                $getProduct = \App\Models\Product::get();
-                @endphp
-                <select class="form-control" id="Product" placeholder="Select Member">
-                <option selected>---Select Product----</option>
-                    @foreach($getProduct as $key => $value)
-                    <option value='{{$value->id}}'>{{$value->plan_name}}</option>
-                    @endforeach
-                </select>
-                <!-- <span class='text-danger' id="product-error" style='display:none'> Product is required </span> -->
-            </div>
-            <div class="col-12 col-md-4 col-lg-4">
-                <label for="product_amount">Product Amount</label>
-                <input type="text" class="purpose-field form-control" id="product_amount" disabled placeholder="Product Amount" />
-            </div>
-            <div class="col-12 col-md-4 col-lg-4">
-                <label for="purpose">Purpose</label>
-                <input type="text" class="purpose-field form-control" id="purpose" placeholder="Enter Purpose" />
-            </div>
-            <div class="col-12 col-md-4 col-lg-4 addbtn">
-                <button id="add-btn" class="btn btn-success mt-2 d-block">
-                    <i class="fa fa-plus"></i> Add
-                </button>
-                <button id="reset-btn" class="btn btn-warning mt-2 d-block">
-                    <i class="fa fa-refresh"></i> Reset
-                </button>
+    <div class="container" style="margin-top: 10px;">
+        <div id="container">
+            <div class="row">
+                <div class="col-12 col-md-4 col-lg-4 mb">
+                    <label for="center" class="" id="Center-error">Select Center</label>
+                    @if ($type == 'create')
+                        <select class="form-control" id="Center" placeholder="Select Member"></select>
+                    @else
+                        <input class="form-control" id="Center" disabled data-id="{{ $data[0]->center_id }}"
+                            value="{{ $data[0]->center_name }}" placeholder="Select Member"></i>
+                    @endif
+                </div>
+                <div class="col-12 col-md-4 col-lg-4 mb">
+                    <!-- <label for="staff">Select Employee</label> -->
+                    <label for="employee" class="" id="Employee-error"> Employee</label>
+                    @if ($type == 'create')
+                        <input type="text" class="form-control" id="Employee" disabled placeholder=" Employee"></>
+                    @else
+                        <input type="text" class="form-control" value="{{ $data[0]->emp_name }}"
+                            data-id="{{ $data[0]->staff_id }}" id="Employee" disabled placeholder=" Employee"></>
+                    @endif
+                </div>
+                <div class="col-12 col-md-4 col-lg-4 mb">
+                    <label for="member" class="" id="Member-error">Select Member</label>
+                    <select type="text" class="form-control" id="Member" placeholder="Select Member"></select>
+                </div>
+                <div class="col-12 col-md-4 col-lg-4">
+                    <label for="member" class="" id="Product-error">Select Product</label>
+                    @php
+                        $getProduct = \App\Models\Product::get();
+                    @endphp
+                    <select class="form-control" id="Product" placeholder="Select Member">
+                        <option selected>---Select Product----</option>
+                        @foreach ($getProduct as $key => $value)
+                            <option value='{{ $value->id }}'>{{ $value->plan_name }}</option>
+                        @endforeach
+                    </select>
+                    <!-- <span class='text-danger' id="product-error" style='display:none'> Product is required </span> -->
+                </div>
+                <div class="col-12 col-md-4 col-lg-4">
+                    <label for="product_amount">Product Amount</label>
+                    <input type="text" class="purpose-field form-control" id="product_amount" disabled
+                        placeholder="Product Amount" />
+                </div>
+                <div class="col-12 col-md-4 col-lg-4">
+                    <label for="purpose">Purpose</label>
+                    <input type="text" class="purpose-field form-control" id="purpose"
+                        placeholder="Enter Purpose" />
+                </div>
+                <div class="col-12 col-md-4 col-lg-4 addbtn">
+                    <button id="add-btn" class="btn btn-success mt-2 d-block">
+                        <i class="fa fa-plus"></i> Add
+                    </button>
+                    <button id="reset-btn" class="btn btn-warning mt-2 d-block">
+                        <i class="fa fa-refresh"></i> Reset
+                    </button>
+                </div>
             </div>
         </div>
+        <br />
+        <!-- <button class="remove-btn">Remove</button> -->
     </div>
-    <br />
-    <!-- <button class="remove-btn">Remove</button> -->
-</div>
 
 
 @endif
@@ -143,7 +145,7 @@
                 <th>Product</th>
                 <th>Product Amount</th>
                 @if ($type !== 'view')
-                <th>Action</th>
+                    <th>Action</th>
                 @endif
             </tr>
         </thead>
@@ -156,16 +158,17 @@
                 <td colspan="">Total Product Amount</td>
                 <th colspan="" id="total_amount"> 0</th>
                 <th>
-                    <form action="{{ $type == 'create' ? '/admin/addIndex' : '/admin/editIndex' }}" method="post" id="final-form" style="display: none;">
+                    <form action="{{ $type == 'create' ? '/admin/addIndex' : '/admin/editIndex' }}" method="post"
+                        id="final-form" style="display: none;">
                         <input type="hidden" name="data" value="" id="data-bind">
                         @csrf
                         @if ($type == 'edit')
-                        <input type="hidden" name="index_id" value="{{ $data[0]->index_id }}">
+                            <input type="hidden" name="index_id" value="{{ $data[0]->index_id }}">
                         @endif
                         @if ($type != 'view')
-                        <button class="btn btn-success "><i class="fa fa-plus"></i>
-                            {{ $type == 'create' ? 'Add' : 'Update' }}
-                            Index</button>
+                            <button class="btn btn-success "><i class="fa fa-plus"></i>
+                                {{ $type == 'create' ? 'Add' : 'Update' }}
+                                Index</button>
                         @endif
 
                     </form>
@@ -200,8 +203,8 @@
         console.log(e.id, "sdsds");
 
         $("#" + e.id + "-error").css({
-            color: "black"
-        , });
+            color: "black",
+        });
         $("#" + e.id + "-error").text("Select " + e.id);
     };
 
@@ -217,36 +220,35 @@
 
             // console.log(employee, 'emp');
             const valObj = [{
-                    value: center
-                    , id: "Center"
-                , },
+                    value: center,
+                    id: "Center",
+                },
 
                 {
-                    value: member
-                    , id: "Member"
-                , }
-                , {
-                    value: plan
-                    , id: "Product"
-                , }
-            , ];
+                    value: member,
+                    id: "Member",
+                }, {
+                    value: plan,
+                    id: "Product",
+                },
+            ];
             //  console.log(checkField(valObj), 'jgyguyyg');
             if (checkField(valObj)) {
 
                 let onblur = {
-                    sn: row_id
-                    , center: type == 'create' ? center : $('#Center').data('id')
-                    , plan
-                    , purpose
-                    , employee
-                    , member
-                    , amount
-                    , employee_id: $('#Employee').data('id')
-                    , center_name: type == 'create' ? $("#Center  option:selected").text() : $(
-                        '#Center').val()
-                    , member_name: $("#Member option:selected").text()
-                    , product_name: $("#Product option:selected").text()
-                    , emp_name: $("#Employee").val()
+                    sn: row_id,
+                    center: type == 'create' ? center : $('#Center').data('id'),
+                    plan,
+                    purpose,
+                    employee,
+                    member,
+                    amount,
+                    employee_id: $('#Employee').data('id'),
+                    center_name: type == 'create' ? $("#Center  option:selected").text() : $(
+                        '#Center').val(),
+                    member_name: $("#Member option:selected").text(),
+                    product_name: $("#Product option:selected").text(),
+                    emp_name: $("#Employee").val()
 
 
                 };
@@ -326,32 +328,32 @@
     const addSelectData = (id, type = "staff", data = {}) => {
         $("#" + id).select2({
             ajax: {
-                url: "{{ route('get.data') }}"
-                , dataType: "json"
-                , delay: 250
-                , data: function(params) {
+                url: "{{ route('get.data') }}",
+                dataType: "json",
+                delay: 250,
+                data: function(params) {
                     return {
                         q: params.term, // search term
                         page: params.page || 1, // page number
-                        tp: type
-                        , data
-                    , };
-                }
-                , processResults: function(data, params) {
+                        tp: type,
+                        data,
+                    };
+                },
+                processResults: function(data, params) {
                     params.page = params.page || 1;
 
                     return {
-                        results: data.results
-                        , pagination: {
+                        results: data.results,
+                        pagination: {
                             more: params.page * 10 < data
                                 .total_count, // Adjust the limit per page as needed
-                        }
-                    , };
-                }
-                , cache: true, // Enable caching on the client side
-            }
-            , minimumInputLength: 2
-            , placeholder: "Select " + id,
+                        },
+                    };
+                },
+                cache: true, // Enable caching on the client side
+            },
+            minimumInputLength: 2,
+            placeholder: "Select " + id,
             // templateResult: function (data) {
             //     if (!data.id) {
             //         return data.text;
@@ -366,17 +368,17 @@
     };
     $('#Product').select2();
     // addSelectData("Employee", "employee");
-   
-          //  addSelectData("Product", "product");
-        
+
+    //  addSelectData("Product", "product");
+
     if (type == 'create') {
 
         addSelectData("Center", "center");
     } else {
         console.log('efefe');
         addSelectData("Member", "member", {
-            id: '@json(isset($data) ? $data[0]->member_id : 0)'
-        , });
+            id: '@json(isset($data) ? $data[0]->member_id : 0)',
+        });
     }
 
 
@@ -384,8 +386,8 @@
     var dispalyErrorMessage = (errorMessageId) => {
         var errorMessageNewId = "#" + errorMessageId;
         $(errorMessageNewId + "-error").css({
-            color: "red"
-        , });
+            color: "red",
+        });
         console.log(errorMessageId, "erferf");
 
         $(errorMessageNewId + "-error").text(
@@ -412,22 +414,22 @@
         console.log(center_id, "ihhxgfh");
         // $("#Employee").removeAttr("disabled");
         $.ajax({
-            url: "{{ route('get.employee') }}"
-            , dataType: "json"
-            , delay: 250
-            , data: {
+            url: "{{ route('get.employee') }}",
+            dataType: "json",
+            delay: 250,
+            data: {
 
                 id: center_id, // search term
 
-            }
-            , success: (e) => {
+            },
+            success: (e) => {
                 console.log('dataEmp', e);
                 $('#Employee').val(e.staff_name);
                 $('#Employee').attr('data-id', e.id);
 
                 addSelectData("Member", "member", {
-                    id: e.id
-                , });
+                    id: e.id,
+                });
             }
         })
 
@@ -435,14 +437,14 @@
     $('#Product').on('change', function() {
         // $("#Employee").removeAttr("disabled");
         $.ajax({
-            url: "{{ route('get.product') }}"
-            , dataType: "json"
-            , data: {
+            url: "{{ route('get.product') }}",
+            dataType: "json",
+            data: {
 
                 id: $(this).val(), // search term
 
-            }
-            , success: (e) => {
+            },
+            success: (e) => {
                 console.log('dataEmp', e);
                 $('#product_amount').val(e.plan_amount);
             }
@@ -545,6 +547,7 @@
             })
         }
     }
+
     $("#data-table").on("click", ".remove-btn", function() {
         // $(this).closest("tr").remove(); // Remove the closest table row
         console.log('removeid');
@@ -561,5 +564,4 @@
     });
 
     changeUi()
-
 </script>

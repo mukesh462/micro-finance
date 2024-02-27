@@ -50,6 +50,9 @@ class IndexController extends AdminController
                 return "<span class='label label-success'>Index Disbursement</span>";
             }
         });
+        $grid->column('total_amount', __('Total Member'));
+        $grid->column('total_member', __('Total Amount'));
+
         $grid->actions(function ($actions) {
             $actions->disableDelete();
             // $actions->disableEdit();
@@ -197,15 +200,31 @@ class IndexController extends AdminController
                 $total = $query->count();
 
                 $results = $query->skip($offset)->take($perPage)->select('id', DB::raw("CONCAT('00',id,'-',center_name) AS text"))->get();
-            } else if ($request->tp = 'index') {
+            } else if ($request->tp == 'index') {
                 // dd($request->id);
 
                 $query = Index::query();
                 $query->where('center_id', $request->id);
                 $total = $query->count();
 
-                $results = $query->select('id', 'index_no as text')->get();
-            } else {
+                $results = $query->get();
+            } else if ($request->tp == 'index_member') {
+                $query = IndexMember::query();
+                $query->where('index_id', $request->id);
+                $total = $query->count();
+
+                $results = $query->get();
+                // dd($results);
+                foreach ($results as $key => $value) {
+                    $center = Center::find($value->center_id);
+                    $employe = Employee::find($value->staff_id);
+                    $member = Member::find($value->member_id);
+                    $product = Product::find($value->plan_id);
+                    $results[$key]['center_name'] = is_object($center) ? '00' . $center->id . '-' . $center->center_name : '---';
+                    $results[$key]['employee_name'] = is_object($employe) ? $employe->staff_name : '---';
+                    $results[$key]['product_name'] = is_object($product) ? $product->plan_name : '---';
+                    $results[$key]['member_name'] = is_object($member) ? $member->client_name : '---';
+                }
             }
 
 
@@ -236,7 +255,9 @@ class IndexController extends AdminController
 
 
         $dataList = json_decode($request->data);
+        // dd($dataList);
         if (count($dataList) > 0) {
+            $collection = collect($dataList);
             $createIndex = new Index();
             $countCheck = Index::where('index_date', date('Y-m-d'))->count();
             $createIndex->index_date = date('Y-m-d');
@@ -244,6 +265,9 @@ class IndexController extends AdminController
             $createIndex->index_no = date('Ymd') . $row_id;
             $createIndex->center_id = $dataList[0]->center;
             $createIndex->staff_id = $dataList[0]->employee_id;
+            $createIndex->total_amount = $collection->sum('amount');
+            $createIndex->total_member = $collection->count();
+
 
             $createIndex->save();
             // dd($dataList);
@@ -315,6 +339,11 @@ class IndexController extends AdminController
         // dd($dataList);
         if (count($dataList) > 0) {
             $ids = [];
+            $collection = collect($dataList);
+            $inDex = Index::where('id', $request->index_id)->first();
+            $inDex->total_amount = $collection->sum('amount');
+            $inDex->total_member = $collection->count();
+            $inDex->save();
             foreach ($dataList as $key => $value) {
                 if (isset($value->id)) {
                     array_push($ids, $value->id);
@@ -414,5 +443,9 @@ class IndexController extends AdminController
 
             $content->body(new Box('', view('loan_dis', ['id' => $id, 'type' => 'edit'])));
         });
+    }
+    public  function loan_disbrusment(Request $request)
+    {
+        dd($request->all());
     }
 }

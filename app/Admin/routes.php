@@ -48,11 +48,14 @@ Route::group([
     $router->get('getCenter', "CenterController@getCenter");
     $router->post('getDetails', "CenterController@getDetails");
     // $router->get('pens/create', [IndexController::class, 'Disbursement']);
+    $router->get('loan', [IndexController::class, 'Disbursement']);
 
     $router->get('pens/{id}/edits', [IndexController::class, 'editt']);
     $router->post('addIndex', [IndexController::class, 'addIndex'])->name('add.index');
     $router->get('indexes/{id}/edits', [IndexController::class, 'EditViewIndex']);
     $router->post('editIndex', [IndexController::class, 'editIndex'])->name('edit.index');
     $router->get('indexes/{id}/view', [IndexController::class, 'ViewIndex']);
+    $router->post('loan_disbrusment', [IndexController::class, 'loan_disbrusment']);
+
     // $router->get('/per', TaskManager::class);
 });
