@@ -47,8 +47,8 @@ Route::group([
     $router->get('singleCollection', "DayBookController@singleCollection");
     $router->get('getCenter', "CenterController@getCenter");
     $router->post('getDetails', "CenterController@getDetails");
-
-    $router->get('pens/create', [IndexController::class, 'Disbursement']);
+    // $router->get('pens/create', [IndexController::class, 'Disbursement']);
+    $router->get('loan', [IndexController::class, 'Disbursement']);
     $router->get('pens/{id}/edits', [IndexController::class, 'editt']);
     $router->post('addIndex', [IndexController::class, 'addIndex'])->name('add.index');
     $router->get('indexes/{id}/edits', [IndexController::class, 'EditViewIndex']);

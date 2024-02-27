@@ -120,9 +120,9 @@ class ReasonController extends AdminController
 
         return $form;
     }
-    public function getReason(Request $request) {
+    public function getReason(Request $request)
+    {
 
-        return Reason::select('reason_name as id','reason_name as text')->where('reason_type',$request->input('q'))->get();
-       
+        return Reason::select('id', 'reason_name as text')->where('reason_type', $request->input('q'))->get();
     }
 }

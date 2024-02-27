@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Actions\Post\IndexDelete;
 use App\Admin\Actions\Post\IndexPage;
 use App\Admin\Actions\Post\IndexView;
 use App\Models\Center;
@@ -55,6 +56,8 @@ class IndexController extends AdminController
 
             $actions->add(new IndexPage);
             $actions->add(new IndexView);
+            $actions->add(new IndexDelete);
+
 
             $actions->disableEdit();
             $actions->disableView();
@@ -72,6 +75,7 @@ class IndexController extends AdminController
         $grid->disableBatchActions();
         $grid->disableColumnSelector();
         $grid->disableExport();
+
         // $grid->actions(function ($actions) {
         //     $actions->disableDelete();
         //     $actions->add(new ManageDocument);
@@ -79,12 +83,15 @@ class IndexController extends AdminController
         //     // $actions->disableView();
         // });
         $grid->disableCreateButton();
+
+
         $grid->tools(function ($tools) {
-            $tools->append('
-                <a href="http://localhost:8000/admin/indexes/create"  class="btn btn-sm btn-success pull-right" title="New">
+            $tools->prepend('
+           
+                <a href="http://localhost:8000/admin/indexes/create"  class="btn btn-sm btn-success " title="New">
                     <i class="fa fa-plus"></i><span class="hidden-xs">&nbsp;&nbsp;New</span>
                 </a>
-             
+        
                   ');
         });
         return $grid;
@@ -375,8 +382,8 @@ class IndexController extends AdminController
     {
         return Admin::content(function (Content $content) {
 
-            $content->header(' Loan');
-            $content->description('Laon Disbursement');
+            // $content->header(' Loan');
+            // $content->description('Ln Disbursement');
 
 
             $content->body(new Box('', view('loan_dis', ['type' => 'create'])));
