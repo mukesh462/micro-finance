@@ -30,11 +30,11 @@ class ProductController extends AdminController
         $grid->column('id', __('Id'));
         $grid->column('plan_name', __('Loan Type'));
         $grid->column('plan_amount', __('Loan amount'));
-        $grid->column('interest_amount', __('Interest amount'))->display(function($interest_amount){
-            if($this->interest_type == 1) {
-                return $interest_amount." %";
-            }else{
-                return "Rs ".$interest_amount;
+        $grid->column('interest_amount', __('Interest amount'))->display(function ($interest_amount) {
+            if ($this->interest_type == 1) {
+                return $interest_amount . " %";
+            } else {
+                return "Rs " . $interest_amount;
             }
         });
         // $grid->column('plan_type', __('Plan type'));
@@ -155,22 +155,18 @@ class ProductController extends AdminController
             // $tools->add('<a class="btn btn-sm btn-danger"><i class="fa fa-trash"></i>&nbsp;&nbsp;delete</a>');
         });
         $form->saved(function (Form $form) {
-          $loan = Product::where('id',$form->model()->id)->first();
-          if(is_object($loan))
-          {
-            if($loan->plan_type == 1){
-                $plan_name = $loan->plan_duration."-Weeks";
-            }else if($loan->plan_type == 2){
-                $plan_name = $loan->plan_duration."-14 days";
-
-            }else {
-                $plan_name = $loan->plan_duration."-Months";
-
+            $loan = Product::where('id', $form->model()->id)->first();
+            if (is_object($loan)) {
+                if ($loan->plan_type == 1) {
+                    $plan_name = $loan->plan_duration . "-Weeks";
+                } else if ($loan->plan_type == 2) {
+                    $plan_name = $loan->plan_duration . "-14 days";
+                } else {
+                    $plan_name = $loan->plan_duration . "-Months";
+                }
+                $loan->plan_name = $plan_name;
+                $loan->save();
             }
-            $loan->plan_name = $plan_name;
-            $loan->save();
-          }
-
         });
 
         return $form;
