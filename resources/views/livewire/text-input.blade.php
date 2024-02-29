@@ -11,7 +11,11 @@
             <span class="input-group-addon"><i class="fa fa-pencil fa-fw"></i></span>
 
             <input type="text" id="{{ $name }}" name="{{ $name }}" wire:model="{{ $name }}"
-                value="" class="form-control " placeholder="{{ $label }}">
+                value="" class="form-control "
+                @isset($disabled)
+                    disabled
+                @endisset
+                placeholder="{{ $label }}">
         </div>
         @error($name)
             <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>

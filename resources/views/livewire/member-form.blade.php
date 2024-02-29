@@ -1,4 +1,32 @@
 <div>
+    <div class="bs-example">
+
+        <div id="myModal" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Image preview
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="modal-body" id="open_preview">
+                        <!-- <img id="" src="" width="150" height="150" alt="" srcset=""> -->
+                    </div>
+                    <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            Cancel
+                        </button> -->
+                        <button type="button" data-dismiss="modal" id="reset-form" class="btn btn-primary">
+                            Ok
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     @livewireStyles
     <form wire:submit.prevent="submitForm" class="form-horizontal model-form-65ddb585837bb" accept-charset="UTF-8">
 
@@ -66,8 +94,8 @@
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="fa fa-calendar fa-fw"></i></span>
 
-                                            <input id="dob_date" type="text" name="dob" value=""
-                                                class="form-control dob" placeholder="Input DOB">
+                                            <input id="dob" type="text" name="dob" value="" class="form-control dob"
+                                                placeholder="Input DOB">
                                         </div>
 
 
@@ -193,12 +221,13 @@
                                     </div>
                                 </div>
                                 <div class="">
+                                    ffwfw
+                                    @livewire('image-uploader',['img'=>'photo_img'])
+
+                                    <!-- <label for="photo" class="  control-label">Photo</label>
 
 
-                                    <label for="photo" class="  control-label">Photo</label>
-
-
-                                    <input class=" form-control" placeholder="Select image">
+                                    <input class=" form-control" placeholder="Select image"> -->
 
 
 
@@ -307,42 +336,59 @@
 
                     </div>
                     <div class="tab-pane container " id="tab-form-2">
-                        @include('livewire.text-input', [
-                        'label' => 'Father Name',
-                        'name' => 'father_name',
-                        'isRequired' => true,
-                        ])
-                        @include('livewire.text-input', [
-                        'label' => 'Mother Name',
-                        'name' => 'mother_name',
-                        'isRequired' => true,
-                        ])
-                        @include('livewire.text-input', [
-                        'label' => 'Spouse Name',
-                        'name' => 'spouse_name',
-                        'isRequired' => true,
-                        ])
-                        @include('livewire.text-input', [
-                        'label' => 'Spouse Occupation',
-                        'name' => 'spouse_occupation',
-                        'isRequired' => true,
-                        ])
-                        @include('livewire.text-input', [
-                        'label' => 'Number of Adult',
-                        'name' => 'no_of_adult',
-                        'isRequired' => true,
-                        ])
-                        @include('livewire.text-input', [
-                        'label' => 'Number of children',
-                        'name' => 'no_of_children',
-                        'isRequired' => true,
-                        ])
+                        <div class="row">
+                            <div class="col-12 col-md-6 col-lg-6">
+                                @include('livewire.text-input', [
+                                'label' => 'Father Name',
+                                'name' => 'father_name',
+                                'isRequired' => true,
+                                ])
+                                @include('livewire.text-input', [
+                                'label' => 'Mother Name',
+                                'name' => 'mother_name',
+                                'isRequired' => true,
+                                ])
 
-                        @include('livewire.text-input', [
-                        'label' => 'Total Family Members',
-                        'name' => 'total_family_members',
-                        'isRequired' => true,
-                        ])
+
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-6"> @include('livewire.text-input', [
+                                'label' => 'Spouse Name',
+                                'name' => 'spouse_name',
+                                'isRequired' => true,
+                                ])
+                                @include('livewire.text-input', [
+                                'label' => 'Spouse Occupation',
+                                'name' => 'spouse_occupation',
+                                'isRequired' => true,
+                                ])</div>
+                            <div class="col-12" style="margin-top: 5px;">
+                                <div class="col-12 col-md-4 col-lg-4">
+                                    <label for="no_of_adult">No of Ad</label>
+                                    <input type="number" min="0" name="no_of_adult" value="0" class="form-control"
+                                        id="no_of_adult">
+
+                                </div>
+                                <div class="col-12 col-md-4 col-lg-4">
+                                    <label for="no_of_children">No of child</label>
+                                    <input type="number" min="0" name="no_of_children" value="0" class="form-control"
+                                        id="no_of_children">
+                                </div>
+                                <div class="col-12 col-md-4 col-lg-4" style="margin-bottom: 2px;">
+                                    @include('livewire.text-input', [
+                                    'label' => 'Total Family Members',
+                                    'name' => 'total_family_members',
+                                    'isRequired' => false,
+                                    'disabled'=>true
+                                    ])
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+
+
 
                     </div>
                     <div class="tab-pane container" id="tab-form-3">
@@ -372,8 +418,14 @@
                             <div class="col-12 col-md-6 col-lg-6" style="margin-top: 5px;">
                                 <div class="">
                                     <label for="smartcard_img" class="  control-label">SmartCard Img</label>
-                                    <input class=" form-control" type="file" name="smartcard_img" id="smartcard_img"
-                                        placeholder="Select image">
+                                    <div class=" " style="display: flex;">
+
+                                        <input class="form-control" type="file" name="smartcard_img" id="smartcard_img"
+                                            placeholder="Select image">
+                                        <button type="button" class="btn btn-sm btn-info" id="smart_card"
+                                            style="display: none;">show</button>
+                                    </div>
+
                                 </div>
                                 <div class="">
                                     <label for="voterid_img" class="  control-label">Voter ID Img</label>
@@ -467,31 +519,37 @@
 
                     </div>
                     <div class="tab-pane container " id="tab-form-5">
-                        @include('livewire.text-input', [
-                        'label' => 'Account Holder name',
-                        'name' => 'account_holder_name',
-                        'isRequired' => true,
-                        ])
-                        @include('livewire.text-input', [
-                        'label' => 'Account Number',
-                        'name' => 'account_number',
-                        'isRequired' => true,
-                        ])
-                        @include('livewire.text-input', [
-                        'label' => 'Bank Name',
-                        'name' => 'bank_name',
-                        'isRequired' => true,
-                        ])
-                        @include('livewire.text-input', [
-                        'label' => 'IFSC Code',
-                        'name' => 'ifsc_number',
-                        'isRequired' => true,
-                        ])
-                        @include('livewire.text-input', [
-                        'label' => 'Branch Name',
-                        'name' => 'branch_name',
-                        'isRequired' => true,
-                        ])
+                        <div class="row">
+                            <div class="col-12 col-md-6 col-lg-6">
+                                @include('livewire.text-input', [
+                                'label' => 'Account Holder name',
+                                'name' => 'account_holder_name',
+                                'isRequired' => true,
+                                ])
+                                @include('livewire.text-input', [
+                                'label' => 'Account Number',
+                                'name' => 'account_number',
+                                'isRequired' => true,
+                                ])
+                                @include('livewire.text-input', [
+                                'label' => 'Bank Name',
+                                'name' => 'bank_name',
+                                'isRequired' => true,
+                                ])
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-6"> @include('livewire.text-input', [
+                                'label' => 'IFSC Code',
+                                'name' => 'ifsc_number',
+                                'isRequired' => true,
+                                ])
+                                @include('livewire.text-input', [
+                                'label' => 'Branch Name',
+                                'name' => 'branch_name',
+                                'isRequired' => true,
+                                ])</div>
+                        </div>
+
+
                     </div>
 
                 </div>
@@ -524,20 +582,42 @@
             src="{{ asset('/vendor/laravel-admin/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 
         <script>
-            $('#adult').bootstrapNumber({
+            $('#no_of_adult').bootstrapNumber({
+                upClass: 'success',
+                downClass: 'default',
+                center: true
+            }); $('#no_of_children').bootstrapNumber({
                 upClass: 'success',
                 downClass: 'default',
                 center: true
             });
-            $('#dob_date').datetimepicker({
+            $('#dob').datetimepicker({
                 format: 'DD-MM-YYYY',
 
             })
-            $("#smartcard_img").fileinput({
-                dropZoneEnabled: false,
-                showRemove: false,
-                showZoom: false
+            $("#smartcard_img").on('change', function (eve) {
+                console.log(eve, 'fwfw');
+                var file = this.files[0];
+                var imageType = /^image\//;
+
+                if (!file || !imageType.test(file.type)) {
+                    alert('Please select an image file.');
+                    this.value = '';
+                    return;
+                }
+                $('#smart_card').css({ display: 'block' })
+                //var reader = new FileReader();
+                // reader.onload = function (e) {
+                //      var preview = document.getElementById('imagePreview');
+                //       preview.innerHTML = '<img src="' + e.target.result + '" alt="Image Preview">';
+                //       preview.style.display = 'block';
+                //   }
+                //   reader.readAsDataURL(file);
             });
+            $('#smart_card').on('click', () => {
+                $('#myModal').model('show');
+                $('#smartcard_img')
+            })
             $(document).ready(function () {
                 // Handle tab shown event
                 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -559,7 +639,41 @@
                     //console.log($('.tab-link a[href="' + urlHash + '"]').tab('show'), 'efegegeg');
                 }
             });
+            $(function () {
+                $("#dob").on("blur", function (e) {
+                    var dateParts = $(this).val().split("-");
+                    var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+                    const current = new Date(formattedDate).getFullYear() - new Date().getFullYear();
+                    $("#age").val(Math.abs(current));
+                });
 
+
+                // $("#adult").on("input", function () {
+                //     this.value = this.value.replace(/[^0-9]/g, "");
+                // });
+                // $("#child").on("input", function () {
+                //     this.value = this.value.replace(/[^0-9]/g, "");
+                // });
+                $("#no_of_adult").on("change", function () {
+                    this.value = this.value.replace(/[^0-9]/g, "");
+                    var adult = parseInt($("#no_of_adult").val())
+                    var child = parseInt($("#no_of_children").val())
+                    console.log(adult, child)
+                    var total = adult + child
+                    $("#total_family_members").val(total)
+                })
+                $("#no_of_children").on("change", function () {
+                    this.value = this.value.replace(/[^0-9]/g, "");
+                    var adult = parseInt($("#no_of_adult").val())
+                    var child = parseInt($("#no_of_children").val())
+                    console.log(adult, child)
+                    var total = adult + child
+                    $("#total_family_members").val(total)
+                })
+
+
+
+            });
         </script>
 
         <!-- /.box-footer -->
