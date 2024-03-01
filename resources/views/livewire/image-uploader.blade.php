@@ -1,5 +1,5 @@
-<div>
-    @livewireStyles
+{{-- <div>
+
     <div class="bs-example">
 
         <div id="{{ $img }}" class="modal fade" tabindex="-1">
@@ -13,11 +13,15 @@
                             &times;
                         </button>
                     </div>
-                    <div class="modal-body" id="open_preview">
-                        <img id="previewImage" width='100' height='100' src="" alt="Preview">
+                    <div class="modal-body" style="display: flex;justify-content: center;"
+                        id="open-{{ $img }}">
+                        @if ($value)
+                            <img width="150" height="150" src="{{ $value->temporaryUrl() }}" alt=""
+                                srcset="">
+                        @endif
                     </div>
                     <div class="modal-footer">
-                        <button type="button" data-dismiss="modal" id="reset-form" class="btn btn-primary">
+                        <button type="button" data-dismiss="modal" class="btn btn-primary">
                             Ok
                         </button>
                     </div>
@@ -25,26 +29,69 @@
             </div>
         </div>
     </div>
-    <div>
-        <input type="file" wire:model="image">
-        <button wire:click="showPreview">Show Preview</button>
+    <div class="form-group" style="margin: 0;max-width: 100% !important;">
+        <label for="up-{{ $img }}"
+            class="control-label @isset($required) asterisk @endisset">{{ $label }}</label>
+
+        <div class="" style="display:flex;gap:4px;position: relative;">
+            <input type="text" name="" class="form-control" style="cursor: pointer;"
+                placeholder="Select Image" readonly id="check-{{ $img }}">
+            <input type="file" style="display: block;" id="up-{{ $img }}" wire:model="{{ $img }}"
+                class="form-control" name="{{ $img }}" accept="image/*">
+            <button data-toggle="modal" type='button' class="btn btn-sm btn-info"
+                @if ($value) style='display:block;'
+                @else style='display:none;' @endif
+                id="dis-{{ $img }}" data-target="#{{ $img }}"> Preview</button>
+        </div>
+
+        @error($img)
+            <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
+                {{ $message }}</label>
+        @enderror
+
     </div>
-    {{-- <div id="imagePreviewModal" style="display: none;">
-        <img id="previewImage" src="" alt="Preview">
-    </div> --}}
+
+</div>
+
+<script>
+    $('#check-{{ $img }}').on('click', () => {
+        console.log('dfdfdfdfdf');
+        $('#up-{{ $img }}').trigger('click')
+
+    })
+    document.getElementById('up-{{ $img }}').addEventListener('change', function() {
+        console.log('call')
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                var imageUrl = event.target.result;
+                $('#open-{{ $img }}').html('')
+                $('#open-{{ $img }}').html('<img width="150" height="150" src="' + imageUrl +
+                    '">')
+
+                $('#dis-{{ $img }}').css('display', 'block')
+                $('#check-{{ $img }}').val(file.name)
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    $('#adder').on('click', () => {
+        console.log('qsqssfss')
+        $('#{{ $img }}').model('show');
+    })
+</script> --}}
+@livewireScripts
+<div>
+    <input type="file" wire:model="{{ $imageName }}">
+
+    @error($imageName)
+        <span class="error">{{ $message }}</span>
+    @enderror
+
+    @if ($image)
+        <img src="{{ $image->temporaryUrl() }}">
+    @endif
 </div>
 @livewireScripts
-<script>
-    document.addEventListener('livewire:load', function() {
-        $wire.on('showPreview', (s) => {
-            //
-            console.log(s, 'gegegege')
-        });
-        Livewire.on('showPreview', imageUrl => {
-            document.getElementById('previewImage').src = imageUrl;
-            alert(imageUrl)
-            $('#{{ $img }}').model('show');
-            //document.getElementById('imagePreviewModal').style.display = 'block';
-        });
-    });
-</script>

@@ -1,34 +1,22 @@
 <div>
-    <div class="bs-example">
 
-        <div id="myModal" class="modal fade" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            Image preview
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            &times;
-                        </button>
-                    </div>
-                    <div class="modal-body" id="open_preview">
-                        <!-- <img id="" src="" width="150" height="150" alt="" srcset=""> -->
-                    </div>
-                    <div class="modal-footer">
-                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                            Cancel
-                        </button> -->
-                        <button type="button" data-dismiss="modal" id="reset-form" class="btn btn-primary">
-                            Ok
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     @livewireStyles
-    <form wire:submit.prevent="submitForm" class="form-horizontal model-form-65ddb585837bb" accept-charset="UTF-8">
+    <form wire:submit.prevent="submitForm" class="form-horizontal " accept-charset="UTF-8">
+        {{-- @include('livewire.image-uploader', ['img' => 'photo', 'label' => 'Photo', 'value' => $photo]) --}}
+        {{-- @include('livewire.image-uploader', [
+            'img' => 'voterid_img',
+            'label' => 'Voter',
+            'value' => $voterid_img,
+            'required' => true,
+        ]) --}}
+
+        @livewire('image-uploader', ['imageName' => 'photo'])
+
+
+
+        <button>sumnohefkh</button>
+    </form>
+    {{-- <form wire:submit.prevent="submitForm" class="form-horizontal model-form-65ddb585837bb" accept-charset="UTF-8">
 
         <div class="box-body">
             <div class="nav-tabs-custom">
@@ -677,7 +665,7 @@
         </script>
 
         <!-- /.box-footer -->
-    </form>
+    </form> --}}
 
     @livewireScripts
 </div>
