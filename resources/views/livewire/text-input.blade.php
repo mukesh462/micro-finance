@@ -11,7 +11,7 @@
             <span class="input-group-addon"><i class="fa fa-pencil fa-fw"></i></span>
 
             <input type="text" id="{{ $name }}" name="{{ $name }}" wire:model="{{ $name }}"
-                value="" class="form-control "
+                wire:model.blur="{{ $name }}" value="" class="form-control "
                 @isset($disabled)
                     disabled
                 @endisset

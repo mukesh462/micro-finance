@@ -1,5 +1,5 @@
 @if ($type == 'create')
-    @livewire('member-form')
+    @include('member-form')
 @else
     @livewire('member-form', ['editId' => $id])
 @endif

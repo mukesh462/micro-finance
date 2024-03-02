@@ -382,4 +382,15 @@ class MemberController extends AdminController
             $content->body(new Box('', view('test', ['type' => 'create'])));
         });
     }
+    public function MemberformSave(Request $request)
+    {
+        $this->validate([
+            'photo' => 'required|image',
+            'client_name' => 'required',
+            'dob' => ['required', 'date', 'before_or_equal:' . date('Y-m-d', strtotime('-18 years')), 'after_or_equal:' . date('Y-m-d', strtotime('-60 years'))]
+
+
+
+        ]);
+    }
 }

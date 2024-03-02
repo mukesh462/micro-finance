@@ -1,4 +1,4 @@
-{{-- <div>
+<div>
 
     <div class="bs-example">
 
@@ -30,13 +30,21 @@
         </div>
     </div>
     <div class="form-group" style="margin: 0;max-width: 100% !important;">
+
         <label for="up-{{ $img }}"
-            class="control-label @isset($required) asterisk @endisset">{{ $label }}</label>
+            class="control-label  @isset($required) asterisk @endisset" style='text-align:left'>
+            Select {{ $label }}
+        </label>
+
 
         <div class="" style="display:flex;gap:4px;position: relative;">
-            <input type="text" name="" class="form-control" style="cursor: pointer;"
-                placeholder="Select Image" readonly id="check-{{ $img }}">
-            <input type="file" style="display: block;" id="up-{{ $img }}" wire:model="{{ $img }}"
+            <label id='mas{{ $img }}' for="up-{{ $img }}" class=" form-control "
+                style='text-align:left;   white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;'>
+                Select {{ $label }}
+            </label>
+            <input type="file" style="display: none;" id="up-{{ $img }}" wire:model="{{ $img }}"
                 class="form-control" name="{{ $img }}" accept="image/*">
             <button data-toggle="modal" type='button' class="btn btn-sm btn-info"
                 @if ($value) style='display:block;'
@@ -54,11 +62,6 @@
 </div>
 
 <script>
-    $('#check-{{ $img }}').on('click', () => {
-        console.log('dfdfdfdfdf');
-        $('#up-{{ $img }}').trigger('click')
-
-    })
     document.getElementById('up-{{ $img }}').addEventListener('change', function() {
         console.log('call')
         var file = this.files[0];
@@ -71,27 +74,15 @@
                     '">')
 
                 $('#dis-{{ $img }}').css('display', 'block')
-                $('#check-{{ $img }}').val(file.name)
+                $('#mas{{ $img }}').text(file.name)
+
             };
             reader.readAsDataURL(file);
         }
     });
 
     $('#adder').on('click', () => {
-        console.log('qsqssfss')
+
         $('#{{ $img }}').model('show');
     })
-</script> --}}
-@livewireScripts
-<div>
-    <input type="file" wire:model="{{ $imageName }}">
-
-    @error($imageName)
-        <span class="error">{{ $message }}</span>
-    @enderror
-
-    @if ($image)
-        <img src="{{ $image->temporaryUrl() }}">
-    @endif
-</div>
-@livewireScripts
+</script>
