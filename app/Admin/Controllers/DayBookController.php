@@ -162,4 +162,16 @@ class DayBookController extends AdminController
         });
     }
 
+    public function bulkCollection(HttpRequest $request)
+    {
+        return Admin::content(function (Content $content) {
+
+            // optional
+            // $content->header(' Collection');
+
+            // $content->description('Single Member collection');
+            $content->body( new Box('Bulk Collection',view('bulk_collection')));
+        });
+    }
+
 }
