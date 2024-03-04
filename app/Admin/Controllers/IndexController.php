@@ -21,6 +21,7 @@ use Encore\Admin\Widgets\Box;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use PDF;
 
 class IndexController extends AdminController
 {
@@ -309,6 +310,7 @@ class IndexController extends AdminController
             $getIndexMember[$key]['member'] = $value->member_id;
             $getIndexMember[$key]['staff_id'] = $getemp->id;
             $getIndexMember[$key]['center_id'] = $center->id;
+            $getIndexMember[$key]['nominee_name'] = $member->nominee_name;
         }
         // return $getIndexMember;
         return Admin::content(function (Content $content) use ($getIndexMember) {
@@ -399,6 +401,7 @@ class IndexController extends AdminController
             $getIndexMember[$key]['member'] = $value->member_id;
             $getIndexMember[$key]['staff_id'] = $getemp->id;
             $getIndexMember[$key]['center_id'] = $center->id;
+            $getIndexMember[$key]['nominee_name'] = $member->nominee_name;
         }
         // return $getIndexMember;
         return Admin::content(function (Content $content) use ($getIndexMember) {
@@ -447,5 +450,49 @@ class IndexController extends AdminController
     public  function loan_disbrusment(Request $request)
     {
         dd($request->all());
+    }
+    public function checkIndex(Request $request)
+    {
+        $findIndex = IndexMember::where(['member_id' => $request->member_id, 'plan_id' => $request->plan_id, 'loan_status' => 0])->count();
+        // dd($findIndex);
+        return response()->json($findIndex == 0);
+    }
+    public function getmember(Request $request)
+    {
+        return response()->json(Member::find($request->id));
+    }
+    public function getIndexMemberPdf($id)
+    {
+        $data = IndexMember::where('index_id', $id)->get();
+
+        foreach ($data as $key => $value) {
+            # code...
+            $center = Center::where('id', $value->center_id)->first();
+            $getemp = Employee::where('id', $value->center_id)->first();
+            $plan = Product::where('id', $value->plan_id)->first();
+            $member = Member::where('id', $value->member_id)->first();
+            $data[$key]['sn'] = $key + 1;
+
+            $data[$key]['center_name'] = '00' . $center->id . '-' . $center->center_name;
+            $data[$key]['product_name'] = $plan->plan_name;
+            $data[$key]['member_name'] = $member->client_name;
+            $data[$key]['emp_name'] = $getemp->staff_name;
+            $data[$key]['purpose'] = $value->loan_purpose;
+            $data[$key]['amount'] = $value->plan_amount;
+            $data[$key]['plan'] = $plan->id;
+            $data[$key]['member'] = $value->member_id;
+            $data[$key]['staff_id'] = $getemp->id;
+            $data[$key]['center_id'] = $center->id;
+            $data[$key]['nominee_name'] = $member->nominee_name;
+        }
+        $pdf = PDF::loadView('indexmember', ['data' => $data]);
+
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="indexmember.pdf"',
+        ];
+
+        // Return the PDF content as a response
+        return response($pdf->output(), 200, $headers);
     }
 }

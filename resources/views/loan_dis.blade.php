@@ -8,7 +8,7 @@
     }
 
     .select2 {
-        width: 100%;
+        width: 100% !important;
     }
 
     /* Estilo iOS */
@@ -261,6 +261,12 @@
 
             </select>
         </div>
+        <div class="col-12  col-md-3 col-lg-3">
+            <label for="approve">Approve Count
+
+            </label>
+            <input type="text" class="form-control" value="0" id='approve' disabled>
+        </div>
         <div class="col-12  col-md-3 col-lg-3 search-btn">
             <button class="btn btn-info" id='search-btn' type='button' onclick='submitBtn()'><i
                     class="fa fa-search"></i> Search</button>
@@ -279,7 +285,8 @@
                 <td>Product </td>
                 <td> Purpose</td>
                 <td> Product Amount</td>
-                <td class="checkAll"> Check All <input type="checkbox" id="masterCheckbox" /></td>
+                <td class="checkAll"> <label for="masterCheckbox"> Check All </label><input type="checkbox"
+                        id="masterCheckbox" /></td>
             </thead>
             <tbody id='list-table'>
 
@@ -538,4 +545,16 @@
         // Set all other checkboxes to the same state as the master checkbox
         $('.selected_value').prop('checked', isChecked);
     });
+    $(".selected_value").change(() => {
+        console.log('class call');
+        let checkCount = 0;
+        $('.selected_value').each(function () {
+            // Check if the checkbox is checked
+            if ($(this).is(':checked')) {
+                // If checked, add its value to the selectedValues array
+                checkCount++;
+            }
+        });
+        $('#approve').val(checkCount);
+    })
 </script>

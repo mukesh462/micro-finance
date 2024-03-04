@@ -21,7 +21,8 @@ Route::get('/', function () {
 });
 
 Route::get('/get-data', [IndexController::class, 'getData'])->name('get.data');
+Route::get('/checkIndex', [IndexController::class, 'checkIndex'])->name('checkIndex');
 Route::get('/get-employee', [IndexController::class, 'getemployee'])->name('get.employee');
+Route::get('/get-member', [IndexController::class, 'getmember'])->name('get.member');
 Route::get('/get-product', [IndexController::class, 'getproduct'])->name('get.product');
 Route::get('/admin/per', TaskManager::class);
-

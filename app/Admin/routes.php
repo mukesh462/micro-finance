@@ -57,7 +57,7 @@ Route::group([
     $router->post('editIndex', [IndexController::class, 'editIndex'])->name('edit.index');
     $router->get('indexes/{id}/view', [IndexController::class, 'ViewIndex']);
     $router->post('loan_disbrusment', [IndexController::class, 'loan_disbrusment']);
-
+    $router->get('getIndexMember/{id}/pdf', [IndexController::class, 'getIndexMemberPdf']);
     $router->get('member/create', [MemberController::class, 'Memberform']);
     $router->post('member/save', [MemberController::class, 'MemberformSave']);
 });
