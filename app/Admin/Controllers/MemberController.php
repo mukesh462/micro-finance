@@ -13,7 +13,7 @@ use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 use Encore\Admin\Widgets\Box;
-use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class MemberController extends AdminController
@@ -346,7 +346,7 @@ class MemberController extends AdminController
             // });
             $("#adult").on("change",function(){
                 this.value = this.value.replace(/[^0-9]/g, "");
-                var adult = parseInt($("#adult").val()) 
+                var adult = parseInt($("#adult").val())
                 var child = parseInt($("#child").val())
                 console.log(adult,child)
                 var total = adult + child
@@ -354,7 +354,7 @@ class MemberController extends AdminController
             })
             $("#child").on("change",function(){
                 this.value = this.value.replace(/[^0-9]/g, "");
-                var adult = parseInt($("#adult").val()) 
+                var adult = parseInt($("#adult").val())
                 var child = parseInt($("#child").val())
                 console.log(adult,child)
                 var total = adult + child
@@ -384,10 +384,49 @@ class MemberController extends AdminController
     }
     public function MemberformSave(Request $request)
     {
-        $this->validate([
-            'photo' => 'required|image',
+        $validated = $request->validate([
             'client_name' => 'required',
-            'dob' => ['required', 'date', 'before_or_equal:' . date('Y-m-d', strtotime('-18 years')), 'after_or_equal:' . date('Y-m-d', strtotime('-60 years'))]
+            'dob' => 'required',
+            'gender' => 'required',
+            'address' => 'required',
+            'community' => 'required',
+            'qualification' => 'required',
+            'monthly_income' => 'required',
+            'home_status' => 'required',
+            'status' => 'required',
+            'center_id' => 'required',
+            'image' => 'required',
+            // 'age' => 'required',
+            'phone_number' => 'required',
+            'city' => 'required',
+            'pincode' => 'required',
+            'religion' => 'required',
+            'marital_status' => 'required',
+            'monthly_expenses' => 'required',
+            'date_of_joined' => 'required',
+            'father_name' => 'required',
+            'mother_name' => 'required',
+            'spouse_name' => 'required',
+            'spouse_occupation' => 'required',
+            'no_of_adult' => 'required',
+            'no_of_children' => 'required',
+            'smartcard_no' => 'required',
+            'voter_id' => 'required',
+            'smartcard_img' => 'required',
+            'voterid_img' => 'required',
+            'nominee_name' => 'required',
+            'relation_with_client' => 'required',
+            'nominee_aadhar' => 'required',
+            'nominee_mobile' => 'required',
+            'nominee_dob' => 'required',
+            'nominee_aadhar_img' => 'required',
+            'nominee_voter_img' => 'required',
+            'account_holder_name' => 'required',
+            'account_number' => 'required',
+            'bank_name' => 'required',
+            'ifsc_number' => 'required',
+            'branch_name' => 'required',
+
 
 
 

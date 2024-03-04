@@ -78,6 +78,7 @@
                                         'label' => 'Member name',
                                         'name' => 'client_name',
                                         'isRequired' => true,
+                                        'value'=> old('client_name')
                                     ])
                                 </div>
                                 <div class="">
@@ -85,6 +86,7 @@
                                         'label' => 'DOB',
                                         'name' => 'dob',
                                         'isRequired' => true,
+                                        'value'=> old('dob')
                                     ])
 
                                 </div>
@@ -93,7 +95,7 @@
                                 <div class="  " style="margin: 0!important;width:100%">
                                     <label for="gender" class="asterisk  control-label">Gender</label>
                                     <div class="">
-                                        <select class=" gender " wire:ignore wire:mode="gender" id="gender">
+                                        <select class=" gender " wire:ignore wire:mode="gender" id="gender" name="gender" value="{{ old('gender') }}">
                                             <option value="" selected>--- Select Gender ---</option>
                                             <option value="Male">Male</option>
                                             <option value="Female">Female</option>
@@ -111,10 +113,11 @@
 
                                 </div>
                                 <div class="">
-                                    @include('livewire.text-input', [
-                                        'label' => 'State',
-                                        'name' => 'state',
-                                    ])
+                                @include('livewire.text-input', [
+        'label' => 'State',
+        'name' => 'state',
+        'value' => old('state')
+    ])
 
                                 </div>
                                 <div class="form-group  " style="margin: 0;">
@@ -123,7 +126,7 @@
 
                                     <div class="">
                                         <select class="form-control community " style="width: 100%;" name="community"
-                                            data-value="Not prefer to say" tabindex="-1" aria-hidden="true">
+                                            data-value="Not prefer to say" tabindex="-1" aria-hidden="true" value="{{ old('community') }}">>
                                             <option value=""></option>
                                             <option value="BC">BC</option>
                                             <option value="MBC">MBC</option>
@@ -142,9 +145,9 @@
                                     <div class="">
                                         <select class="form-control" name="qualification" tabindex="-1"
                                             aria-hidden="true">
-                                            <option value=""></option>
-                                            <option value="SSLC" selected="">SSLC</option>
-                                            <option value="HSC">HSC</option>
+                                            <option value="" selected>Select qualification</option>
+                                            <option value="SSLC">SSLC</option>
+                                            <option value="HSC" {{ old('qualification') == 'HSC' ? 'selected' : '' }}>HSC</option>
                                             <option value="UG">UG</option>
                                             <option value="PG">PG</option>
                                             <option value="Other">Other</option>
@@ -163,7 +166,7 @@
                                     <label for="home_status" class=" asterisk control-label">Home status</label>
                                     <div class="">
                                         <select class="form-control home_status " style="width: 100%;"
-                                            name="home_status">
+                                            name="home_status" value="{{ old('home_status') }}">
                                             <option value="Own" selected>Own</option>
                                             <option value="Rent">Rent</option>
                                             <option value="Lease">Lease</option>
@@ -173,7 +176,6 @@
                                 <div class="form-group  " style="margin: 0;">
                                     <label for="status" class=" asterisk control-label">Member status</label>
                                     <select class="form-control status " name="status">
-
                                         <option value="1" selected>Active</option>
                                         <option value="0">In Active</option>
                                     </select>
@@ -192,7 +194,7 @@
                                     <div class="">
                                         <select wire:model='center_id' class="form-control center_id " style=""
                                             name="center_id" data-value="" id="center_id" tabindex="-1"
-                                            aria-hidden="true">
+                                            aria-hidden="true" name="center_id">
                                             <option value="" selected>--- Select Center ---</option>
                                             @foreach ($centers as $value)
                                                 <option value="1">{{ $value->center_name }}</option>
@@ -218,6 +220,7 @@
                                         'img' => 'photo',
                                         'label' => 'Photo',
                                         'value' => '',
+                                         "name" =>"image"
                                     ])
 
                                 </div>
@@ -286,8 +289,8 @@
                                         <select class="form-control marital_status " style="width: 100%;"
                                             name="marital_status" data-value="Single" tabindex="-1"
                                             aria-hidden="true">
-                                            <option value=""></option>
-                                            <option value="Single" selected>Single</option>
+                                            <option value="" selected>Select Marital Status</option>
+                                            <option value="Single">Single</option>
                                             <option value="Married">Married</option>
                                             <option value="Widow">Widow</option>
                                             <option value="Divorced">Divorced</option>
@@ -351,13 +354,13 @@
                             <div class="col-12" style="margin-top: 5px;">
                                 <div class="col-12 col-md-4 col-lg-4">
                                     <label for="no_of_adult">No of Ad</label>
-                                    <input type="number" min="0" name="no_of_adult" value="0"
+                                    <input type="number" min="0" name="no_of_adult"
                                         class="form-control" id="no_of_adult">
 
                                 </div>
                                 <div class="col-12 col-md-4 col-lg-4">
                                     <label for="no_of_children">No of child</label>
-                                    <input type="number" min="0" name="no_of_children" value="0"
+                                    <input type="number" min="0" name="no_of_children"
                                         class="form-control" id="no_of_children">
                                 </div>
                                 <div class="col-12 col-md-4 col-lg-4" style="margin-bottom: 2px;">
@@ -447,7 +450,7 @@
                                 ]) <div class="form-group  " style="margin: 0;">
                                     <label for="relation_with_client" class="  control-label">Relation with
                                         Member</label>
-                                    <select class="form-control relation_with_client " style="width: 100%;"
+                                    <select class="form-control relation_with_client" style="width: 100%;"
                                         name="relation_with_client" data-value="" tabindex="-1"
                                         aria-hidden="true">
                                         <option value="Mother">Mother</option>
@@ -548,8 +551,7 @@
 
         <div class="box-footer">
 
-            <input type="hidden" name="_token" value="DtuEzWf2Rmnkt8xMAJaZnCM19Ot8JPZJHvSnuLsB"
-                autocomplete="off">
+        @csrf
 
             <div class="col-md-2">
             </div>
@@ -565,6 +567,7 @@
             </div>
         </div>
 
+        </form>
 
 
         <script>
@@ -649,7 +652,6 @@
         </script>
 
         <!-- /.box-footer -->
-    </form>
 
 
 </div>
