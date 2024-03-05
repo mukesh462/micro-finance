@@ -9,6 +9,7 @@ use App\Models\Center;
 use App\Models\Employee;
 use App\Models\Index;
 use App\Models\IndexMember;
+use App\Models\LoanAccount;
 use App\Models\Member;
 use App\Models\Product;
 use Encore\Admin\Controllers\AdminController;
@@ -447,9 +448,99 @@ class IndexController extends AdminController
             $content->body(new Box('', view('loan_dis', ['id' => $id, 'type' => 'edit'])));
         });
     }
-    public  function loan_disbrusment(Request $request)
+    public  function loan_disbrusment()
     {
-        dd($request->all());
+        $data = '
+            [{"id":20,"member_id":1,"plan_id":5,"loan_purpose":"maseret","plan_amount":22500,"staff_id":1,"loan_status":0,"center_id":1,"index_id":8,"created_at":"2024-02-21T13:20:15.000000Z","updated_at":"2024-02-21T13:20:15.000000Z","center_name":"001-Madurai","employee_name":"murgan","product_name":"10-14 days","member_name":"Mukesh"},{"id":21,"member_id":1,"plan_id":2,"loan_purpose":"test","plan_amount":5000,"staff_id":1,"loan_status":0,"center_id":1,"index_id":8,"created_at":"2024-02-21T13:20:36.000000Z","updated_at":"2024-02-21T13:20:36.000000Z","center_name":"001-Madurai","employee_name":"murgan","product_name":"night","member_name":"Mukesh"}]
+      ';
+        $finalData = json_decode($data);
+        foreach ($finalData as $key => $value) {
+            $planFind = Product::find($value->plan_id);
+            if (is_object($planFind)) {
+                $addTo = new LoanAccount();
+                $addTo->index_id = $value->index_id;
+                $addTo->index_member_id = $value->id;
+                $addTo->center_id = $value->center_id;
+                $addTo->member_id = $value->member_id;
+                $addTo->loan_interest = $planFind->interest_amount;
+                $addTo->plan_id = $value->plan_id;
+                $addTo->loan_amount = $planFind->plan_amount;
+                $addTo->interest_type = $planFind->interest_type;
+                $addTo->loan_duration = $planFind->plan_duration;
+                $addTo->loan_type = $planFind->plan_type;
+                $addTo->staff_id = $value->staff_id;
+                // $addTo->save();
+                // IndexMember::where('id', $value->id)->update(['loan_status' => 1]);
+                // if ($key == 0) {
+                //     Index::where('id', $value->index_id)->update(['index_status' => 2]);
+                // }
+                $arr = [];
+                for ($due = 0; $due < $planFind->plan_duration; $due++) {
+                    $dayPlus = $due + 1;
+                    $loan_amt = $planFind->plan_amount / $planFind->plan_duration;
+                    $interest = $planFind->interest_type == 1 ? ($planFind->plan_amount * $planFind->interest_amount / 100) : $planFind->interest_amount;
+                    $month_interest = $interest / $planFind->plan_duration;
+                    // dd(($planFind->plan_amount * $planFind->loan_interest));
+                    if ($planFind->plan_type == 1) { //week
+                        $arr[] = [
+                            'loan_id' => 1,
+                            'member_id' => $value->member_id,
+                            'center_id' => $value->center_id,
+                            'staff_id' => $value->staff_id,
+                            'due_number' => $dayPlus,
+                            'due_date' => date('Y-m-d', strtotime('+' . ($dayPlus) . 'week')),
+                            'due_interest' => $month_interest,
+                            'collection_date' => date('Y-m-d', strtotime('+' . ($dayPlus) . 'week')),
+                            'due_amount' => round($loan_amt + $interest, 2),
+                            'collection_price' => round($loan_amt, 2),
+                            'collection_interest' => $interest,
+                            'collection_amount' => round($loan_amt + $interest, 2),
+                            'due_balance' => 0,
+                            'collection_interest' => $interest,
+                        ];
+                    } elseif ($planFind->plan_type == 2) { //14 days
+                        $arr[] = [
+                            'loan_id' => 1,
+                            'member_id' => $value->member_id,
+                            'center_id' => $value->center_id,
+                            'staff_id' => $value->staff_id,
+                            'due_number' => $dayPlus,
+                            'due_date' => date('Y-m-d', strtotime('+' . ($dayPlus * 14) . 'day')),
+                            'due_interest' => $month_interest,
+                            'collection_date' => date('Y-m-d', strtotime('+' . ($dayPlus * 14) . 'day')),
+                            'due_amount' => round($loan_amt + $interest, 2),
+                            'collection_price' => round($loan_amt, 2),
+                            'collection_interest' => $interest,
+                            'collection_amount' => round($loan_amt + $interest, 2),
+                            'due_balance' => 0,
+                            'collection_interest' => $interest,
+                        ];
+                    } else { //month
+                        $arr[] = [
+                            'loan_id' => 1,
+                            'member_id' => $value->member_id,
+                            'center_id' => $value->center_id,
+                            'staff_id' => $value->staff_id,
+                            'due_number' => $dayPlus,
+                            'due_date' => date('Y-m-d', strtotime('+' . ($dayPlus) . 'month')),
+                            'due_interest' => $month_interest,
+                            'collection_date' => date('Y-m-d', strtotime('+' . ($dayPlus) . 'month')),
+                            'due_amount' => round($loan_amt + $interest, 2),
+                            'collection_price' => round($loan_amt, 2),
+                            'collection_interest' => $interest,
+                            'collection_amount' => round($loan_amt + $interest, 2),
+                            'due_balance' => 0,
+                            'collection_interest' => $interest,
+                        ];
+                    }
+                }
+
+                DB::table('collections')->insert($arr);
+            }
+        }
+
+
+        return (json_decode($data));
     }
     public function checkIndex(Request $request)
     {

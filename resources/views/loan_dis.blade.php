@@ -185,6 +185,9 @@
                     </button>
                     <form style="display: inline;" action="{{admin_url('loan_disbrusment')}}" method="post">
                         <input type="hidden" name="data" id="sendVal">
+                        <input type="hidden" name="dis_mode">
+                        <input type="hidden" name="first_due">
+
                         @csrf
                         <button id="" class="btn btn-primary">
                             Ok
@@ -544,17 +547,17 @@
 
         // Set all other checkboxes to the same state as the master checkbox
         $('.selected_value').prop('checked', isChecked);
+        $('.selected_value').trigger('change')
     });
-    $(".selected_value").change(() => {
-        console.log('class call');
-        let checkCount = 0;
-        $('.selected_value').each(function () {
-            // Check if the checkbox is checked
-            if ($(this).is(':checked')) {
-                // If checked, add its value to the selectedValues array
-                checkCount++;
-            }
-        });
+
+    $(document).on('change', '.selected_value', function () {
+
+        let checkCount = $('.selected_value:checked').length;
+        let NoncheckCount = $('.selected_value').not(':checked').length;
+
+        $('#masterCheckbox').prop('checked', !NoncheckCount > 0)
         $('#approve').val(checkCount);
-    })
+
+    });
+
 </script>
