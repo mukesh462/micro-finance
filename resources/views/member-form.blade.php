@@ -21,6 +21,12 @@
             DB::raw('CONCAT("00",id, " - ", center_name) as center_name'),
             'id',
         )->get();
+        $member = \App\Models\Member::orderBy('id','desc')->first();
+        if(is_object($member)){
+            $member_id = $member->id + 1;
+        }else{
+            $member_id = 1;
+        }
     @endphp
     <form action="/admin/member/save" method="post" enctype="multipart/form-data">
 
@@ -66,7 +72,7 @@
                                     <div class="box box-solid box-default no-margin">
                                         <!-- /.box-header -->
                                         <div class="" style="padding: 6px;">
-                                            4
+                                         {{$member_id}}
                                         </div><!-- /.box-body -->
                                     </div>
 
@@ -95,12 +101,17 @@
                                 <div class="  " style="margin: 0!important;width:100%">
                                     <label for="gender" class="asterisk  control-label">Gender</label>
                                     <div class="">
-                                        <select class=" gender " wire:ignore wire:mode="gender" id="gender" name="gender" value="{{ old('gender') }}">
-                                            <option value="" selected>--- Select Gender ---</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Other">Other</option>
+                                        <select class=" gender " wire:ignore wire:mode="gender" id="gender" name="gender" >
+                                            <option value="" {{ old('gender') == '' ? 'selected' : '' }}>--- Select Gender ---</option>
+                                            <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                                            <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+                                            <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
                                         </select>
+                                        @error('gender')
+                                        <label class="control-label" style='color:red;'><i
+                                                    class="fa fa-times-circle-o"></i>
+                                                {{ $message }}</label>
+    @enderror
                                     </div>
                                 </div>
 
@@ -109,33 +120,36 @@
                                         'label' => 'Address',
                                         'name' => 'address',
                                         'isRequired' => true,
+                                        'value'=> old('address')
                                     ])
 
                                 </div>
                                 <div class="">
                                 @include('livewire.text-input', [
-        'label' => 'State',
-        'name' => 'state',
-        'value' => old('state')
-    ])
-
+                                'label' => 'State',
+                                'name' => 'state',
+                                'value' => old('state')
+                             ])
                                 </div>
                                 <div class="form-group  " style="margin: 0;">
 
                                     <label for="community" class=" asterisk control-label">Community</label>
 
                                     <div class="">
-                                        <select class="form-control community " style="width: 100%;" name="community"
-                                            data-value="Not prefer to say" tabindex="-1" aria-hidden="true" value="{{ old('community') }}">>
-                                            <option value=""></option>
-                                            <option value="BC">BC</option>
-                                            <option value="MBC">MBC</option>
-                                            <option value="SC">SC</option>
-                                            <option value="ST">ST</option>
-                                            <option value="Other">Other</option>
-                                            <option value="Not prefer to say" selected="">Not prefer to say</option>
+                                        <select class="form-control community " style="width: 100%;" name="community">
+                                            <option value="" {{ old('community') == '' ? 'selected' : '' }}>Select Community</option>
+                                            <option value="BC" {{ old('community') == 'BC' ? 'selected' : '' }}>BC</option>
+                                            <option value="MBC" {{ old('community') == 'MBC' ? 'selected' : '' }}>MBC</option>
+                                            <option value="SC" {{ old('community') == 'SC' ? 'selected' : '' }}>SC</option>
+                                            <option value="ST" {{ old('community') == 'ST' ? 'selected' : '' }}>ST</option>
+                                            <option value="Other"{{ old('community') == 'Other' ? 'selected' : '' }}>Other</option>
+                                            <option value="Not prefer to say" {{ old('community') == 'Not prefer to say' ? 'selected' : '' }}>Not prefer to say</option>
                                         </select>
-
+                                        @error('community')
+                                        <label class="control-label" style='color:red;'><i
+                                                    class="fa fa-times-circle-o"></i>
+                                                {{ $message }}</label>
+    @enderror
                                     </div>
                                 </div>
                                 <div class="form-group  " style="margin: 0;">
@@ -145,142 +159,137 @@
                                     <div class="">
                                         <select class="form-control" name="qualification" tabindex="-1"
                                             aria-hidden="true">
-                                            <option value="" selected>Select qualification</option>
-                                            <option value="SSLC">SSLC</option>
+                                            <option value="" {{ old('qualification') == '' ? 'selected' : '' }}>Select qualification</option>
+                                            <option value="SSLC" {{ old('qualification') == 'SSLC' ? 'selected' : '' }}>SSLC</option>
                                             <option value="HSC" {{ old('qualification') == 'HSC' ? 'selected' : '' }}>HSC</option>
-                                            <option value="UG">UG</option>
-                                            <option value="PG">PG</option>
-                                            <option value="Other">Other</option>
+                                            <option value="UG" {{ old('qualification') == 'UG' ? 'selected' : '' }}>UG</option>
+                                            <option value="PG" {{ old('qualification') == 'PG' ? 'selected' : '' }}>PG</option>
+                                            <option value="Other" {{ old('qualification') == 'Other' ? 'selected' : '' }}>Other</option>
                                         </select>
+                                        @error('qualification')
+                                        <label class="control-label" style='color:red;'><i
+                                                    class="fa fa-times-circle-o"></i>
+                                                {{ $message }}</label>
+    @enderror
                                     </div>
                                 </div>
                                 <div class="">
                                     @include('livewire.text-input', [
                                         'label' => 'Monthly income',
                                         'name' => 'monthly_income',
+                                        'value' => old('monthly_income')
                                     ])
 
                                 </div>
                                 <div class="form-group  " style="margin: 0;">
-
                                     <label for="home_status" class=" asterisk control-label">Home status</label>
                                     <div class="">
-                                        <select class="form-control home_status " style="width: 100%;"
-                                            name="home_status" value="{{ old('home_status') }}">
-                                            <option value="Own" selected>Own</option>
-                                            <option value="Rent">Rent</option>
-                                            <option value="Lease">Lease</option>
+                                        <select class="form-control home_status " style="width: 100%;" name="home_status">
+                                        <option value="" {{ old('home_status') == '' ? 'selected' : '' }}>Select Home Status</option>
+                                            <option value="Own" {{ old('home_status') == 'Own' ? 'selected' : '' }}>Own</option>
+                                            <option value="Rent" {{ old('home_status') == 'Rent' ? 'selected' : '' }}>Rent</option>
+                                            <option value="Lease" {{ old('home_status') == 'Lease' ? 'selected' : '' }}>Lease</option>
                                         </select>
+                                        @error('home_status')
+                                        <label class="control-label" style='color:red;'><i
+                                                    class="fa fa-times-circle-o"></i>
+                                                {{ $message }}</label>
+    @enderror
                                     </div>
                                 </div>
                                 <div class="form-group  " style="margin: 0;">
                                     <label for="status" class=" asterisk control-label">Member status</label>
                                     <select class="form-control status " name="status">
-                                        <option value="1" selected>Active</option>
-                                        <option value="0">In Active</option>
+                                    <option value="" {{ old('status') == '' ? 'selected' : '' }}>Select Member Status</option>
+                                        <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Active</option>
+                                        <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>In Active</option>
+
                                     </select>
-
-
-
+                                    @error('status')
+                                    <label class="control-label" style='color:red;'><i
+                                                    class="fa fa-times-circle-o"></i>
+                                                {{ $message }}</label>
+    @enderror
                                 </div>
                             </div>
                             <div class="col-12 col-md-6 col-lg-6">
-
                                 <div class="">
-
                                     <label for="center_id" class=" asterisk control-label">Select Center
                                     </label>
-
                                     <div class="">
                                         <select wire:model='center_id' class="form-control center_id " style=""
                                             name="center_id" data-value="" id="center_id" tabindex="-1"
                                             aria-hidden="true" name="center_id">
-                                            <option value="" selected>--- Select Center ---</option>
+                                            <option value="" {{ old('center_id') == '' ? 'selected' : '' }}>--- Select Center ---</option>
                                             @foreach ($centers as $value)
-                                                <option value="1">{{ $value->center_name }}</option>
+                                                <option value="{{ $value->id}}"  {{ old('center_id') == $value->id ? 'selected' : ''}}>{{ $value->center_name }}</option>
                                             @endforeach
-
-
-
-
                                         </select>
                                         @error('center_id')
                                             <label class="control-label" style='color:red;'><i
                                                     class="fa fa-times-circle-o"></i>
                                                 {{ $message }}</label>
                                         @enderror
-
-
-
                                     </div>
                                 </div>
                                 <div class="">
-
                                     @include('livewire.image-uploader', [
-                                        'img' => 'photo',
+                                        'img' => 'image',
                                         'label' => 'Photo',
-                                        'value' => '',
+                                        'value' => old('image') ? old('image') : '',
                                          "name" =>"image"
                                     ])
-
                                 </div>
                                 <div class="form-group  " style="margin: 0;">
-
                                     <label for="age" class="  control-label">Age</label>
-
                                     <div class="">
-
-
                                         <div class="input-group">
-
                                             <span class="input-group-addon"><i class="fa fa-pencil fa-fw"></i></span>
-
                                             <input id="age" readonly="" disabled="" type="text"
                                                 name="age" value="" class="form-control age"
                                                 placeholder="Input Age">
-
-
-
                                         </div>
-
-
                                     </div>
                                 </div>
                                 <div class="">
                                     @include('livewire.text-input', [
                                         'label' => 'Mobile',
                                         'name' => 'phone_number',
-                                        'isRequired' => true,
+                                        'value' => old('phone_number')
                                     ])
                                 </div>
                                 <div class=" ">
                                     @include('livewire.text-input', [
                                         'label' => 'City',
                                         'name' => 'city',
-                                        'isRequired' => true,
+                                        'value' => old('city')
                                     ])
-
-
-
-
                                 </div>
                                 <div class="">
                                     @include('livewire.text-input', [
                                         'label' => 'Pincode',
                                         'name' => 'pincode',
+                                        'value' => old('pincode')
                                     ])
                                 </div>
                                 <div class="form-group  " style="margin: 0;">
                                     <label for="religion" class=" asterisk control-label">Religion</label>
                                     <div class="">
                                         <select class=" form-control " style=" width: 100%;" name="religion"
-                                            tabindex="-1" aria-hidden="true">
-                                            <option value="Hindu">Hindu</option>
-                                            <option value="Muslim">Muslim</option>
-                                            <option value="Christian">Christian</option>
-                                            <option value="Other">Other</option>
-                                            <option value="Not prefer to say" selected>Not prefer to say</option>
+                                            tabindex="-1" aria-hidden="true" >
+                                            <option value="" {{ old('religion') == '' ? 'selected' : '' }}>Select Religion</option>
+                                            <option value="Hindu" {{ old('religion') == 'Hindu' ? 'selected' : '' }}>Hindu</option>
+                                            <option value="Muslim" {{ old('religion') == 'Muslim' ? 'selected' : '' }}>Muslim</option>
+                                            <option value="Christian" {{ old('religion') == 'Christian' ? 'selected' : '' }}>Christian</option>
+                                            <option value="Other" {{ old('religion') == 'Other' ? 'selected' : '' }}>Other</option>
+                                            <option value="Not prefer to say" {{ old('religion') == 'Not prefer to say' ? 'selected' : '' }}>Not prefer to say</option>
+
                                         </select>
+                                        @error('religion')
+                                        <label class="control-label" style='color:red;'><i
+                                                    class="fa fa-times-circle-o"></i>
+                                                {{ $message }}</label>
+    @enderror
                                     </div>
                                 </div>
                                 <div class="form-group  " style="margin: 0;">
@@ -289,20 +298,26 @@
                                         <select class="form-control marital_status " style="width: 100%;"
                                             name="marital_status" data-value="Single" tabindex="-1"
                                             aria-hidden="true">
-                                            <option value="" selected>Select Marital Status</option>
-                                            <option value="Single">Single</option>
-                                            <option value="Married">Married</option>
-                                            <option value="Widow">Widow</option>
-                                            <option value="Divorced">Divorced</option>
-                                            <option value="Other">Other</option>
+                                            <option value="" {{ old('marital_status') == '' ? 'selected' : '' }}>Select Marital Status</option>
+                                            <option value="Single" {{ old('marital_status') == 'Single' ? 'selected' : '' }}>Single</option>
+                                            <option value="Married"  {{ old('marital_status') == 'Married' ? 'selected' : '' }}>Married</option>
+                                            <option value="Widow" {{ old('marital_status') == 'Widow' ? 'selected' : '' }}>Widow</option>
+                                            <option value="Divorced" {{ old('marital_status') == 'Divorced' ? 'selected' : '' }}>Divorced</option>
+                                            <option value="Other" {{ old('marital_status') == 'Other' ? 'selected' : '' }}>Other</option>
+
                                         </select>
+                                        @error('marital_status')
+                                        <label class="control-label" style='color:red;'><i
+                                                    class="fa fa-times-circle-o"></i>
+                                                {{ $message }}</label>
+    @enderror
                                     </div>
                                 </div>
                                 <div class="">
                                     @include('livewire.text-input', [
                                         'label' => 'Monthly Expenses',
                                         'name' => 'monthly_expenses',
-                                        'isRequired' => true,
+                                        'value' => old('monthly_expenses')
                                     ])
 
                                 </div>
@@ -310,20 +325,11 @@
                                     @include('livewire.text-input', [
                                         'label' => 'Date of joined',
                                         'name' => 'date_of_joined',
-                                        'isRequired' => true,
+                                        'value' => old('date_of_joined')
                                     ])
-
                                 </div>
-
                             </div>
                         </div>
-
-
-
-
-
-
-
                     </div>
                     <div class="tab-pane container " id="tab-form-2" style='max-width:100%!important'>
                         <div class="row">
@@ -331,55 +337,54 @@
                                 @include('livewire.text-input', [
                                     'label' => 'Father Name',
                                     'name' => 'father_name',
-                                    'isRequired' => true,
+                                    'value' => old('father_name')
                                 ])
                                 @include('livewire.text-input', [
                                     'label' => 'Mother Name',
                                     'name' => 'mother_name',
-                                    'isRequired' => true,
+                                    'value' => old('mother_name')
                                 ])
-
-
                             </div>
                             <div class="col-12 col-md-6 col-lg-6"> @include('livewire.text-input', [
                                 'label' => 'Spouse Name',
                                 'name' => 'spouse_name',
-                                'isRequired' => true,
+                                'value' => old('spouse_name')
                             ])
                                 @include('livewire.text-input', [
                                     'label' => 'Spouse Occupation',
                                     'name' => 'spouse_occupation',
-                                    'isRequired' => true,
+                                    'value' => old('spouse_occupation')
                                 ])</div>
                             <div class="col-12" style="margin-top: 5px;">
                                 <div class="col-12 col-md-4 col-lg-4">
                                     <label for="no_of_adult">No of Ad</label>
                                     <input type="number" min="0" name="no_of_adult"
-                                        class="form-control" id="no_of_adult">
-
+                                        class="form-control" id="no_of_adult" value="{{old('no_of_adult')}}">
+                                        @error('no_of_adult')
+            <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
+                {{ $message }}</label>
+        @enderror
                                 </div>
+
                                 <div class="col-12 col-md-4 col-lg-4">
                                     <label for="no_of_children">No of child</label>
                                     <input type="number" min="0" name="no_of_children"
-                                        class="form-control" id="no_of_children">
+                                        class="form-control" id="no_of_children" value="{{old('no_of_children')}}">
+                                        @error('no_of_children')
+                                        <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i> {{ $message }}</label>
+                                        @enderror
                                 </div>
+
                                 <div class="col-12 col-md-4 col-lg-4" style="margin-bottom: 2px;">
                                     @include('livewire.text-input', [
                                         'label' => 'Total Family Members',
                                         'name' => 'total_family_members',
-                                        'isRequired' => false,
+                                        'value'=>old('total_family_members'),
                                         'disabled' => true,
                                     ])
                                 </div>
-
-
-
                             </div>
                         </div>
-
-
-
-
                     </div>
                     <div class="tab-pane container" id="tab-form-3" style='max-width:100%!important'>
                         <div class="row">
@@ -406,31 +411,41 @@
                                 ])
                             </div>
                             <div class="col-12 col-md-6 col-lg-6" style="margin-top: 5px;">
-                                <div class="">
-                                    <label for="smartcard_img" class="  control-label">SmartCard Img</label>
-                                    <div class=" " style="display: flex;">
 
-                                        <input class="form-control" type="file" name="smartcard_img"
-                                            id="smartcard_img" placeholder="Select image">
-                                        <button type="button" class="btn btn-sm btn-info" id="smart_card"
-                                            style="display: none;">show</button>
-                                    </div>
+                                <div class="">
+                                    @include('livewire.image-uploader', [
+                                        'img' => 'smartcard_img',
+                                        'label' => 'Smart card img',
+                                        'value' => old('smartcard_img') ? old('smartcard_img') : '',
+                                         "name" =>"smartcard_img"
+                                    ])
+                                </div>
 
-                                </div>
                                 <div class="">
-                                    <label for="voterid_img" class="  control-label">Voter ID Img</label>
-                                    <input class=" form-control" name="voterid_img" id="voterid_img"
-                                        placeholder="Select image">
+                                    @include('livewire.image-uploader', [
+                                        'img' => 'voterid_img',
+                                        'label' => 'voterid img',
+                                        'value' => old('voterid_img') ? old('voterid_img') : '',
+                                         "name" =>"voterid_img"
+                                    ])
                                 </div>
+
                                 <div class="">
-                                    <label for="aadhar_img" class="  control-label">AadharCard Img</label>
-                                    <input class=" form-control" name="aadhar_img" id="aadhar_img"
-                                        placeholder="Select image">
+                                    @include('livewire.image-uploader', [
+                                        'img' => 'aadhar_img',
+                                        'label' => 'Aadhar img',
+                                        'value' => old('aadhar_img') ? old('aadhar_img') : '',
+                                         "name" =>"aadhar_img"
+                                    ])
                                 </div>
+
                                 <div class="">
-                                    <label for="pancard_img" class="  control-label">Pan Img</label>
-                                    <input class=" form-control" name="pancard_img" id="pancard_img"
-                                        placeholder="Select image">
+                                    @include('livewire.image-uploader', [
+                                        'img' => 'pancard_img',
+                                        'label' => 'pancard img',
+                                        'value' => old('pancard_img') ? old('pancard_img') : '',
+                                         "name" =>"pancard_img"
+                                    ])
                                 </div>
                             </div>
                         </div>
@@ -446,48 +461,52 @@
                                 @include('livewire.text-input', [
                                     'label' => 'Nominee name',
                                     'name' => 'nominee_name',
-                                    'isRequired' => true,
+                                    'value'=>old('nominee_name'),
                                 ]) <div class="form-group  " style="margin: 0;">
                                     <label for="relation_with_client" class="  control-label">Relation with
                                         Member</label>
                                     <select class="form-control relation_with_client" style="width: 100%;"
                                         name="relation_with_client" data-value="" tabindex="-1"
                                         aria-hidden="true">
-                                        <option value="Mother">Mother</option>
-                                        <option value="Father">Father</option>
-                                        <option value="Wife">Wife</option>
-                                        <option value="Husband">Husband</option>
-                                        <option value="Brother">Brother</option>
-                                        <option value="Sister">Sister</option>
-                                        <option value="Other">Other</option>
+                                        <option value="" {{ old('relation_with_client') == '' ? 'selected' : '' }}>Select Relationship</option>
+                                        <option value="Mother" {{ old('relation_with_client') == 'Mother' ? 'selected' : '' }}>Mother</option>
+                                        <option value="Father" {{ old('relation_with_client') == 'Father' ? 'selected' : '' }}>Father</option>
+                                        <option value="Wife" {{ old('relation_with_client') == 'Wife' ? 'selected' : '' }}>Wife</option>
+                                        <option value="Husband" {{ old('relation_with_client') == 'Husband' ? 'selected' : '' }}>Husband</option>
+                                        <option value="Brother" {{ old('relation_with_client') == 'Brother' ? 'selected' : '' }}>Brother</option>
+                                        <option value="Sister" {{ old('relation_with_client') == 'Sister' ? 'selected' : '' }}>Sister</option>
+                                        <option value="Other" {{ old('relation_with_client') == 'Other' ? 'selected' : '' }}>Other</option>
                                     </select>
+                                    @error('relation_with_client')
+                                    <label class="control-label" style='color:red;'><i
+                                                    class="fa fa-times-circle-o"></i>
+                                                {{ $message }}</label>
+    @enderror
                                 </div>
                                 @include('livewire.text-input', [
                                     'label' => 'Nominee Aadhar',
                                     'name' => 'nominee_aadhar',
-                                    'isRequired' => true,
+                                    'value'=>old('nominee_aadhar'),
                                 ])
                                 @include('livewire.text-input', [
                                     'label' => 'Nominee Voter ID',
                                     'name' => 'nominee_voter_id',
-                                    'isRequired' => true,
+                                    'value'=>old('nominee_voter_id'),
                                 ])
                                 @include('livewire.text-input', [
                                     'label' => 'Nominee Other Number',
                                     'name' => 'nominee_other_id',
-                                    'isRequired' => true,
+                                    'value'=>old('nominee_other_id'),
                                 ])
                             </div>
                             <div class="col-12 col-md-6 col-lg-6">
                                 @include('livewire.text-input', [
                                     'label' => 'Nominee mobile',
                                     'name' => 'nominee_mobile',
-                                    'isRequired' => true,
                                 ])
                                 @include('livewire.text-input', [
                                     'label' => 'Nominee dob',
                                     'name' => 'nominee_dob',
-                                    'isRequired' => true,
                                 ])
                                 <div class="">
                                     <label for="nominee_aadhar_img" class="  control-label">Nominee Aadhar
@@ -516,28 +535,29 @@
                                 @include('livewire.text-input', [
                                     'label' => 'Account Holder name',
                                     'name' => 'account_holder_name',
-                                    'isRequired' => true,
+                                    'value'=>old('nominee_name'),
                                 ])
                                 @include('livewire.text-input', [
                                     'label' => 'Account Number',
                                     'name' => 'account_number',
-                                    'isRequired' => true,
+                                    'value'=>old('nominee_name'),
                                 ])
                                 @include('livewire.text-input', [
                                     'label' => 'Bank Name',
                                     'name' => 'bank_name',
-                                    'isRequired' => true,
+                                    'value'=>old('bank_name'),
                                 ])
                             </div>
                             <div class="col-12 col-md-6 col-lg-6"> @include('livewire.text-input', [
                                 'label' => 'IFSC Code',
                                 'name' => 'ifsc_number',
-                                'isRequired' => true,
+                                'value'=>old('ifsc_number'),
                             ])
                                 @include('livewire.text-input', [
                                     'label' => 'Branch Name',
                                     'name' => 'branch_name',
-                                    'isRequired' => true,
+                                    'value'=>old('branch_name'),
+
                                 ])</div>
                         </div>
 
