@@ -415,14 +415,14 @@ class MemberController extends AdminController
             'no_of_children' => 'required',
             'smartcard_no' => 'required',
             'voter_id' => 'required',
-            // 'smartcard_img' => 'required',
-            // 'voterid_img' => 'required',
+            'smartcard_img' => 'required',
+            'voterid_img' => 'required',
             'nominee_name' => 'required',
             'relation_with_client' => 'required',
             'nominee_aadhar' => 'required',
             // 'nominee_mobile' => 'required',
             'nominee_dob' => 'required',
-            // 'nominee_aadhar_img' => 'required',
+            'nominee_aadhar_img' => 'required',
             // 'account_holder_name' => 'required',
             // 'account_number' => 'required',
             // 'bank_name' => 'required',
@@ -493,8 +493,10 @@ class MemberController extends AdminController
             // $path now contains the path where the file is stored
             $input['nominee_other_img'] = $path;
         }
+        $center = Center::where('id',$input['center_id'])->first();
+        $input['staff_id'] = $center->employee_id;
         Member::create($input);
         admin_toastr('Member Created Successfully', 'success');
-        return redirect('members');
+        return redirect('/admin/members');
     }
 }

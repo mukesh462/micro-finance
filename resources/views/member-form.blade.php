@@ -7,7 +7,6 @@
     <script src="{{ asset('/vendor/laravel-admin/bootstrap-fileinput/js/fileinput.min.js') }}"></script>
     <script src="{{ asset('/vendor/laravel-admin/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}">
     </script>
-    <script src="{{ asset('/select2/dist/js/select2.min.js') }}"></script>
 
     <style>
         .select2 {
@@ -623,17 +622,23 @@
             downClass: 'default',
             center: true
         });
+        var today = moment();
+        var minDate = today.clone().subtract(60, 'years').startOf('day');
+        var maxDate = today.clone().subtract(18, 'years').endOf('day');
+
         $('#dob').datetimepicker({
             format: 'DD-MM-YYYY',
-
+            minDate: minDate,
+            maxDate: maxDate
         })
         $('#nominee_dob').datetimepicker({
             format: 'DD-MM-YYYY',
+            minDate: minDate,
+            maxDate: maxDate
 
         })
         $('#date_of_joined').datetimepicker({
             format: 'DD-MM-YYYY',
-
         })
         $('#gender').select2()
         $('#commu').select2()
