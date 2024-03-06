@@ -31,9 +31,8 @@
     </div>
     <div class="form-group" style="margin: 0;max-width: 100% !important;">
 
-        <label for="up-{{ $img }}"
-            class="control-label  @isset($required) asterisk @endisset" style='text-align:left'>
-            Select {{ $label }}
+        <label for="up-{{ $img }}" class="control-label  {{ $isRequired ? 'asterisk' : '' }}" style='text-align:left'>
+            {{ $label }}
         </label>
 
 
@@ -42,7 +41,7 @@
                 style='text-align:left;   white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;color:grey;font-size:small'>
-                Select {{ $label }}
+            {{ $label }}
             </label>
             <input type="file" style="display: none;" id="up-{{ $img }}" wire:model="{{ $img }}"
                 class="form-control" name="{{ $img }}" accept="image/*">

@@ -1,7 +1,7 @@
 <div class="form-group" style='margin:0!important'>
 
-    <label for="{{ $name }}" class="control-label"
-        style='margin-top:5px'>{{ $label }}</label>
+<label for="{{ $name }}" class="{{ $isRequired ? 'asterisk' : '' }} control-label" style="margin-top:5px">{{ $label }}</label>
+
 
     <div class="">
 
@@ -12,8 +12,8 @@
 
             <input type="text" id="{{ $name }}" name="{{ $name }}" wire:model="{{ $name }}"
                 wire:model.blur="{{ $name }}" value="{{old($name)}}" class="form-control "
-                @isset($disabled)
-                    disabled
+                @isset($readonly)
+                readonly
                 @endisset
                 placeholder="{{ $label }}">
         </div>

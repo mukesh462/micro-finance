@@ -16,6 +16,7 @@ use Encore\Admin\Widgets\Box;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 
 class MemberController extends AdminController
 {
@@ -385,10 +386,11 @@ class MemberController extends AdminController
     }
     public function MemberformSave(Request $request)
     {
-        $validated = $request->validate([
+        $input = $request->all();
+        $validator = Validator::make($request->all(), [
             'client_name' => 'required',
             'dob' => 'required',
-            'gender' => 'required',
+            // 'gender' => 'required',
             'address' => 'required',
             'community' => 'required',
             'qualification' => 'required',
@@ -396,11 +398,11 @@ class MemberController extends AdminController
             'home_status' => 'required',
             'status' => 'required',
             'center_id' => 'required',
-            'image' => 'required',
-            'age' => 'required',
+            // 'image' => 'required',
+            // 'age' => 'required',
             'phone_number' => 'required',
-            'city' => 'required',
-            'pincode' => 'required',
+            // 'city' => 'required',
+            // 'pincode' => 'required',
             'religion' => 'required',
             'marital_status' => 'required',
             'monthly_expenses' => 'required',
@@ -413,20 +415,25 @@ class MemberController extends AdminController
             'no_of_children' => 'required',
             'smartcard_no' => 'required',
             'voter_id' => 'required',
-            'smartcard_img' => 'required',
-            'voterid_img' => 'required',
+            // 'smartcard_img' => 'required',
+            // 'voterid_img' => 'required',
             'nominee_name' => 'required',
             'relation_with_client' => 'required',
             'nominee_aadhar' => 'required',
-            'nominee_mobile' => 'required',
+            // 'nominee_mobile' => 'required',
             'nominee_dob' => 'required',
-            'nominee_aadhar_img' => 'required',
-            'account_holder_name' => 'required',
-            'account_number' => 'required',
-            'bank_name' => 'required',
-            'ifsc_number' => 'required',
-            'branch_name' => 'required',
+            // 'nominee_aadhar_img' => 'required',
+            // 'account_holder_name' => 'required',
+            // 'account_number' => 'required',
+            // 'bank_name' => 'required',
+            // 'ifsc_number' => 'required',
+            // 'branch_name' => 'required',
         ]);
+        if ($validator->fails()) {
+            return redirect('/admin/member/create')
+                        ->withErrors($validator)
+                        ->withInput();
+        }
 
         if($request->hasFile('image')) {
             $file = $request->file('image'); // Assuming 'image' is the name of the input field
@@ -487,8 +494,7 @@ class MemberController extends AdminController
             $input['nominee_other_img'] = $path;
         }
         Member::create($input);
-
         admin_toastr('Member Created Successfully', 'success');
-        return redirect('/admin/members');
+        return redirect('members');
     }
 }
