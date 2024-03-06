@@ -91,6 +91,7 @@
                                     @include('livewire.text-input', [
                                         'label' => 'DOB',
                                         'name' => 'dob',
+                                        'id'=>'dob',
                                         'isRequired' => true,
                                         'value'=> old('dob')
                                     ])
@@ -133,7 +134,7 @@
                                 </div>
                                 <div class="form-group  " style="margin: 0;">
 
-                                    <label for="community" class=" asterisk control-label">Community</label>
+                                    <label for="community" class="asterisk control-label">Community</label>
 
                                     <div class="">
                                         <select class="form-control community " style="width: 100%;" name="community">
@@ -245,9 +246,9 @@
                                     <div class="">
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="fa fa-pencil fa-fw"></i></span>
-                                            <input id="age" readonly="" disabled="" type="text"
-                                                name="age" value="" class="form-control age"
-                                                placeholder="Input Age">
+                                            <input id="age"  type="text"
+                                                name="age" value="{{old('age')}}" class="form-control age"
+                                                placeholder="Input Age" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -325,7 +326,8 @@
                                     @include('livewire.text-input', [
                                         'label' => 'Date of joined',
                                         'name' => 'date_of_joined',
-                                        'value' => old('date_of_joined')
+                                        'value' => old('date_of_joined'),
+                                        'id'=>"date_of_joined"
                                     ])
                                 </div>
                             </div>
@@ -503,27 +505,41 @@
                                 @include('livewire.text-input', [
                                     'label' => 'Nominee mobile',
                                     'name' => 'nominee_mobile',
+                                    'value'=>old('nominee_mobile')
                                 ])
                                 @include('livewire.text-input', [
                                     'label' => 'Nominee dob',
                                     'name' => 'nominee_dob',
+                                    'id'=>'nominee_dob',
+                                    'value'=>old('nominee_dob')
                                 ])
+
                                 <div class="">
-                                    <label for="nominee_aadhar_img" class="  control-label">Nominee Aadhar
-                                        Photo</label>
-                                    <input class=" form-control" name="nominee_aadhar_img" id="nominee_aadhar_img"
-                                        placeholder="Select image">
+                                    @include('livewire.image-uploader', [
+                                        'img' => 'nominee_aadhar_img',
+                                        'label' => 'Nominee Aadhar
+                                        Photo',
+                                        'value' => old('nominee_aadhar_img') ? old('nominee_aadhar_img') : '',
+                                         "name" =>"nominee_aadhar_img"
+                                    ])
+                                </div>
+
+                                <div class="">
+                                    @include('livewire.image-uploader', [
+                                        'img' => 'nominee_voter_img',
+                                        'label' => 'Nominee VoterID
+                                        Photo',
+                                        'value' => old('nominee_voter_img') ? old('nominee_voter_img') : '',
+                                         "name" =>"nominee_voter_img"
+                                    ])
                                 </div>
                                 <div class="">
-                                    <label for="nominee_voter_img" class="  control-label">Nominee VoterID
-                                        Photo</label>
-                                    <input class=" form-control" name="nominee_voter_img" id="nominee_voter_img"
-                                        placeholder="Select image">
-                                </div>
-                                <div class="">
-                                    <label for="nominee_other_img" class="  control-label">Nominee Other Photo</label>
-                                    <input class=" form-control" name="nominee_other_img" id="nominee_other_img"
-                                        placeholder="Select image">
+                                    @include('livewire.image-uploader', [
+                                        'img' => 'nominee_other_img',
+                                        'label' => 'Nominee Other Photo',
+                                        'value' => old('nominee_other_img') ? old('nominee_other_img') : '',
+                                         "name" =>"nominee_other_img"
+                                    ])
                                 </div>
                             </div>
                         </div>
@@ -602,6 +618,14 @@
                 center: true
             });
             $('#dob').datetimepicker({
+                format: 'DD-MM-YYYY',
+
+            })
+            $('#nominee_dob').datetimepicker({
+                format: 'DD-MM-YYYY',
+
+            })
+            $('#date_of_joined').datetimepicker({
                 format: 'DD-MM-YYYY',
 
             })

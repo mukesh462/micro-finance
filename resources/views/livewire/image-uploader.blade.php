@@ -41,7 +41,7 @@
             <label id='mas{{ $img }}' for="up-{{ $img }}" class=" form-control "
                 style='text-align:left;   white-space: nowrap;
                 overflow: hidden;
-                text-overflow: ellipsis;'>
+                text-overflow: ellipsis;color:grey;font-size:small'>
                 Select {{ $label }}
             </label>
             <input type="file" style="display: none;" id="up-{{ $img }}" wire:model="{{ $img }}"
