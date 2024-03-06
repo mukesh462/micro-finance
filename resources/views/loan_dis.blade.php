@@ -185,8 +185,10 @@
                     </button>
                     <form style="display: inline;" action="{{admin_url('loan_disbrusment')}}" method="post">
                         <input type="hidden" name="data" id="sendVal">
-                        <input type="hidden" name="dis_mode">
-                        <input type="hidden" name="first_due">
+                        <input type="hidden" name="dis_mode" id="dis_type_field">
+                        <input type="hidden" name="first_due" id="first_due_field">
+                        <input type="hidden" name="fund" value="" id="select_fund">
+
 
                         @csrf
                         <button id="" class="btn btn-primary">
@@ -206,9 +208,6 @@
                 Center
             </label>
             <select name="" class="form-control" id="Center">
-
-
-
             </select>
         </div>
         <div class="col-12 col-md-3 col-lg-3">
@@ -245,22 +244,23 @@
             <input type="text" class="form-control" id='index_date' disabled>
         </div>
         <div class="col-12 col-md-3 col-lg-3">
-            <label for="">Select
+            <label for="fund" id="fund-error">Select
                 Fund
             </label>
-            <select name="" class="form-control" id="">
+            <select name="" class="form-control" id="fund">
+            <option selected disabled >---Select Fund---</option>
                 <option value="Own">Own</option>
                 <option value="Lease">Lease</option>
 
             </select>
         </div>
         <div class="col-12 col-md-3 col-lg-3">
-            <label for="">Disbursal Type
-
+            <label for="type" id="type-error">Disbursal Type
             </label>
-            <select name="" class="form-control" id="">
-                <option value="">Bank</option>
-                <option value="">Cash In Hand</option>
+            <select name="" class="form-control" id="type"  >
+            <option selected disabled  >---Select Type---</option>
+                <option value="Bank">Bank</option>
+                <option value="Cash In Hand">Cash In Hand</option>
 
             </select>
         </div>
@@ -269,6 +269,12 @@
 
             </label>
             <input type="text" class="form-control" value="0" id='approve' disabled>
+        </div>
+         <div class="col-12  col-md-3 col-lg-3">
+            <label for="Due" id="Due-error">First Due
+
+            </label>
+            <input type="text" class="form-control"  id="Due" onfocus="removeError(this)" >
         </div>
         <div class="col-12  col-md-3 col-lg-3 search-btn">
             <button class="btn btn-info" id='search-btn' type='button' onclick='submitBtn()'><i
@@ -305,12 +311,19 @@
         </table>
     </div>
 </div>
+    <script src="{{ asset('/vendor/laravel-admin/moment/min/moment-with-locales.min.js') }}"></script>
 
-
+  <script
+        src="{{ asset('/vendor/laravel-admin/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}">
+    </script>
 <script src="{{ asset('/select2/dist/js/select2.min.js') }}"></script>
 <script>
     var center = $("#Center");
     var index = $("#Index");
+    $('#fund').on('change',function (){
+        // console.log($(this).val(),'jhgyhgfgffty')
+        $('#select_fund').val($(this).val())
+    })
     const submitBtn = () => {
 
         //  console.log(index, ' in ')
@@ -328,9 +341,19 @@
         {
             value: index.val(),
             id: "Index",
+        },{
+            value:$('#fund').val(),
+            id:'fund'
+        },
+        {
+            value:$('#type').val(),
+            id:'type'
+        }, {
+            value:$('#Due').val(),
+            id:'Due'
         }
         ];
-        console.log(checkField(valObj), 'jgyguyyg');
+        // console.log(checkField(valObj), 'jgyguyyg');
         if (checkField(valObj)) {
             $('.total').text($('.total_amount').val())
 
@@ -416,7 +439,7 @@
     };
 
     $('#Center').on('change', function () {
-        console.log($(this).val(), 'hkjh')
+        // console.log($(this).val(), 'hkjh')
         if ($(this).val() != '') {
             $.ajax({
                 url: "/get-data",
@@ -477,17 +500,14 @@
     };
     $('#Index').select2()
     $('#Index').on('change', function () {
-        console.log($(this).val(), 'value')
+        // console.log($(this).val(), 'value')
         if ($(this).val() != '' && $(this).val() != null) {
             const selectedVal = JSON.parse($(this).find(':selected').attr('data-value'));
             console.log($(this).find(':selected').attr('data-value'), 'seleceted');
             $('#index_date').val(selectedVal.index_date);
             $('#total_member').val(selectedVal.total_member);
             $('.total_amount').val(selectedVal.total_amount);
-
-
         }
-
 
     })
     $(document).on("select2:open", (e) => {
@@ -511,7 +531,14 @@
         $('.total_amount').val('');
         $("#myModal").modal("hide");
         $('#list-table').html('')
-        $('.total').text('0')
+        $('.total').text('0');
+ 
+ 
+        $('#fund').val(null).trigger('change');
+        $('#type').val(null).trigger('change');
+
+
+
 
 
     })
@@ -559,5 +586,22 @@
         $('#approve').val(checkCount);
 
     });
+    $('#type').select2();
+    $('#fund').select2();
+
+    $('#type').on('change',function(){
+        console.log($(this).val())
+        $('#dis_type_field').val($(this).val())
+    })
+    $('#Due').on('blur',function(){
+        // console.log($(this).val())
+        $('#first_due_field').val($(this).val())
+    })
+    $('#first_due_field').val($('#Due').val())
+      $('#Due').datetimepicker({
+                format: 'DD-MM-YYYY',
+                 minDate:new Date()
+
+            })
 
 </script>
