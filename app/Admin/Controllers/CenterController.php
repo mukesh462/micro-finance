@@ -101,17 +101,42 @@ class CenterController extends AdminController
         // $center = Center::whereNot('id', request()->segment(3))->pluck('employee_id')->toArray();
         // $employees = Employee::where('status', 1)->whereNotIn('id', $center)->pluck('staff_name', 'id');
         // }
+        $dayNames = array(
+            0 => 'Sunday',
+            1 => 'Monday',
+            2 => 'Tuesday',
+            3 => 'Wednesday',
+            4 => 'Thursday',
+            5 => 'Friday',
+            6 => 'Saturday'
+        );
         if (request()->segment(3) == 'create#tab-form-1' || request()->segment(3) == 'create') {
             $form->display('Center Id')->value(is_object($checkId) ? "00" . $checkId->id + 1 : "001");
         } else {
         }
         $form->text('center_name', __('Center Name'))->rules('required');
+        $form->radio('center_name', __('Center Name'))->options([1 => 'Week', 2 => '14 Days', 3 => 'Month'])->when(1, function (Form $form) use ($dayNames) {
+            $form->select('name', 'Select day')->options($dayNames)->attribute(['id' => 'day_select']);
+            $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "day-id"])->readonly();
+            // $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "dagy-id"])->readonly();
+            $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
+        })->when(2, function (Form $form) use ($dayNames) {
+            $form->select('name', 'Select day')->options($dayNames)->attribute(['id' => '14-day-select']);
+            $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "14day-id"])->readonly();
+            // $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "dagy-id"])->readonly();
+            $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
+        })->when(3, function (Form $form) use ($dayNames) {
+            // $form->select('name', 'Select Day')->options($dayNames)->attribute(['id' => '14-day-select']);
+            $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->minDate(date('DD-MM-YYYY'))->attribute(['id' => "month-id"]);
+            $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "month-id"])->readonly();
+            $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
+        })->rules('required');
+
+        $form->date('formation_date', __('Formation Date'))->format('DD-MM-YYYY')->default(date('d-m-Y'))->rules(['required', 'date']);
         $form->text('center_address', __('Center Address'))->rules('required');
         $form->select('employee_id', __('Select Employee'))->options($employees)->rules('required');
-        $form->date('formation_date', __('Formation Date'))->format('DD-MM-YYYY')->default(date('d-m-Y'))->rules(['required', 'date']);
-        $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "meeting-date"]);
-        $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "day-id"])->readonly();
-        $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
+
+
         $form->text('meeting_place', __('Meeting Place'))->rules('required');
         $form->text('mobile_number', 'Mobile Number')->rules('required|regex:/^[0-9]+$/|min:10');
         $form->tools(function (Form\Tools $tools) {
