@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Actions\Post\memberEdit;
 use App\Models\Center;
 use App\Models\Employee;
 use App\Models\Member;
@@ -107,12 +108,20 @@ class MemberController extends AdminController
         // $grid->column('updated_at', __('Updated at'));
         $grid->actions(function ($actions) {
             $actions->disableDelete();
-            // $actions->disableEdit();
+            $actions->disableEdit();
             $actions->disableView();
+            $actions->add(new memberEdit);
         });
         $grid->disableBatchActions();
         $grid->disableColumnSelector();
         $grid->disableExport();
+        $grid->disableCreateButton();
+
+        $grid->tools(function ($tools) {
+            $tools->append('<a href="/admin/member/create" class="btn btn-sm btn-success" title="New">
+            <i class="fa fa-plus"></i><span class="hidden-xs">&nbsp;&nbsp;New</span>
+        </a>');
+        });
         $grid->filter(function ($filter) {
             // Remove the default id filter
             $center = Center::select(DB::raw('CONCAT("00",id, " - ", center_name) as center_name'), 'id')
@@ -431,39 +440,39 @@ class MemberController extends AdminController
         ]);
         if ($validator->fails()) {
             return redirect('/admin/member/create')
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
 
-        if($request->hasFile('image')) {
+        if ($request->hasFile('image')) {
             $file = $request->file('image'); // Assuming 'image' is the name of the input field
             $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
             $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
             // $path now contains the path where the file is stored
             $input['photo'] = $path;
         }
-        if($request->hasFile('smartcard_img')) {
+        if ($request->hasFile('smartcard_img')) {
             $file = $request->file('smartcard_img'); // Assuming 'image' is the name of the input field
             $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
             $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
             // $path now contains the path where the file is stored
             $input['smartcard_img'] = $path;
         }
-        if($request->hasFile('voterid_img')) {
+        if ($request->hasFile('voterid_img')) {
             $file = $request->file('voterid_img'); // Assuming 'image' is the name of the input field
             $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
             $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
             // $path now contains the path where the file is stored
             $input['voterid_img'] = $path;
         }
-        if($request->hasFile('aadhar_img')) {
+        if ($request->hasFile('aadhar_img')) {
             $file = $request->file('aadhar_img'); // Assuming 'image' is the name of the input field
             $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
             $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
             // $path now contains the path where the file is stored
             $input['aadhar_img'] = $path;
         }
-        if($request->hasFile('pancard_img')) {
+        if ($request->hasFile('pancard_img')) {
             $file = $request->file('pancard_img'); // Assuming 'image' is the name of the input field
             $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
             $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
@@ -472,31 +481,49 @@ class MemberController extends AdminController
         }
 
         //nominee
-        if($request->hasFile('nominee_aadhar_img')) {
+        if ($request->hasFile('nominee_aadhar_img')) {
             $file = $request->file('nominee_aadhar_img'); // Assuming 'image' is the name of the input field
             $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
             $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
             // $path now contains the path where the file is stored
             $input['nominee_aadhar_img'] = $path;
         }
-        if($request->hasFile('nominee_voter_img')) {
+        if ($request->hasFile('nominee_voter_img')) {
             $file = $request->file('nominee_voter_img'); // Assuming 'image' is the name of the input field
             $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
             $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
             // $path now contains the path where the file is stored
             $input['nominee_voter_img'] = $path;
         }
-        if($request->hasFile('nominee_other_img')) {
+        if ($request->hasFile('nominee_other_img')) {
             $file = $request->file('nominee_other_img'); // Assuming 'image' is the name of the input field
             $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
             $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
             // $path now contains the path where the file is stored
             $input['nominee_other_img'] = $path;
         }
-        $center = Center::where('id',$input['center_id'])->first();
+        $center = Center::where('id', $input['center_id'])->first();
         $input['staff_id'] = $center->employee_id;
         Member::create($input);
         admin_toastr('Member Created Successfully', 'success');
         return redirect('/admin/members');
+    }
+
+    public function MemberEdit(Request $request)
+    {
+        $id = $request->segment('3');
+        $data = Member::where('id', $id)->first();
+        if (is_object($data)) {
+            return Admin::content(function (Content $content) use ($data) {
+                // $content->header(' Loan');
+                // $content->description('Laon Disbursement end');
+
+
+                $content->body(new Box('', view('test', ['type' => 'edit','data'=>$data])));
+            });
+        }
+        else{
+            abort(404);
+        }
     }
 }

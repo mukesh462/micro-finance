@@ -11,9 +11,12 @@
             <span class="input-group-addon"><i class="fa fa-pencil fa-fw"></i></span>
 
             <input type="text" id="{{ $name }}" name="{{ $name }}" wire:model="{{ $name }}"
-                wire:model.blur="{{ $name }}" value="{{old($name)}}" class="form-control "
+                wire:model.blur="{{ $name }}" value="{{$value}}" class="form-control "
                 @isset($readonly)
                 readonly
+                @endisset
+                @isset($autoComplete)
+                autocomplete="off"
                 @endisset
                 placeholder="{{ $label }}">
         </div>

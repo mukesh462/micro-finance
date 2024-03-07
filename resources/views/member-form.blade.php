@@ -29,7 +29,17 @@
     }else{
     $member_id = 1;
     }
+    $dat = $data->dob ?? '';
     @endphp
+    <div class="box-header with-border">
+        <h3 class="box-title">{{$type}}</h3>
+
+        <div class="box-tools">
+            <div class="btn-group pull-right" style="margin-right: 5px">
+                <a href="/admin/members" class="btn btn-sm btn-default" title="List"><i class="fa fa-list"></i><span class="hidden-xs">&nbsp;List</span></a>
+            </div>
+        </div>
+    </div>
     <form action="/admin/member/save" method="post" enctype="multipart/form-data">
 
         <div class="box-body">
@@ -71,16 +81,22 @@
                                     <div class="box box-solid box-default no-margin">
                                         <!-- /.box-header -->
                                         <div class="" style="padding: 6px;">
+                                            @if($type == "edit")
+                                            {{$data->id}}
+                                            @else
                                             {{$member_id}}
+                                            @endif
+
                                         </div><!-- /.box-body -->
                                     </div>
                                 </div>
+
                                 <div class="">
                                     @include('livewire.text-input', [
                                     'label' => 'Member name',
                                     'name' => 'client_name',
                                     'isRequired' => true,
-                                    'value'=> old('client_name')
+                                    'value' => old('client_name', isset($data) ? $data->client_name : '')
                                     ])
                                 </div>
                                 <div class="">
@@ -89,7 +105,8 @@
                                     'name' => 'dob',
                                     'id'=>'dob',
                                     'isRequired' => true,
-                                    'value'=> old('dob')
+                                    'value' => old('dob', isset($data) ? $data->dob : ''),
+                                    'autoComplete'=>true
                                     ])
 
                                 </div>
@@ -98,12 +115,13 @@
                                 <div class="  " style="margin: 0!important;width:100%">
                                     <label for="gender" class="asterisk  control-label">Gender</label>
                                     <div class="">
-                                        <select class=" gender " wire:ignore wire:mode="gender" id="gender" name="gender">
-                                            <option value="" {{ old('gender') == '' ? 'selected' : '' }}>--- Select Gender ---</option>
-                                            <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
-                                            <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
-                                            <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
+                                        <select class="gender" wire:ignore wire:mode="gender" id="gender" name="gender">
+                                            <option value="">--- Select Gender ---</option>
+                                            <option value="Male" {{ (old('gender') == 'Male' || (isset($data) && $data->gender == 'Male')) ? 'selected' : '' }}>Male</option>
+                                            <option value="Female" {{ (old('gender') == 'Female' || (isset($data) && $data->gender == 'Female')) ? 'selected' : '' }}>Female</option>
+                                            <option value="Other" {{ (old('gender') == 'Other' || (isset($data) && $data->gender == 'Other')) ? 'selected' : '' }}>Other</option>
                                         </select>
+
                                         @error('gender')
                                         <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
                                             {{ $message }}</label>
@@ -116,31 +134,28 @@
                                     'label' => 'Address',
                                     'name' => 'address',
                                     'isRequired' => true,
-                                    'value'=> old('address'),
+                                    'value'=> old('address', isset($data) ? $data->address : ''),
                                     ])
-
                                 </div>
                                 <div class="">
                                     @include('livewire.text-input', [
                                     'label' => 'State',
                                     'name' => 'state',
-                                    'value' => old('state'),
-                                    'isRequired' => true,
+                                    'value'=> old('state', isset($data) ? $data->state : ''),
+                                    'isRequired' => false,
                                     ])
                                 </div>
                                 <div class="form-group  " style="margin: 0;">
-
                                     <label for="community" class="asterisk control-label">Community</label>
-
                                     <div class="">
                                         <select id="commu" class="form-control community" style="width: 100%;" name="community">
-                                            <option value="" {{ old('community') == '' ? 'selected' : '' }}>Select Community</option>
-                                            <option value="BC" {{ old('community') == 'BC' ? 'selected' : '' }}>BC</option>
-                                            <option value="MBC" {{ old('community') == 'MBC' ? 'selected' : '' }}>MBC</option>
-                                            <option value="SC" {{ old('community') == 'SC' ? 'selected' : '' }}>SC</option>
-                                            <option value="ST" {{ old('community') == 'ST' ? 'selected' : '' }}>ST</option>
-                                            <option value="Other" {{ old('community') == 'Other' ? 'selected' : '' }}>Other</option>
-                                            <option value="Not prefer to say" {{ old('community') == 'Not prefer to say' ? 'selected' : '' }}>Not prefer to say</option>
+                                            <option value="" {{ (old('community') == '' || (isset($data) && $data->community == '')) ? 'selected' : '' }}>Select Community</option>
+                                            <option value="BC" {{ (old('community') == 'BC' || (isset($data) && $data->community == 'BC')) ? 'selected' : '' }}>BC</option>
+                                            <option value="MBC" {{ (old('community') == 'MBC' || (isset($data) && $data->community == 'MBC')) ? 'selected' : '' }}>MBC</option>
+                                            <option value="SC" {{ (old('community') == 'SC' || (isset($data) && $data->community == 'SC')) ? 'selected' : '' }}>SC</option>
+                                            <option value="ST" {{ (old('community') == 'ST' || (isset($data) && $data->community == 'ST')) ? 'selected' : '' }}>ST</option>
+                                            <option value="Other" {{ (old('community') == 'Other' || (isset($data) && $data->community == 'Other')) ? 'selected' : '' }}>Other</option>
+                                            <option value="Not prefer to say" {{ (old('community') == 'Not prefer to say' || (isset($data) && $data->community == 'Not prefer to say')) ? 'selected' : '' }}>Not prefer to say</option>
                                         </select>
                                         @error('community')
                                         <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
@@ -154,13 +169,14 @@
 
                                     <div class="">
                                         <select id="quali" class="form-control" name="qualification" tabindex="-1" aria-hidden="true">
-                                            <option value="" {{ old('qualification') == '' ? 'selected' : '' }}>Select qualification</option>
-                                            <option value="SSLC" {{ old('qualification') == 'SSLC' ? 'selected' : '' }}>SSLC</option>
-                                            <option value="HSC" {{ old('qualification') == 'HSC' ? 'selected' : '' }}>HSC</option>
-                                            <option value="UG" {{ old('qualification') == 'UG' ? 'selected' : '' }}>UG</option>
-                                            <option value="PG" {{ old('qualification') == 'PG' ? 'selected' : '' }}>PG</option>
-                                            <option value="Other" {{ old('qualification') == 'Other' ? 'selected' : '' }}>Other</option>
+                                            <option value="" {{ (old('qualification') == '' || (isset($data) && $data->qualification == '')) ? 'selected' : '' }}>Select qualification</option>
+                                            <option value="SSLC" {{ (old('qualification') == 'SSLC' || (isset($data) && $data->qualification == 'SSLC')) ? 'selected' : '' }}>SSLC</option>
+                                            <option value="HSC" {{ (old('qualification') == 'HSC' || (isset($data) && $data->qualification == 'HSC')) ? 'selected' : '' }}>HSC</option>
+                                            <option value="UG" {{ (old('qualification') == 'UG' || (isset($data) && $data->qualification == 'UG')) ? 'selected' : '' }}>UG</option>
+                                            <option value="PG" {{ (old('qualification') == 'PG' || (isset($data) && $data->qualification == 'PG')) ? 'selected' : '' }}>PG</option>
+                                            <option value="Other" {{ (old('qualification') == 'Other' || (isset($data) && $data->qualification == 'Other')) ? 'selected' : '' }}>Other</option>
                                         </select>
+
                                         @error('qualification')
                                         <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
                                             {{ $message }}</label>
@@ -171,7 +187,7 @@
                                     @include('livewire.text-input', [
                                     'label' => 'Monthly income',
                                     'name' => 'monthly_income',
-                                    'value' => old('monthly_income'),
+                                    'value' => old('monthly_income',isset($data) ? $data->monthly_income : ''),
                                     'isRequired' => true,
                                     ])
 
@@ -179,11 +195,11 @@
                                 <div class="form-group" style="margin: 0;">
                                     <label for="home_status" class=" asterisk control-label">Home status</label>
                                     <div class="">
-                                        <select id="home_sta" class="form-control home_status " style="width: 100%;" name="home_status">
-                                            <option value="" {{ old('home_status') == '' ? 'selected' : '' }}>Select Home Status</option>
-                                            <option value="Own" {{ old('home_status') == 'Own' ? 'selected' : '' }}>Own</option>
-                                            <option value="Rent" {{ old('home_status') == 'Rent' ? 'selected' : '' }}>Rent</option>
-                                            <option value="Lease" {{ old('home_status') == 'Lease' ? 'selected' : '' }}>Lease</option>
+                                        <select id="home_sta" class="form-control home_status" style="width: 100%;" name="home_status">
+                                            <option value="" {{ (old('home_status') == '' || (isset($data) && $data->home_status == '')) ? 'selected' : '' }}>Select Home Status</option>
+                                            <option value="Own" {{ (old('home_status') == 'Own' || (isset($data) && $data->home_status == 'Own')) ? 'selected' : '' }}>Own</option>
+                                            <option value="Rent" {{ (old('home_status') == 'Rent' || (isset($data) && $data->home_status == 'Rent')) ? 'selected' : '' }}>Rent</option>
+                                            <option value="Lease" {{ (old('home_status') == 'Lease' || (isset($data) && $data->home_status == 'Lease')) ? 'selected' : '' }}>Lease</option>
                                         </select>
                                         @error('home_status')
                                         <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
@@ -193,12 +209,12 @@
                                 </div>
                                 <div class="form-group" style="margin: 0;">
                                     <label for="status" class=" asterisk control-label">Member status</label>
-                                    <select id="mem_status" class="form-control status " name="status">
-                                        <option value="" {{ old('status') == '' ? 'selected' : '' }}>Select Member Status</option>
-                                        <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Active</option>
-                                        <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>In Active</option>
-
+                                    <select id="mem_status" class="form-control status" name="status">
+                                        <option value="" {{ (old('status') == '' || (isset($data) && $data->status === null)) ? 'selected' : '' }}>Select Member Status</option>
+                                        <option value="1" {{ (old('status') == '1' || (isset($data) && $data->status == 1)) ? 'selected' : '' }}>Active</option>
+                                        <option value="0" {{ (old('status') == '0' || (isset($data) && $data->status == 0)) ? 'selected' : '' }}>In Active</option>
                                     </select>
+
                                     @error('status')
                                     <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
                                         {{ $message }}</label>
@@ -210,10 +226,12 @@
                                     <label for="center_id" class="asterisk control-label">Select Center
                                     </label>
                                     <div class="">
-                                        <select id="center_id" wire:model='center_id' class="form-control center_id " style="" name="center_id" data-value="" id="center_id" tabindex="-1" aria-hidden="true" name="center_id">
+                                        <select id="center_id" class="form-control center_id" name="center_id" data-value="" id="center_id" tabindex="-1" aria-hidden="true" name="center_id">
                                             <option value="" {{ old('center_id') == '' ? 'selected' : '' }}>--- Select Center ---</option>
                                             @foreach ($centers as $value)
-                                            <option value="{{ $value->id}}" {{ old('center_id') == $value->id ? 'selected' : ''}}>{{ $value->center_name }}</option>
+                                            <option value="{{ $value->id }}" {{ (old('center_id') == $value->id || (isset($data) && $data->center_id == $value->id)) ? 'selected' : '' }}>
+                                                {{ $value->center_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                         @error('center_id')
@@ -626,11 +644,18 @@
         var minDate = today.clone().subtract(60, 'years').startOf('day');
         var maxDate = today.clone().subtract(18, 'years').endOf('day');
 
-        $('#dob').datetimepicker({
+        $('#dob').val('').datetimepicker({
             format: 'DD-MM-YYYY',
             minDate: minDate,
-            maxDate: maxDate
-        })
+            useCurrent: false // Prevents setting the current date as default
+        }).on('dp.show', function() {
+            // Update maxDate on datepicker show
+            $(this).data('DateTimePicker').maxDate(maxDate);
+        });
+        let dat = "{{ $dat }}";
+        if (dat != '') {
+            $('#dob').val(dat)
+        }
         $('#nominee_dob').datetimepicker({
             format: 'DD-MM-YYYY',
             minDate: minDate,
@@ -639,6 +664,7 @@
         })
         $('#date_of_joined').datetimepicker({
             format: 'DD-MM-YYYY',
+            maxDate: moment()
         })
         $('#gender').select2()
         $('#commu').select2()
@@ -702,9 +728,9 @@
                 console.log(typeof adult, typeof child)
                 if (adult >= 0 && child >= 0) {
                     total = adult + child
-                } else if( adult >= 0){
+                } else if (adult >= 0) {
                     total = adult
-                }else if(child >= 0){
+                } else if (child >= 0) {
                     total = child
                 }
                 $("#total_family_members").val(total)

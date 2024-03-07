@@ -13,7 +13,7 @@ class HomeController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->title('Micro Finance')
+            ->title('laravel')
             // ->description('Description...')
             // ->row(Dashboard::title())
             ->row(function (Row $row) {

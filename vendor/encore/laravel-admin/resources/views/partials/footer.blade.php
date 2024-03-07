@@ -14,5 +14,5 @@
 
     </div> -->
     <!-- Default to the left -->
-    <strong>Powered by <a href="https://github.com/z-song/laravel-admin" target="_blank">Micro Finance</a></strong>
+    <strong>Powered by <a href="https://github.com/z-song/laravel-admin" target="_blank">laravel</a></strong>
 </footer>
