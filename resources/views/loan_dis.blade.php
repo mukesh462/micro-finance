@@ -248,7 +248,7 @@
                 Fund
             </label>
             <select name="" class="form-control" id="fund">
-            <option selected disabled >---Select Fund---</option>
+                <option selected disabled>---Select Fund---</option>
                 <option value="Own">Own</option>
                 <option value="Lease">Lease</option>
 
@@ -257,8 +257,8 @@
         <div class="col-12 col-md-3 col-lg-3">
             <label for="type" id="type-error">Disbursal Type
             </label>
-            <select name="" class="form-control" id="type"  >
-            <option selected disabled  >---Select Type---</option>
+            <select name="" class="form-control" id="type">
+                <option selected disabled>---Select Type---</option>
                 <option value="Bank">Bank</option>
                 <option value="Cash In Hand">Cash In Hand</option>
 
@@ -270,15 +270,14 @@
             </label>
             <input type="text" class="form-control" value="0" id='approve' disabled>
         </div>
-         <div class="col-12  col-md-3 col-lg-3">
+        <div class="col-12  col-md-3 col-lg-3">
             <label for="Due" id="Due-error">First Due
 
             </label>
-            <input type="text" class="form-control"  id="Due" onfocus="removeError(this)" >
+            <input type="text" class="form-control" id="Due" onfocus="removeError(this)">
         </div>
         <div class="col-12  col-md-3 col-lg-3 search-btn">
-            <button class="btn btn-info" id='search-btn' type='button' onclick='submitBtn()'><i
-                    class="fa fa-search"></i> Search</button>
+            <button class="btn btn-info" id="search-max" type='button'><i class="fa fa-search"></i> Search</button>
             <button class="btn btn-warning" id="rest-btn"><i class="fa fa-reset"></i> Reset</button>
         </div>
 
@@ -304,73 +303,111 @@
                 <tr>
                     <td colspan="6"></td>
                     <td class="total">0</td>
-                    <td colspan=""><button class="btn btn-warning" onclick='showSelectedData()'>Submit</button></td>
+                    <td colspan=""><button class="btn btn-warning" id="submit-button">Save</button></td>
 
                 </tr>
             </tfoot>
         </table>
     </div>
 </div>
-    <script src="{{ asset('/vendor/laravel-admin/moment/min/moment-with-locales.min.js') }}"></script>
+<script src="{{ asset('/vendor/laravel-admin/moment/min/moment-with-locales.min.js') }}"></script>
 
-  <script
-        src="{{ asset('/vendor/laravel-admin/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}">
+<script
+    src="{{ asset('/vendor/laravel-admin/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}">
     </script>
 <script src="{{ asset('/select2/dist/js/select2.min.js') }}"></script>
 <script>
-    var center = $("#Center");
-    var index = $("#Index");
-    $('#fund').on('change',function (){
-        // console.log($(this).val(),'jhgyhgfgffty')
-        $('#select_fund').val($(this).val())
-    })
-    const submitBtn = () => {
 
-        //  console.log(index, ' in ')
-        //    var member = $("#Member").val();
-        //  var plan = $("#Product").val(); 
-        //   var purpose = $("#purpose").val();
-        //   var amount = $("#product_amount").val();
 
-        // console.log(employee, 'emp');
-        const valObj = [{
-            value: center.val(),
-            id: "Center",
-        },
+    $(document).ready(function () {
+        var center = $("#Center");
+        var index = $("#Index");
+        var due = $("#Due");
+        var fund = $("#fund");
+        var type = $("#type");
+        var search = $("#search-max");
+        //   console.log(search, 'class');
+        $('#fund').on('change', function () {
+            // console.log($(this).val(),'jhgyhgfgffty')
+            $('#select_fund').val($(this).val())
+        })
+        $('#submit-button').click(function () {
+            showSelectedData()
+            console.log('wdwd');
+        })
+        var showSelectedData = () => {
+            var selectedValues = []; // Array to store the selected checkbox values
 
-        {
-            value: index.val(),
-            id: "Index",
-        },{
-            value:$('#fund').val(),
-            id:'fund'
-        },
-        {
-            value:$('#type').val(),
-            id:'type'
-        }, {
-            value:$('#Due').val(),
-            id:'Due'
+            // Loop through each checkbox with class 'checkbox'
+            $('.selected_value').each(function () {
+                // Check if the checkbox is checked
+                if ($(this).is(':checked')) {
+                    // If checked, add its value to the selectedValues array
+                    selectedValues.push(JSON.parse($(this).val()));
+                }
+            });
+            if (selectedValues.length == 0) {
+                toastr.error('Need to Approve Atleast one Employee ')
+                return;
+
+            } else {
+                $('#sendVal').val(JSON.stringify(selectedValues))
+                $('#final').modal('show')
+            }
+
+            // Display the selected values
+            console.log(selectedValues, 'dada')
         }
-        ];
-        // console.log(checkField(valObj), 'jgyguyyg');
-        if (checkField(valObj)) {
-            $('.total').text($('.total_amount').val())
+        const submitBtn = () => {
 
-            center.attr('disabled', true)
-            index.attr('disabled', true)
-            $.ajax({
-                url: "/get-data",
-                data: {
-                    id: index.val(),
-                    tp: 'index_member'
-                },
-                success: function ({
-                    results
-                }) {
-                    $('#list-table').html('')
-                    results.forEach((dat, i) => {
-                        const rowData = `<tr>
+            //  console.log(index, ' in ')
+            //    var member = $("#Member").val();
+            //  var plan = $("#Product").val(); 
+            //   var purpose = $("#purpose").val();
+            //   var amount = $("#product_amount").val();
+
+            // console.log(employee, 'emp');
+            const valObj = [{
+                value: center.val(),
+                id: "Center",
+            },
+
+            {
+                value: index.val(),
+                id: "Index",
+            }, {
+                value: $('#fund').val(),
+                id: 'fund'
+            },
+            {
+                value: $('#type').val(),
+                id: 'type'
+            }, {
+                value: $('#Due').val(),
+                id: 'Due'
+            }
+            ];
+            // console.log(checkField(valObj), 'jgyguyyg');
+            if (checkField(valObj)) {
+                $('.total').text($('.total_amount').val())
+
+                center.attr('disabled', true)
+                type.attr('disabled', true)
+                fund.attr('disabled', true)
+                due.attr('disabled', true)
+                search.attr('disabled', true)
+
+                index.attr('disabled', true)
+                $.ajax({
+                    url: "/get-data",
+                    data: {
+                        id: index.val(),
+                        tp: 'index_member'
+                    },
+                    success: function ({ results }) {
+                        $('#list-table').html('')
+                        results.forEach((dat, i) => {
+                            const rowData = `<tr>
                     <td>${i + 1}</td>
                     <td>${dat.center_name}</td>
                     <td>${dat.employee_name}</td>
@@ -387,221 +424,219 @@
 
 
 
-                </tr>`
-                        $('#list-table').append(rowData)
-                    })
+                 </tr>`
+                            $('#list-table').append(rowData)
+                        })
 
+                    }, error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(textStatus, errorThrown);
+                        search.removeAttr('disabled')
+                    }
                 }
-            });
-            $('#table_handle').show()
+
+                );
+                $('#table_handle').show()
+            }
         }
-    }
-    const addSelectData = (id, type = "staff", data = {}) => {
-        $("#" + id).select2({
-            ajax: {
-                url: "{{ route('get.data') }}",
-                dataType: "json",
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term, // search term
-                        page: params.page || 1, // page number
-                        tp: type,
-                        data,
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
+        const addSelectData = (id, type = "staff", data = {}) => {
+            $("#" + id).select2({
+                ajax: {
+                    url: "{{ route('get.data') }}",
+                    dataType: "json",
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page || 1, // page number
+                            tp: type,
+                            data,
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
 
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: params.page * 10 < data
-                                .total_count, // Adjust the limit per page as needed
-                        },
-                    };
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: params.page * 10 < data
+                                    .total_count, // Adjust the limit per page as needed
+                            },
+                        };
+                    },
+                    cache: true, // Enable caching on the client side
                 },
-                cache: true, // Enable caching on the client side
-            },
-            minimumInputLength: 2,
-            placeholder: "Select " + id,
-            // templateResult: function (data) {
-            //     if (!data.id) {
-            //         return data.text;
-            //     }
-            //     var html = '<div >' + data.text + '</div>';
-            //     html += '<div class="additional-attribute">' + data.value + '</div>';
-            //     return $(html);
-            // }
+                minimumInputLength: 2,
+                placeholder: "Select " + id,
+                // templateResult: function (data) {
+                //     if (!data.id) {
+                //         return data.text;
+                //     }
+                //     var html = '<div >' + data.text + '</div>';
+                //     html += '<div class="additional-attribute">' + data.value + '</div>';
+                //     return $(html);
+                // }
 
-            // Other options...
-        });
-    };
+                // Other options...
+            });
+        };
 
-    $('#Center').on('change', function () {
-        // console.log($(this).val(), 'hkjh')
-        if ($(this).val() != '') {
-            $.ajax({
-                url: "/get-data",
-                data: {
-                    id: $(this).val(),
-                    tp: 'index'
-                },
-                success: function ({
-                    results
-                }) {
-                    console.log(results, 'sss')
-                    $('#Index').html('')
-                    $('#Index').append(
-                        ' <option value="" disabled selected>--- Select Index ---</option>')
-                    results.forEach((e) => {
+        $('#Center').on('change', function () {
+            // console.log($(this).val(), 'hkjh')
+            if ($(this).val() != '') {
+                $.ajax({
+                    url: "/get-data",
+                    data: {
+                        id: $(this).val(),
+                        tp: 'index'
+                    },
+                    success: function ({
+                        results
+                    }) {
+                        console.log(results, 'sss')
+                        $('#Index').html('')
                         $('#Index').append(
-                            `<option data-value='${JSON.stringify(e)}' value='${e.id}'>${e.index_no}</option>`
-                        );
-                    })
+                            ' <option value="" disabled selected>--- Select Index ---</option>')
+                        results.forEach((e) => {
+                            $('#Index').append(
+                                `<option data-value='${JSON.stringify(e)}' value='${e.id}'>${e.index_no}</option>`
+                            );
+                        })
+                    }
+                });
+
+            }
+
+        })
+        addSelectData('Center', 'center')
+        const checkField = (data) => {
+
+            data.forEach((element) => {
+                // console.log(element.value, 'sdsds');
+                if (element.value == "" || element.value == null) {
+                    // console.log(member);
+                    dispalyErrorMessage(element.id);
+
                 }
+            });;
+            return data.every(e => e.value === "" || e.value !== null);
+
+        };
+        const removeError = (e) => {
+            console.log(e.id, "sdsds");
+
+            $("#" + e.id + "-error").css({
+                color: "black",
             });
+            $("#" + e.id + "-error").text("Select " + e.id);
+        };
+        var dispalyErrorMessage = (errorMessageId) => {
+            var errorMessageNewId = "#" + errorMessageId;
+            $(errorMessageNewId + "-error").css({
+                color: "red",
+            });
+            //   console.log(errorMessageId, "erferf");
 
-        }
-
-    })
-    addSelectData('Center', 'center')
-    const checkField = (data) => {
-
-        data.forEach((element) => {
-            // console.log(element.value, 'sdsds');
-            if (element.value == "" || element.value == null) {
-                // console.log(member);
-                dispalyErrorMessage(element.id);
-
+            $(errorMessageNewId + "-error").text(
+                "Select  " + errorMessageId + " is required"
+            );
+        };
+        $('#Index').select2()
+        $('#Index').on('change', function () {
+            // console.log($(this).val(), 'value')
+            if ($(this).val() != '' && $(this).val() != null) {
+                const selectedVal = JSON.parse($(this).find(':selected').attr('data-value'));
+                // console.log($(this).find(':selected').attr('data-value'), 'seleceted');
+                $('#index_date').val(selectedVal.index_date);
+                $('#total_member').val(selectedVal.total_member);
+                $('.total_amount').val(selectedVal.total_amount);
             }
-        });;
-        return data.every(e => e.value === "" || e.value !== null);
 
-    };
-    const removeError = (e) => {
-        console.log(e.id, "sdsds");
-
-        $("#" + e.id + "-error").css({
-            color: "black",
+        })
+        $(document).on("select2:open", (e) => {
+            removeError(e.target);
+            // console.log(e.target.id, 'sffsfsf');
+            document
+                .querySelector(
+                    ".select2-container--open .select2-search__field"
+                )
+                .focus();
         });
-        $("#" + e.id + "-error").text("Select " + e.id);
-    };
-    var dispalyErrorMessage = (errorMessageId) => {
-        var errorMessageNewId = "#" + errorMessageId;
-        $(errorMessageNewId + "-error").css({
-            color: "red",
+        $('#rest-form').on('click', function () {
+            $('#table_handle').hide()
+
+            center.removeAttr('disabled')
+            index.removeAttr('disabled')
+            fund.removeAttr('disabled')
+            type.removeAttr('disabled')
+            due.removeAttr('disabled')
+            search.removeAttr('disabled')
+
+
+
+            $('#Center').val(null).trigger('change');
+            $('#Index').val(null).trigger('change');
+            $('#index_date').val('');
+            $('#total_member').val('');
+            $('.total_amount').val('');
+            $("#myModal").modal("hide");
+            $('#list-table').html('')
+            $('.total').text('0');
+
+
+            $('#fund').val(null).trigger('change');
+            $('#type').val(null).trigger('change');
+
+
+
+
+
+        })
+        $("#rest-btn").click(function () {
+            $("#myModal").modal("show");
         });
-        console.log(errorMessageId, "erferf");
 
-        $(errorMessageNewId + "-error").text(
-            "Select  " + errorMessageId + " is required"
-        );
-    };
-    $('#Index').select2()
-    $('#Index').on('change', function () {
-        // console.log($(this).val(), 'value')
-        if ($(this).val() != '' && $(this).val() != null) {
-            const selectedVal = JSON.parse($(this).find(':selected').attr('data-value'));
-            console.log($(this).find(':selected').attr('data-value'), 'seleceted');
-            $('#index_date').val(selectedVal.index_date);
-            $('#total_member').val(selectedVal.total_member);
-            $('.total_amount').val(selectedVal.total_amount);
-        }
+        $('#masterCheckbox').click(function () {
+            // Check if the master checkbox is checked
+            var isChecked = $(this).is(':checked');
 
-    })
-    $(document).on("select2:open", (e) => {
-        removeError(e.target);
-        // console.log(e.target.id, 'sffsfsf');
-        document
-            .querySelector(
-                ".select2-container--open .select2-search__field"
-            )
-            .focus();
-    });
-    $('#rest-form').on('click', function () {
-        $('#table_handle').hide()
-
-        center.removeAttr('disabled')
-        index.removeAttr('disabled')
-        $('#Center').val(null).trigger('change');
-        $('#Index').val(null).trigger('change');
-        $('#index_date').val('');
-        $('#total_member').val('');
-        $('.total_amount').val('');
-        $("#myModal").modal("hide");
-        $('#list-table').html('')
-        $('.total').text('0');
- 
- 
-        $('#fund').val(null).trigger('change');
-        $('#type').val(null).trigger('change');
-
-
-
-
-
-    })
-    $("#rest-btn").click(function () {
-        $("#myModal").modal("show");
-    });
-    const showSelectedData = () => {
-        var selectedValues = []; // Array to store the selected checkbox values
-
-        // Loop through each checkbox with class 'checkbox'
-        $('.selected_value').each(function () {
-            // Check if the checkbox is checked
-            if ($(this).is(':checked')) {
-                // If checked, add its value to the selectedValues array
-                selectedValues.push(JSON.parse($(this).val()));
-            }
+            // Set all other checkboxes to the same state as the master checkbox
+            $('.selected_value').prop('checked', isChecked);
+            $('.selected_value').trigger('change')
         });
-        if (selectedValues.length == 0) {
-            toastr.error('Need to Approve Atleast one Employee ')
-            return;
 
-        } else {
-            $('#sendVal').val(JSON.stringify(selectedValues))
-            $('#final').modal('show')
-        }
+        $(document).on('change', '.selected_value', function () {
 
-        // Display the selected values
-        console.log(selectedValues, 'dada')
-    }
-    $('#masterCheckbox').click(function () {
-        // Check if the master checkbox is checked
-        var isChecked = $(this).is(':checked');
+            let checkCount = $('.selected_value:checked').length;
+            let NoncheckCount = $('.selected_value').not(':checked').length;
 
-        // Set all other checkboxes to the same state as the master checkbox
-        $('.selected_value').prop('checked', isChecked);
-        $('.selected_value').trigger('change')
-    });
+            $('#masterCheckbox').prop('checked', !NoncheckCount > 0)
+            $('#approve').val(checkCount);
 
-    $(document).on('change', '.selected_value', function () {
+        });
+        $('#type').select2();
+        $('#fund').select2();
 
-        let checkCount = $('.selected_value:checked').length;
-        let NoncheckCount = $('.selected_value').not(':checked').length;
+        $('#type').on('change', function () {
+            // console.log($(this).val())
+            $('#dis_type_field').val($(this).val())
+        })
+        $('#Due').on('blur', function () {
+            // console.log($(this).val())
+            $('#first_due_field').val($(this).val())
+        })
 
-        $('#masterCheckbox').prop('checked', !NoncheckCount > 0)
-        $('#approve').val(checkCount);
+        $('#Due').datetimepicker({
+            format: 'DD-MM-YYYY',
+            minDate: new Date()
 
-    });
-    $('#type').select2();
-    $('#fund').select2();
+        })
 
-    $('#type').on('change',function(){
-        console.log($(this).val())
-        $('#dis_type_field').val($(this).val())
+        $('#search-max').click(function () {
+            submitBtn()
+            //console.log('sfsfsff');
+        })
+        $('#first_due_field').val($('#Due').val())
     })
-    $('#Due').on('blur',function(){
-        // console.log($(this).val())
-        $('#first_due_field').val($(this).val())
-    })
-    $('#first_due_field').val($('#Due').val())
-      $('#Due').datetimepicker({
-                format: 'DD-MM-YYYY',
-                 minDate:new Date()
 
-            })
 
 </script>
