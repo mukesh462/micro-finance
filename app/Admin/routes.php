@@ -60,5 +60,6 @@ Route::group([
     $router->get('getIndexMember/{id}/pdf', [IndexController::class, 'getIndexMemberPdf']);
     $router->get('member/create', [MemberController::class, 'Memberform']);
     $router->get('member/{id}/edit', [MemberController::class, 'MemberEdit']);
+    $router->post('member/edit', [MemberController::class, 'MemberUpdate']);
     $router->post('member/save', [MemberController::class, 'MemberformSave']);
 });

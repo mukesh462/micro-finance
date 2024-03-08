@@ -40,7 +40,7 @@
             </div>
         </div>
     </div>
-    <form action="/admin/member/save" method="post" enctype="multipart/form-data">
+    <form action="{{ $type == 'create' ? '/admin/member/save' : '/admin/member/edit'}}" method="post" enctype="multipart/form-data">
 
         <div class="box-body">
             <div class="nav-tabs-custom">
@@ -90,7 +90,7 @@
                                         </div><!-- /.box-body -->
                                     </div>
                                 </div>
-
+                                <input hidden  value="{{(isset($data->id) ? $data->id : '')}}" name="create"/>
                                 <div class="">
                                     @include('livewire.text-input', [
                                     'label' => 'Member name',
@@ -244,7 +244,7 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'image',
                                     'label' => 'Photo',
-                                    'value' => old('image') ? old('image') : '',
+                                    'value' => old('image', isset($data) ? env('APP_URL').'/uploads/'.$data->photo : ''),
                                     "name" =>"image",
                                     'isRequired' => false,
                                     ])
@@ -254,7 +254,7 @@
                                     <div class="">
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="fa fa-pencil fa-fw"></i></span>
-                                            <input id="age" type="text" name="age" value="{{ old('age') }}" class="form-control age" placeholder="Input Age" readonly>
+                                            <input id="age" type="text" name="age" value="{{ old('age') ? old('age') : (isset($data->age) ? $data->age : '') }}" class="form-control age" placeholder="Input Age" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -262,7 +262,7 @@
                                     @include('livewire.text-input', [
                                     'label' => 'Mobile',
                                     'name' => 'phone_number',
-                                    'value' => old('phone_number'),
+                                    'value' => old('phone_number',isset($data) ? $data->phone_number : ''),
                                     'isRequired' => true,
                                     ])
                                 </div>
@@ -270,7 +270,7 @@
                                     @include('livewire.text-input', [
                                     'label' => 'City',
                                     'name' => 'city',
-                                    'value' => old('city'),
+                                    'value' => old('city',isset($data) ? $data->city : ''),
                                     'isRequired' => false,
                                     ])
                                 </div>
@@ -278,22 +278,22 @@
                                     @include('livewire.text-input', [
                                     'label' => 'Pincode',
                                     'name' => 'pincode',
-                                    'value' => old('pincode'),
+                                    'value' => old('pincode',isset($data) ? $data->pincode : ''),
                                     'isRequired' => false,
                                     ])
                                 </div>
                                 <div class="form-group  " style="margin: 0;">
                                     <label for="religion" class=" asterisk control-label">Religion</label>
                                     <div class="">
-                                        <select id="reli" class=" form-control " style=" width: 100%;" name="religion" tabindex="-1" aria-hidden="true">
-                                            <option value="" {{ old('religion') == '' ? 'selected' : '' }}>Select Religion</option>
-                                            <option value="Hindu" {{ old('religion') == 'Hindu' ? 'selected' : '' }}>Hindu</option>
-                                            <option value="Muslim" {{ old('religion') == 'Muslim' ? 'selected' : '' }}>Muslim</option>
-                                            <option value="Christian" {{ old('religion') == 'Christian' ? 'selected' : '' }}>Christian</option>
-                                            <option value="Other" {{ old('religion') == 'Other' ? 'selected' : '' }}>Other</option>
-                                            <option value="Not prefer to say" {{ old('religion') == 'Not prefer to say' ? 'selected' : '' }}>Not prefer to say</option>
-
+                                        <select id="reli" class="form-control" style="width: 100%;" name="religion" tabindex="-1" aria-hidden="true">
+                                            <option value="" {{ (old('religion') == '' && (!isset($data) || $data->religion === null)) ? 'selected' : '' }}>Select Religion</option>
+                                            <option value="Hindu" {{ (old('religion') == 'Hindu' || (isset($data) && $data->religion == 'Hindu')) ? 'selected' : '' }}>Hindu</option>
+                                            <option value="Muslim" {{ (old('religion') == 'Muslim' || (isset($data) && $data->religion == 'Muslim')) ? 'selected' : '' }}>Muslim</option>
+                                            <option value="Christian" {{ (old('religion') == 'Christian' || (isset($data) && $data->religion == 'Christian')) ? 'selected' : '' }}>Christian</option>
+                                            <option value="Other" {{ (old('religion') == 'Other' || (isset($data) && $data->religion == 'Other')) ? 'selected' : '' }}>Other</option>
+                                            <option value="Not prefer to say" {{ (old('religion') == 'Not prefer to say' || (isset($data) && $data->religion == 'Not prefer to say')) ? 'selected' : '' }}>Not prefer to say</option>
                                         </select>
+
                                         @error('religion')
                                         <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
                                             {{ $message }}</label>
@@ -303,14 +303,13 @@
                                 <div class="form-group  " style="margin: 0;">
                                     <label for="marital_status" class=" asterisk control-label">Marital status</label>
                                     <div class="">
-                                        <select id="mar_sta" class="form-control marital_status " style="width: 100%;" name="marital_status" data-value="Single" tabindex="-1" aria-hidden="true">
-                                            <option value="" {{ old('marital_status') == '' ? 'selected' : '' }}>Select Marital Status</option>
-                                            <option value="Single" {{ old('marital_status') == 'Single' ? 'selected' : '' }}>Single</option>
-                                            <option value="Married" {{ old('marital_status') == 'Married' ? 'selected' : '' }}>Married</option>
-                                            <option value="Widow" {{ old('marital_status') == 'Widow' ? 'selected' : '' }}>Widow</option>
-                                            <option value="Divorced" {{ old('marital_status') == 'Divorced' ? 'selected' : '' }}>Divorced</option>
-                                            <option value="Other" {{ old('marital_status') == 'Other' ? 'selected' : '' }}>Other</option>
-
+                                        <select id="mar_sta" class="form-control marital_status" style="width: 100%;" name="marital_status" data-value="Single" tabindex="-1" aria-hidden="true">
+                                            <option value="" {{ (old('marital_status') == '' && (!isset($data) || $data->marital_status === null)) ? 'selected' : '' }}>Select Marital Status</option>
+                                            <option value="Single" {{ (old('marital_status') == 'Single' || (isset($data) && $data->marital_status == 'Single')) ? 'selected' : '' }}>Single</option>
+                                            <option value="Married" {{ (old('marital_status') == 'Married' || (isset($data) && $data->marital_status == 'Married')) ? 'selected' : '' }}>Married</option>
+                                            <option value="Widow" {{ (old('marital_status') == 'Widow' || (isset($data) && $data->marital_status == 'Widow')) ? 'selected' : '' }}>Widow</option>
+                                            <option value="Divorced" {{ (old('marital_status') == 'Divorced' || (isset($data) && $data->marital_status == 'Divorced')) ? 'selected' : '' }}>Divorced</option>
+                                            <option value="Other" {{ (old('marital_status') == 'Other' || (isset($data) && $data->marital_status == 'Other')) ? 'selected' : '' }}>Other</option>
                                         </select>
                                         @error('marital_status')
                                         <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
@@ -322,7 +321,7 @@
                                     @include('livewire.text-input', [
                                     'label' => 'Monthly Expenses',
                                     'name' => 'monthly_expenses',
-                                    'value' => old('monthly_expenses'),
+                                    'value' => old('monthly_expenses',isset($data) ? $data->monthly_expenses : ''),
                                     'isRequired' => true,
                                     ])
 
@@ -331,7 +330,7 @@
                                     @include('livewire.text-input', [
                                     'label' => 'Date of joined',
                                     'name' => 'date_of_joined',
-                                    'value' => old('date_of_joined'),
+                                    'value' => old('date_of_joined',isset($data) ? $data->date_of_joined : ''),
                                     'id'=>"date_of_joined",
                                     'isRequired' => true,
                                     ])
@@ -345,33 +344,33 @@
                                 @include('livewire.text-input', [
                                 'label' => 'Father Name',
                                 'name' => 'father_name',
-                                'value' => old('father_name'),
+                                'value' => old('father_name',isset($data) ? $data->father_name : ''),
                                 'isRequired' => true,
 
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Mother Name',
                                 'name' => 'mother_name',
-                                'value' => old('mother_name'),
+                                'value' => old('mother_name',isset($data) ? $data->mother_name : ''),
                                 'isRequired' => true,
                                 ])
                             </div>
                             <div class="col-12 col-md-6 col-lg-6"> @include('livewire.text-input', [
                                 'label' => 'Spouse Name',
                                 'name' => 'spouse_name',
-                                'value' => old('spouse_name'),
+                                'value' => old('spouse_name',isset($data) ? $data->spouse_name : ''),
                                 'isRequired' => true,
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Spouse Occupation',
                                 'name' => 'spouse_occupation',
-                                'value' => old('spouse_occupation'),
+                                'value' => old('spouse_occupation',isset($data) ? $data->spouse_occupation : ''),
                                 'isRequired' => true,
                                 ])</div>
                             <div class="col-12" style="margin-top: 5px;">
                                 <div class="col-12 col-md-4 col-lg-4">
                                     <label for="no_of_adult">No of Ad</label>
-                                    <input type="number" min="0" name="no_of_adult" class="form-control" id="no_of_adult" value="{{old('no_of_adult')}}">
+                                    <input type="number" min="0" name="no_of_adult" class="form-control" id="no_of_adult" value="{{ old('no_of_adult') ? old('no_of_adult') : (isset($data->no_of_adult) ? $data->no_of_adult : '') }}">
                                     @error('no_of_adult')
                                     <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
                                         {{ $message }}</label>
@@ -380,7 +379,7 @@
 
                                 <div class="col-12 col-md-4 col-lg-4">
                                     <label for="no_of_children">No of child</label>
-                                    <input type="number" min="0" name="no_of_children" class="form-control" id="no_of_children" value="{{old('no_of_children')}}">
+                                    <input type="number" min="0" name="no_of_children" class="form-control" id="no_of_children" value="{{ old('no_of_children') ? old('no_of_children') : (isset($data->no_of_children) ? $data->no_of_children : '') }}">
                                     @error('no_of_children')
                                     <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i> {{ $message }}</label>
                                     @enderror
@@ -390,7 +389,7 @@
                                     @include('livewire.text-input', [
                                     'label' => 'Total Family Members',
                                     'name' => 'total_family_members',
-                                    'value'=>old('total_family_members'),
+                                    'value'=>old('total_family_members',isset($data) ? $data->total_family_members : ''),
                                     'readonly' => true,
                                     'isRequired' => true,
                                     ])
@@ -404,21 +403,25 @@
                                 @include('livewire.text-input', [
                                 'label' => 'SmartCard No',
                                 'name' => 'smartcard_no',
+                                'value' => old('smartcard_no',isset($data) ? $data->smartcard_no : ''),
                                 'isRequired' => true,
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Voter ID',
                                 'name' => 'voter_id',
+                                'value' => old('voter_id',isset($data) ? $data->voter_id : ''),
                                 'isRequired' => true,
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Aadhar Card Number',
                                 'name' => 'aadhar_no',
+                                'value' => old('aadhar_no',isset($data) ? $data->aadhar_no : ''),
                                 'isRequired' => false,
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Pan No',
                                 'name' => 'pancard_no',
+                                'value' => old('pancard_no',isset($data) ? $data->nominee_name : ''),
                                 'isRequired' => false,
                                 ])
                             </div>
@@ -428,7 +431,7 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'smartcard_img',
                                     'label' => 'Smart card img',
-                                    'value' => old('smartcard_img') ? old('smartcard_img') : '',
+                                    'value' => old('smartcard_img', isset($data) ? env('APP_URL').'/uploads/'.$data->smartcard_img : ''),
                                     "name" =>"smartcard_img",
                                     'isRequired' => true,
                                     ])
@@ -438,7 +441,7 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'voterid_img',
                                     'label' => 'voterid img',
-                                    'value' => old('voterid_img') ? old('voterid_img') : '',
+                                    'value' => old('voterid_img', isset($data) ? env('APP_URL').'/uploads/'.$data->voterid_img : ''),
                                     "name" =>"voterid_img",
                                     'isRequired' => true,
                                     ])
@@ -448,7 +451,7 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'aadhar_img',
                                     'label' => 'Aadhar img',
-                                    'value' => old('aadhar_img') ? old('aadhar_img') : '',
+                                    'value' => old('aadhar_img', isset($data) ? env('APP_URL').'/uploads/'.$data->aadhar_img : ''),
                                     "name" =>"aadhar_img",
                                     'isRequired' => false,
                                     ])
@@ -458,39 +461,36 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'pancard_img',
                                     'label' => 'pancard img',
-                                    'value' => old('pancard_img') ? old('pancard_img') : '',
+                                    'value' => old('pancard_img', isset($data) ? env('APP_URL').'/uploads/'.$data->pancard_img : ''),
                                     "name" =>"pancard_img",
                                     'isRequired' => false,
                                     ])
                                 </div>
                             </div>
                         </div>
-
-
-
                     </div>
                     <div class="tab-pane container" id="tab-form-4" style='max-width:100%!important'>
-
                         <div class="row">
                             <div class="col-12 col-md-6 col-lg-6">
                                 @include('livewire.text-input', [
                                 'label' => 'Nominee name',
                                 'name' => 'nominee_name',
-                                'value'=>old('nominee_name'),
+                                'value'=>old('nominee_name',isset($data) ? $data->nominee_name : ''),
                                 'isRequired' => true,
                                 ]) <div class="form-group" style="margin: 0;">
                                     <label for="relation_with_client" class="asterisk control-label">Relation with
                                         Member</label>
-                                    <select id="rela" class="form-control relation_with_client" style="width: 100%;" name="relation_with_client" data-value="" tabindex="-1" aria-hidden="true">
-                                        <option value="" {{ old('relation_with_client') == '' ? 'selected' : '' }}>Select Relationship</option>
-                                        <option value="Mother" {{ old('relation_with_client') == 'Mother' ? 'selected' : '' }}>Mother</option>
-                                        <option value="Father" {{ old('relation_with_client') == 'Father' ? 'selected' : '' }}>Father</option>
-                                        <option value="Wife" {{ old('relation_with_client') == 'Wife' ? 'selected' : '' }}>Wife</option>
-                                        <option value="Husband" {{ old('relation_with_client') == 'Husband' ? 'selected' : '' }}>Husband</option>
-                                        <option value="Brother" {{ old('relation_with_client') == 'Brother' ? 'selected' : '' }}>Brother</option>
-                                        <option value="Sister" {{ old('relation_with_client') == 'Sister' ? 'selected' : '' }}>Sister</option>
-                                        <option value="Other" {{ old('relation_with_client') == 'Other' ? 'selected' : '' }}>Other</option>
+                                    <select id="rela" class="form-control relation_with_client" name="relation_with_client">
+                                        <option value="" {{ (old('relation_with_client') == '' || (isset($data) && $data->relation_with_client === null)) ? 'selected' : '' }}>Select Relationship</option>
+                                        <option value="Mother" {{ (old('relation_with_client') == 'Mother' || (isset($data) && $data->relation_with_client == 'Mother')) ? 'selected' : '' }}>Mother</option>
+                                        <option value="Father" {{ (old('relation_with_client') == 'Father' || (isset($data) && $data->relation_with_client == 'Father')) ? 'selected' : '' }}>Father</option>
+                                        <option value="Wife" {{ (old('relation_with_client') == 'Wife' || (isset($data) && $data->relation_with_client == 'Wife')) ? 'selected' : '' }}>Wife</option>
+                                        <option value="Husband" {{ (old('relation_with_client') == 'Husband' || (isset($data) && $data->relation_with_client == 'Husband')) ? 'selected' : '' }}>Husband</option>
+                                        <option value="Brother" {{ (old('relation_with_client') == 'Brother' || (isset($data) && $data->relation_with_client == 'Brother')) ? 'selected' : '' }}>Brother</option>
+                                        <option value="Sister" {{ (old('relation_with_client') == 'Sister' || (isset($data) && $data->relation_with_client == 'Sister')) ? 'selected' : '' }}>Sister</option>
+                                        <option value="Other" {{ (old('relation_with_client') == 'Other' || (isset($data) && $data->relation_with_client == 'Other')) ? 'selected' : '' }}>Other</option>
                                     </select>
+
                                     @error('relation_with_client')
                                     <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
                                         {{ $message }}</label>
@@ -499,19 +499,19 @@
                                 @include('livewire.text-input', [
                                 'label' => 'Nominee Aadhar',
                                 'name' => 'nominee_aadhar',
-                                'value'=>old('nominee_aadhar'),
+                                'value'=>old('nominee_aadhar',isset($data) ? $data->nominee_aadhar : ''),
                                 'isRequired' => true,
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Nominee Voter ID',
                                 'name' => 'nominee_voter_id',
-                                'value'=>old('nominee_voter_id'),
+                                'value'=>old('nominee_voter_id',isset($data) ? $data->nominee_voter_id : ''),
                                 'isRequired' => false,
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Nominee Other Number',
                                 'name' => 'nominee_other_id',
-                                'value'=>old('nominee_other_id'),
+                                'value'=>old('nominee_other_id',isset($data) ? $data->nominee_other_id : ''),
                                 'isRequired' => false,
                                 ])
                             </div>
@@ -519,14 +519,14 @@
                                 @include('livewire.text-input', [
                                 'label' => 'Nominee mobile',
                                 'name' => 'nominee_mobile',
-                                'value'=>old('nominee_mobile'),
+                                'value'=>old('nominee_mobile',isset($data) ? $data->nominee_mobile : ''),
                                 'isRequired' => false,
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Nominee dob',
                                 'name' => 'nominee_dob',
                                 'id'=>'nominee_dob',
-                                'value'=>old('nominee_dob'),
+                                'value'=>old('nominee_dob',isset($data) ? $data->nominee_dob : ''),
                                 'isRequired' => true,
                                 ])
 
@@ -535,7 +535,7 @@
                                     'img' => 'nominee_aadhar_img',
                                     'label' => 'Nominee Aadhar
                                     Photo',
-                                    'value' => old('nominee_aadhar_img') ? old('nominee_aadhar_img') : '',
+                                    'value' => old('nominee_aadhar_img', isset($data) ? env('APP_URL').'/uploads/'.$data->nominee_aadhar_img : ''),
                                     "name" =>"nominee_aadhar_img",
                                     'isRequired' => true,
                                     ])
@@ -546,7 +546,7 @@
                                     'img' => 'nominee_voter_img',
                                     'label' => 'Nominee VoterID
                                     Photo',
-                                    'value' => old('nominee_voter_img') ? old('nominee_voter_img') : '',
+                                    'value' => old('nominee_voter_img', isset($data) ? env('APP_URL').'/uploads/'.$data->nominee_voter_img : ''),
                                     "name" =>"nominee_voter_img",
                                     'isRequired' => false,
                                     ])
@@ -555,7 +555,7 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'nominee_other_img',
                                     'label' => 'Nominee Other Photo',
-                                    'value' => old('nominee_other_img') ? old('nominee_other_img') : '',
+                                    'value' => old('nominee_other_img', isset($data) ? env('APP_URL').'/uploads/'.$data->nominee_other_img : ''),
                                     "name" =>"nominee_other_img",
                                     'isRequired' => false,
                                     ])
@@ -570,32 +570,32 @@
                                 @include('livewire.text-input', [
                                 'label' => 'Account Holder name',
                                 'name' => 'account_holder_name',
-                                'value'=>old('nominee_name'),
+                                'value'=>old('account_holder_name',isset($data) ? $data->account_holder_name : ''),
                                 'isRequired' => false,
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Account Number',
                                 'name' => 'account_number',
-                                'value'=>old('nominee_name'),
+                                'value'=>old('account_number',isset($data) ? $data->account_number : ''),
                                 'isRequired' => false,
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Bank Name',
                                 'name' => 'bank_name',
-                                'value'=>old('bank_name'),
+                                'value'=>old('bank_name',isset($data) ? $data->bank_name : ''),
                                 'isRequired' => false,
                                 ])
                             </div>
                             <div class="col-12 col-md-6 col-lg-6"> @include('livewire.text-input', [
                                 'label' => 'IFSC Code',
                                 'name' => 'ifsc_number',
-                                'value'=>old('ifsc_number'),
+                                'value'=>old('ifsc_number',isset($data) ? $data->ifsc_number : ''),
                                 'isRequired' => false,
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Branch Name',
                                 'name' => 'branch_name',
-                                'value'=>old('branch_name'),
+                                'value'=>old('branch_name',isset($data) ? $data->branch_name : ''),
                                 'isRequired' => false,
                                 ])</div>
                         </div>

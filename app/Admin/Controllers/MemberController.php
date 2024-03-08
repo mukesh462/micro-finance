@@ -526,4 +526,56 @@ class MemberController extends AdminController
             abort(404);
         }
     }
+    public function MemberUpdate(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($request->all(), [
+            'client_name' => 'required',
+            'dob' => 'required',
+            // 'gender' => 'required',
+            'address' => 'required',
+            'community' => 'required',
+            'qualification' => 'required',
+            'monthly_income' => 'required',
+            'home_status' => 'required',
+            'status' => 'required',
+            'center_id' => 'required',
+            // 'image' => 'required',
+            // 'age' => 'required',
+            'phone_number' => 'required',
+            // 'city' => 'required',
+            // 'pincode' => 'required',
+            'religion' => 'required',
+            'marital_status' => 'required',
+            'monthly_expenses' => 'required',
+            'date_of_joined' => 'required',
+            'father_name' => 'required',
+            'mother_name' => 'required',
+            'spouse_name' => 'required',
+            'spouse_occupation' => 'required',
+            'no_of_adult' => 'required',
+            'no_of_children' => 'required',
+            'smartcard_no' => 'required',
+            'voter_id' => 'required',
+            'smartcard_img' => 'required',
+            'voterid_img' => 'required',
+            'nominee_name' => 'required',
+            'relation_with_client' => 'required',
+            'nominee_aadhar' => 'required',
+            // 'nominee_mobile' => 'required',
+            'nominee_dob' => 'required',
+            'nominee_aadhar_img' => 'required',
+            // 'account_holder_name' => 'required',
+            // 'account_number' => 'required',
+            // 'bank_name' => 'required',
+            // 'ifsc_number' => 'required',
+            // 'branch_name' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return redirect('/admin/member/'.$input['create'].'/edit')
+                ->withErrors($validator)
+                ->withInput();
+        }
+        dd($input);
+    }
 }

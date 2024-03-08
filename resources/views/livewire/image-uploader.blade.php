@@ -16,8 +16,7 @@
                     <div class="modal-body" style="display: flex;justify-content: center;"
                         id="open-{{ $img }}">
                         @if ($value)
-                            <img width="150" height="150" src="{{ $value->temporaryUrl() }}" alt=""
-                                srcset="">
+                        <img width="150" height="150" src="{{ is_object($value) ? $value->temporaryUrl() : ($value ?? '') }}" alt="" srcset="">
                         @endif
                     </div>
                     <div class="modal-footer">
@@ -41,7 +40,7 @@
                 style='text-align:left;   white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;color:grey;font-size:small'>
-            {{ $label }}
+            {{ $value }}
             </label>
             <input type="file" style="display: none;" id="up-{{ $img }}" wire:model="{{ $img }}"
                 class="form-control" name="{{ $img }}" accept="image/*">
