@@ -197,3 +197,72 @@ $('#totop').on('click', function (e) {
 
 })(jQuery);
 
+function getNextDayDate(selectedDay) {
+    // Get the current date
+    var currentDate = new Date();
+
+    // Get the current day of the week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
+    var currentDayOfWeek = currentDate.getDay();
+
+    // Calculate the difference in days between the selected day and the current day
+    var dayDifference = (selectedDay - currentDayOfWeek + 7) % 7;
+
+    // Add the difference to the current date to get the next occurrence of the selected day
+    var nextDayDate = new Date(currentDate.getTime() + dayDifference * 24 * 60 * 60 * 1000);
+
+    // Format the date to DD-MM-YYYY
+    var formattedDate = ('0' + nextDayDate.getDate()).slice(-2) + '-' + ('0' + (nextDayDate.getMonth() + 1)).slice(-2) + '-' + nextDayDate.getFullYear();
+
+    return formattedDate;
+}
+
+
+// Example usage:
+var selectedDay = 0; // 0 for Sunday
+var nextSundayDate = getNextDayDate(selectedDay);
+
+// console.log(nextSundayDate.toDateString()); // Output the date of the next Sunday
+$('#day_select').on('change', function () {
+    console.log($(this).val(), 'ut');
+    $('#day-id').val(getNextDayDate($(this).val()))
+})
+$('#day-id').val(nextSundayDate)
+function getDateAfterDays(dayOfWeek) {
+    // Get the current date
+    var currentDate = new Date();
+
+    // Calculate the difference in days between the selected day and the current day
+    var dayDifference = (dayOfWeek - currentDate.getDay() + 7) % 7;
+
+    // Add the difference to the current date to get the next occurrence of the selected day
+    var nextDayDate = new Date(currentDate.getTime() + dayDifference * 24 * 60 * 60 * 1000);
+
+    // Add 14 days to the next occurrence of the selected day
+    nextDayDate.setDate(nextDayDate.getDate() + 14);
+
+    // Format the date to DD-MM-YYYY
+    var formattedDate = ('0' + nextDayDate.getDate()).slice(-2) + '-' + ('0' + (nextDayDate.getMonth() + 1)).slice(-2) + '-' + nextDayDate.getFullYear();
+
+    return formattedDate;
+}
+
+// Example usage:
+var selectedDay = 0; // 0 for Sunday
+var dateAfter14Days = getDateAfterDays(selectedDay);
+
+
+$('#14-day-select').on('change', function () {
+    console.log($(this).val(), 'ut');
+    $('#14day-id').val(getDateAfterDays($(this).val()))
+})
+$('#14day-id').val(dateAfter14Days)
+
+$("#meeting-date").on("blur", function () {
+    var value = $("#meeting-date").val();
+    var dateParts = value.split("-");
+    var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+    var date = new Date(formattedDate);
+    var dayNumber = date.getDay();
+    var daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    $("#month-id").val(daysOfWeek[dayNumber])
+});
