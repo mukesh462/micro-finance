@@ -25,9 +25,14 @@
 </style>
 <!-- <div class="mb" style="width: 100%;margin: auto;"> -->
 
-<div class="btn-group ">
+<div class="">
     <a href="{{ admin_url('/indexes') }}" class="btn btn-sm btn-default"><i class="fa fa-list"></i><span
             class="hidden-xs">&nbsp;List</span></a>
+    @if ($type == 'view')
+    <a href="/admin/getIndexMember/{{ $data[0]->index_id }}/pdf" class="btn btn-sm btn-info pull-right"><i
+            class=" fa fa-file-pdf-o"></i><span class="hidden-xs">&nbsp;Pdf</span></a>
+    @endif
+
 </div>
 <!-- </div> -->
 
@@ -256,14 +261,16 @@
                             member,
                             amount,
                             employee_id: $('#Employee').data('id'),
-                            center_name: type == 'create' ? $("#Center  option:selected").text() : $(
-                                '#Center').val(),
+                            center_name: type == 'create' ? $(
+                                "#Center  option:selected").text() : $(
+                                    '#Center').val(),
                             member_name: $("#Member option:selected").text(),
                             product_name: $("#Product option:selected").text(),
                             emp_name: $("#Employee").val(),
                             nominee_name: $('#nominee').val()
                         };
-                        const validateRecord = finalObj.find((e) => e.plan == plan && e.member == member);
+                        const validateRecord = finalObj.find((e) => e.plan == plan && e
+                            .member == member);
                         console.log(validateRecord, 'vall');
                         if (validateRecord == undefined) {
 
@@ -314,7 +321,8 @@
                 dataType: "json",
                 data: {
                     id: $('#Member').val(), // search term
-                }, success: (e) => {
+                },
+                success: (e) => {
                     $('#nominee').val(e.nominee_name);
                     //console.log(e, 'memver_c');
                 }

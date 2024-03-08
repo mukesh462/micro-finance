@@ -41,7 +41,7 @@ class IndexController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Index());
-        $grid->where('loan_status', 1);
+        $grid->model()->where('index_status', 1);
         $grid->column('id', __('Id'));
         $grid->index_no('Index No');
         $grid->column('index_date', __('Index Date'));
@@ -206,17 +206,26 @@ class IndexController extends AdminController
                 // dd($request->id);
 
                 $query = Index::query();
-                $query->where('center_id', $request->id)->where('index_status', 1)->orderbydesc('id');
-                $total = $query->count();
+                $query->select('indexes.index_no', 'indexes.id')
+                    ->join('index_members', 'index_members.index_id', '=', 'indexes.id')
+                    ->join('centers', 'indexes.center_id', '=', 'centers.id')
+                    ->where('index_members.loan_status', 0)
+                    ->where('indexes.index_status', 1)
+                    ->where('centers.id', $request->id)->orderbydesc('indexes.id')
+                    ->groupBy('indexes.index_no', 'indexes.id');
 
-                $results = $query->get();
+                // $query->where('center_id', $request->id)->where('index_status', 1)->orderbydesc('id');
+                $total = 0;
+
+                $results = collect($query->get()->unique('index_no')->toArray())->unique('index_no');
+                dd($results);
             } else if ($request->tp == 'index_member') {
                 $query = IndexMember::query();
                 $query->where('index_id', $request->id)->where('loan_status', 0);
                 $total = $query->count();
 
                 $results = $query->get();
-                // dd($results);
+                dd($results);
                 foreach ($results as $key => $value) {
                     $center = Center::find($value->center_id);
                     $employe = Employee::find($value->staff_id);
@@ -456,6 +465,10 @@ class IndexController extends AdminController
         $first_due = date('Y-m-d', strtotime($input['first_due']));
         // dd($first_due);
         $finalData = json_decode($data);
+        $inDex = IndexMember::where('index_id', $finalData[0]->index_id)->count();
+        if (count($finalData) == $inDex) {
+            Index::where('id', $finalData[0]->index_id)->update(['index_status' => 2]);
+        }
         foreach ($finalData as $key => $value) {
             $planFind = Product::find($value->plan_id);
             if (is_object($planFind)) {
@@ -476,9 +489,7 @@ class IndexController extends AdminController
                 $addTo->first_due = $input['first_due'];
                 $addTo->save();
                 IndexMember::where('id', $value->id)->update(['loan_status' => 1]);
-                if ($key == 0) {
-                    Index::where('id', $value->index_id)->update(['index_status' => 2]);
-                }
+
                 $arr = [];
                 for ($due = 0; $due < $planFind->plan_duration; $due++) {
                     $dayPlus = $due + 1;
