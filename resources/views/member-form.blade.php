@@ -431,7 +431,7 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'smartcard_img',
                                     'label' => 'Smart card img',
-                                    'value' => old('smartcard_img', isset($data) ? env('APP_URL').'/uploads/'.$data->smartcard_img : ''),
+                                    'value' => old('smartcard_img', isset($data->smartcard_img) ? env('APP_URL').'/uploads/'.$data->smartcard_img : 'Smart card img'),
                                     "name" =>"smartcard_img",
                                     'isRequired' => true,
                                     ])
@@ -441,7 +441,7 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'voterid_img',
                                     'label' => 'voterid img',
-                                    'value' => old('voterid_img', isset($data) ? env('APP_URL').'/uploads/'.$data->voterid_img : ''),
+                                    'value' => old('voterid_img', isset($data->voterid_img) ? env('APP_URL').'/uploads/'.$data->voterid_img : 'voterid img'),
                                     "name" =>"voterid_img",
                                     'isRequired' => true,
                                     ])
@@ -451,7 +451,7 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'aadhar_img',
                                     'label' => 'Aadhar img',
-                                    'value' => old('aadhar_img', isset($data) ? env('APP_URL').'/uploads/'.$data->aadhar_img : ''),
+                                    'value' => old('aadhar_img', isset($data->aadhar_img) ? env('APP_URL').'/uploads/'.$data->aadhar_img : 'Aadhar img'),
                                     "name" =>"aadhar_img",
                                     'isRequired' => false,
                                     ])
@@ -461,7 +461,7 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'pancard_img',
                                     'label' => 'pancard img',
-                                    'value' => old('pancard_img', isset($data) ? env('APP_URL').'/uploads/'.$data->pancard_img : ''),
+                                    'value' => old('pancard_img', isset($data->pancard_img) ? env('APP_URL').'/uploads/'.$data->pancard_img : 'pancard img'),
                                     "name" =>"pancard_img",
                                     'isRequired' => false,
                                     ])
@@ -511,7 +511,7 @@
                                 @include('livewire.text-input', [
                                 'label' => 'Nominee Other Number',
                                 'name' => 'nominee_other_id',
-                                'value'=>old('nominee_other_id',isset($data) ? $data->nominee_other_id : ''),
+                                'value'=>old('nominee_other_id',isset($data->nominee_other_id) ? $data->nominee_other_id : ''),
                                 'isRequired' => false,
                                 ])
                             </div>
@@ -535,7 +535,8 @@
                                     'img' => 'nominee_aadhar_img',
                                     'label' => 'Nominee Aadhar
                                     Photo',
-                                    'value' => old('nominee_aadhar_img', isset($data) ? env('APP_URL').'/uploads/'.$data->nominee_aadhar_img : ''),
+                                    'value' => old('nominee_aadhar_img', isset($data->nominee_aadhar_img) ? env('APP_URL').'/uploads/'.$data->nominee_aadhar_img : 'Nominee Aadhar
+                                    Photo'),
                                     "name" =>"nominee_aadhar_img",
                                     'isRequired' => true,
                                     ])
@@ -546,7 +547,8 @@
                                     'img' => 'nominee_voter_img',
                                     'label' => 'Nominee VoterID
                                     Photo',
-                                    'value' => old('nominee_voter_img', isset($data) ? env('APP_URL').'/uploads/'.$data->nominee_voter_img : ''),
+                                    'value' => old('nominee_voter_img', isset($data->nominee_voter_img) ? env('APP_URL').'/uploads/'.$data->nominee_voter_img : 'Nominee VoterID
+                                    Photo'),
                                     "name" =>"nominee_voter_img",
                                     'isRequired' => false,
                                     ])
@@ -555,7 +557,7 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'nominee_other_img',
                                     'label' => 'Nominee Other Photo',
-                                    'value' => old('nominee_other_img', isset($data) ? env('APP_URL').'/uploads/'.$data->nominee_other_img : ''),
+                                    'value' => old('nominee_other_img', isset($data->nominee_other_img) ? env('APP_URL').'/uploads/'.$data->nominee_other_img : 'Nominee Other Photo'),
                                     "name" =>"nominee_other_img",
                                     'isRequired' => false,
                                     ])

@@ -40,7 +40,7 @@
                 style='text-align:left;   white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;color:grey;font-size:small'>
-            {{ $value }}
+            {{ last(explode("/", $value)) }}
             </label>
             <input type="file" style="display: none;" id="up-{{ $img }}" wire:model="{{ $img }}"
                 class="form-control" name="{{ $img }}" accept="image/*">

@@ -529,6 +529,7 @@ class MemberController extends AdminController
     public function MemberUpdate(Request $request)
     {
         $input = $request->all();
+
         $validator = Validator::make($request->all(), [
             'client_name' => 'required',
             'dob' => 'required',
@@ -557,14 +558,14 @@ class MemberController extends AdminController
             'no_of_children' => 'required',
             'smartcard_no' => 'required',
             'voter_id' => 'required',
-            'smartcard_img' => 'required',
-            'voterid_img' => 'required',
+            // 'smartcard_img' => 'required',
+            // 'voterid_img' => 'required',
             'nominee_name' => 'required',
             'relation_with_client' => 'required',
             'nominee_aadhar' => 'required',
             // 'nominee_mobile' => 'required',
             'nominee_dob' => 'required',
-            'nominee_aadhar_img' => 'required',
+            // 'nominee_aadhar_img' => 'required',
             // 'account_holder_name' => 'required',
             // 'account_number' => 'required',
             // 'bank_name' => 'required',
