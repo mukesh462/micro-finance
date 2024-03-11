@@ -115,22 +115,22 @@ class CenterController extends AdminController
         } else {
         }
         $form->text('center_name', __('Center Name'))->rules('required');
-        $form->radio('center_name', __('Center Name'))->options([1 => 'Week', 2 => '14 Days', 3 => 'Month'])->when(1, function (Form $form) use ($dayNames) {
-            $form->select('name', 'Select day')->options($dayNames)->attribute(['id' => 'day_select']);
-            $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "day-id"])->readonly();
+        $form->radio('center_type', __('Center type'))->rules('required')->options([1 => 'Week', 2 => '14 Days', 3 => 'Month'])->when(1, function (Form $form) use ($dayNames) {
+            $form->select('day_in_number', 'Select Day')->options($dayNames)->attribute(['id' => 'day_select']);
+            $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "day-id"]);
             // $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "dagy-id"])->readonly();
             $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
         })->when(2, function (Form $form) use ($dayNames) {
-            $form->select('name', 'Select day')->options($dayNames)->attribute(['id' => '14-day-select']);
+            $form->select('day_in_number', 'Select day')->options($dayNames)->attribute(['id' => '14-day-select']);
             $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "14day-id"])->readonly();
             // $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "dagy-id"])->readonly();
             $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
         })->when(3, function (Form $form) use ($dayNames) {
             // $form->select('name', 'Select Day')->options($dayNames)->attribute(['id' => '14-day-select']);
             $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->minDate(date('DD-MM-YYYY'))->attribute(['id' => "month-id"]);
-            $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "month-id"])->readonly();
+            $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "month-day-id"])->readonly();
             $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
-        })->rules('required');
+        })->required();
 
         $form->date('formation_date', __('Formation Date'))->format('DD-MM-YYYY')->default(date('d-m-Y'))->rules(['required', 'date']);
         $form->text('center_address', __('Center Address'))->rules('required');
@@ -145,12 +145,19 @@ class CenterController extends AdminController
             $tools->disableView();
             // $tools->add('<a class="btn btn-sm btn-danger"><i class="fa fa-trash"></i>&nbsp;&nbsp;delete</a>');
         });
-        $form->saving(function (Form $form) {
+        $form->saving(function (Form $form) use ($dayNames) {
             // if (($form->model()->id != null) && ($form->model()->employee_id != $form->employee_id)) {
 
             // } else if ($form->model()->id == null) {
 
             // }
+            if ($form->center_type != 3) {
+
+                $form->meeting_day = $dayNames[$form->day_in_number];
+            }
+            if ($form->center_type == 3) {
+                $form->day_in_number = 1;
+            }
             if ($form->model()->id == null) {
                 // $employee = Employee::where('id', $form->model()->employee_id)->first();
                 // if (is_object($employee)) {
@@ -196,58 +203,87 @@ class CenterController extends AdminController
         // Admin::js('/jquery/jquery.min.js');
         // Admin::js('/select2/dist/js/select2.min.js');
         Admin::script('
-        const addSelectData = (id, type = "staff", data = {}) => {
-            console.log(id,"val")
-                $("#" + id).select2({
-                    ajax: {
-                        url: "/admin/getEmployees",
-                        dataType: "json",
-                        delay: 250,
-                        data: function(params) {
-                            return {
-                                q: params.term,
-                                page: params.page || 1,
-                                tp: type,
-                                data
-
-                            };
-                        },
-                        processResults: function(data, params) {
-                            params.page = params.page || 1;
-                            var mappedResults = data.results.map(function(item) {
-                                return {
-                                    id: item.id,
-                                    text: item.staff_name
-                                };
-                            });
-                            return {
-                                results: mappedResults,
-                                pagination: {
-                                    more: (params.page * 10) < data
-                                        .total_count
-                                }
-                            };
-                        },
-                        cache: true
-                    },
-                    minimumInputLength: 3,
-                });
-            }
-        $(function(){
-                addSelectData("staff");
-
-                  $("#meeting-date").on("blur",function(){
-                    var value = $("#meeting-date").val();
-                    var dateParts = value.split("-");
-                    var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
-                    var date = new Date(formattedDate);
-                    var dayNumber = date.getDay();
-                    var daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-                    $("#day-id").val(daysOfWeek[dayNumber])
-                  });
+        function getNextDayDate(selectedDay) {
+            // Get the current date
+            var currentDate = new Date();
+        
+            // Get the current day of the week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
+            var currentDayOfWeek = currentDate.getDay();
+        
+            // Calculate the difference in days between the selected day and the current day
+            var dayDifference = (selectedDay - currentDayOfWeek + 7) % 7;
+        
+            // Add the difference to the current date to get the next occurrence of the selected day
+            var nextDayDate = new Date(currentDate.getTime() + dayDifference * 24 * 60 * 60 * 1000);
+        
+            // Format the date to DD-MM-YYYY
+            var formattedDate = ("0" + nextDayDate.getDate()).slice(-2) + "-" + ("0" + (nextDayDate.getMonth() + 1)).slice(-2) + "-" + nextDayDate.getFullYear();
+        
+            return formattedDate;
+        }
+        
+        
+        // Example usage:
+        var selectedDay = 0; // 0 for Sunday
+        var nextSundayDate = getNextDayDate(selectedDay);
+        
+        // console.log(nextSundayDate.toDateString()); // Output the date of the next Sunday
+        $("#day_select").on("change", function () {
+            console.log($(this).val(), "ut");
+            $("#day-id").val(getNextDayDate($(this).val()))
         })
-
-       ');
+        $("#day-id").val(nextSundayDate)
+        function getDateAfterDays(dayOfWeek) {
+            // Get the current date
+            var currentDate = new Date();
+        
+            // Calculate the difference in days between the selected day and the current day
+            var dayDifference = (dayOfWeek - currentDate.getDay() + 7) % 7;
+        
+            // Add the difference to the current date to get the next occurrence of the selected day
+            var nextDayDate = new Date(currentDate.getTime() + dayDifference * 24 * 60 * 60 * 1000);
+        
+            // Add 14 days to the next occurrence of the selected day
+            nextDayDate.setDate(nextDayDate.getDate() + 14);
+        
+            // Format the date to DD-MM-YYYY
+            var formattedDate = ("0" + nextDayDate.getDate()).slice(-2) + "-" + ("0" + (nextDayDate.getMonth() + 1)).slice(-2) + "-" + nextDayDate.getFullYear();
+        
+            return formattedDate;
+        }
+        
+        // Example usage:
+        var selectedDay = 0; // 0 for Sunday
+        var dateAfter14Days = getDateAfterDays(selectedDay);
+        
+        
+        $("#14-day-select").on("change", function () {
+            console.log($(this).val(), "ut");
+            $("#14day-id").val(getDateAfterDays($(this).val()))
+        })
+        $("#14day-id").val(dateAfter14Days)
+        
+        $("#month-id").on("blur", function () {
+            var value = $("#month-id").val();
+            console.log(value, "aswfwf");
+            var dateParts = value.split("-");
+            var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+            var date = new Date(formattedDate);
+            var dayNumber = date.getDay();
+            var daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            $("#month-day-id").val(daysOfWeek[dayNumber])
+        });
+        
+        $("#day-id").on("blur", function () {
+            var clumn = $(this).val();
+            console.log($(this).val(), "value");
+            var dateParts = clumn.split("-");
+            var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+            var date = new Date(formattedDate);
+            var dayNumber = date.getDay();
+            $(`#day_select option[value="${dayNumber}"]`).prop("selected", true).change()
+        })
+     ');
         return $form;
     }
 

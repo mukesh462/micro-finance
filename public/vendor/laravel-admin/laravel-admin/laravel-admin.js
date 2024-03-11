@@ -257,12 +257,23 @@ $('#14-day-select').on('change', function () {
 })
 $('#14day-id').val(dateAfter14Days)
 
-$("#meeting-date").on("blur", function () {
-    var value = $("#meeting-date").val();
+$("#month-id").on("blur", function () {
+    var value = $("#month-id").val();
+    console.log(value, 'aswfwf');
     var dateParts = value.split("-");
     var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
     var date = new Date(formattedDate);
     var dayNumber = date.getDay();
     var daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    $("#month-id").val(daysOfWeek[dayNumber])
+    $("#month-day-id").val(daysOfWeek[dayNumber])
 });
+
+$('#day-id').on('blur', function () {
+    var clumn = $(this).val();
+    console.log($(this).val(), 'value');
+    var dateParts = clumn.split("-");
+    var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+    var date = new Date(formattedDate);
+    var dayNumber = date.getDay();
+    $(`#day_select option[value="${dayNumber}"]`).prop('selected', true).change()
+})
