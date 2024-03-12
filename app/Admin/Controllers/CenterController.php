@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Models\Center;
 use App\Models\CenterOwnerList;
 use App\Models\Employee;
+use App\Models\LoanAccount;
 use App\Models\Member;
 use Encore\Admin\Admin;
 use Encore\Admin\Controllers\AdminController;
@@ -332,6 +333,20 @@ class CenterController extends AdminController
         $id = $request->input('center_id'); // Search term
         $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
         $data['member'] = Member::select('id', 'client_name')->where('center_id', $id)->get();
+        // Prepare response data
+        $response = [
+            'results' => $data,
+        ];
+        // Return JSON response
+        return response()->json($response);
+    }
+    public function getLoan(Request $request)
+    {
+
+        // Retrieve parameters from the request
+        $id = $request->input('member_id'); // Search term
+        // $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
+        $data['loan'] =   LoanAccount::select('id', 'loan_amount')->where('member_id', $id)->where('loan_status', 0)->get();
         // Prepare response data
         $response = [
             'results' => $data,

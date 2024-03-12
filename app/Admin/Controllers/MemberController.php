@@ -422,10 +422,12 @@ class MemberController extends AdminController
             'spouse_occupation' => 'required',
             'no_of_adult' => 'required',
             'no_of_children' => 'required',
-            'smartcard_no' => 'required',
-            'voter_id' => 'required',
-            'smartcard_img' => 'required',
-            'voterid_img' => 'required',
+            // 'smartcard_no' => 'required',
+            // 'voter_id' => 'required',
+            // 'smartcard_img' => 'required',
+            // 'voterid_img' => 'required',
+            'aadhar_img' => 'required',
+            'aadhar_no' => 'required',
             'nominee_name' => 'required',
             'relation_with_client' => 'required',
             'nominee_aadhar' => 'required',
@@ -529,6 +531,7 @@ class MemberController extends AdminController
     public function MemberUpdate(Request $request)
     {
         $input = $request->all();
+
         $validator = Validator::make($request->all(), [
             'client_name' => 'required',
             'dob' => 'required',
@@ -557,14 +560,14 @@ class MemberController extends AdminController
             'no_of_children' => 'required',
             'smartcard_no' => 'required',
             'voter_id' => 'required',
-            'smartcard_img' => 'required',
-            'voterid_img' => 'required',
+            // 'smartcard_img' => 'required',
+            // 'voterid_img' => 'required',
             'nominee_name' => 'required',
             'relation_with_client' => 'required',
             'nominee_aadhar' => 'required',
             // 'nominee_mobile' => 'required',
             'nominee_dob' => 'required',
-            'nominee_aadhar_img' => 'required',
+            // 'nominee_aadhar_img' => 'required',
             // 'account_holder_name' => 'required',
             // 'account_number' => 'required',
             // 'bank_name' => 'required',
@@ -576,6 +579,105 @@ class MemberController extends AdminController
                 ->withErrors($validator)
                 ->withInput();
         }
-        dd($input);
+        $member = Member::where('id',$input['create'])->first();
+        $member->client_name = isset($input['client_name'])?$input['client_name']:$member->client_name;
+        $member->dob = isset($input['dob'])?$input['dob']:$member->dob;
+        $member->gender = isset($input['gender'])?$input['gender']:$member->gender;
+        $member->address = isset($input['address'])?$input['address']:$member->address;
+        $member->community = isset($input['community'])?$input['community']:$member->community;
+        $member->qualification = isset($input['qualification'])?$input['qualification']:$member->qualification;
+        $member->monthly_income = isset($input['monthly_income'])?$input['monthly_income']:$member->monthly_income;
+        $member->status = isset($input['status'])?$input['status']:$member->status;
+        $member->center_id = isset($input['center_id'])?$input['center_id']:$member->center_id;
+        $member->age = isset($input['age'])?$input['age']:$member->age;
+        $member->phone_number = isset($input['phone_number'])?$input['phone_number']:$member->phone_number;
+        $member->city = isset($input['city'])?$input['city']:$member->city;
+        $member->pincode = isset($input['pincode'])?$input['pincode']:$member->pincode;
+        $member->religion = isset($input['religion'])?$input['religion']:$member->religion;
+        $member->marital_status = isset($input['marital_status'])?$input['marital_status']:$member->marital_status;
+        $member->monthly_expenses = isset($input['monthly_expenses'])?$input['monthly_expenses']:$member->monthly_expenses;
+        $member->date_of_joined = isset($input['date_of_joined'])?$input['date_of_joined']:$member->date_of_joined;
+        $member->father_name = isset($input['father_name'])?$input['father_name']:$member->father_name;
+        $member->mother_name = isset($input['mother_name'])?$input['mother_name']:$member->mother_name;
+        $member->spouse_name = isset($input['spouse_name'])?$input['spouse_name']:$member->spouse_name;
+        $member->spouse_occupation = isset($input['spouse_occupation'])?$input['spouse_occupation']:$member->spouse_occupation;
+        $member->no_of_adult = isset($input['no_of_adult'])?$input['no_of_adult']:$member->no_of_adult;
+        $member->no_of_children = isset($input['no_of_children'])?$input['no_of_children']:$member->no_of_children;
+        $member->aadhar_no = isset($input['aadhar_no'])?$input['aadhar_no']:$member->aadhar_no;
+        $member->pancard_no = isset($input['pancard_no'])?$input['pancard_no']:$member->pancard_no;
+        $member->smartcard_no = isset($input['smartcard_no'])?$input['smartcard_no']:$member->smartcard_no;
+        $member->voter_id = isset($input['voter_id'])?$input['voter_id']:$member->voter_id;
+        $member->nominee_name = isset($input['nominee_name'])?$input['nominee_name']:$member->nominee_name;
+        $member->relation_with_client = isset($input['relation_with_client'])?$input['relation_with_client']:$member->relation_with_client;
+        $member->nominee_aadhar = isset($input['nominee_aadhar'])?$input['nominee_aadhar']:$member->nominee_aadhar;
+        $member->nominee_mobile = isset($input['nominee_mobile'])?$input['nominee_mobile']:$member->nominee_mobile;
+        $member->nominee_dob = isset($input['nominee_dob'])?$input['nominee_dob']:$member->nominee_dob;
+        $member->account_holder_name = isset($input['account_holder_name'])?$input['account_holder_name']:$member->account_holder_name;
+        $member->account_number = isset($input['account_number'])?$input['account_number']:$member->account_number;
+        $member->bank_name = isset($input['bank_name'])?$input['bank_name']:$member->bank_name;
+        $member->ifsc_number = isset($input['ifsc_number'])?$input['ifsc_number']:$member->ifsc_number;
+        $member->branch_name = isset($input['branch_name'])?$input['branch_name']:$member->branch_name;
+
+        if (isset($input['image']) && $request->hasFile('image')) {
+            $file = $request->file('image'); // Assuming 'image' is the name of the input field
+            $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
+            $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
+            // $path now contains the path where the file is stored
+            $member->photo = $path;
+        }
+        if (isset($input['smartcard_img']) && $request->hasFile('smartcard_img')) {
+            $file = $request->file('smartcard_img'); // Assuming 'image' is the name of the input field
+            $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
+            $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
+            // $path now contains the path where the file is stored
+            $member->smartcard_img = $path;
+        }
+        if (isset($input['voterid_img']) && $request->hasFile('voterid_img')) {
+            $file = $request->file('voterid_img'); // Assuming 'image' is the name of the input field
+            $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
+            $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
+            // $path now contains the path where the file is stored
+            $member->voterid_img = $path;
+        }
+        if (isset($input['aadhar_img']) && $request->hasFile('aadhar_img')) {
+            $file = $request->file('aadhar_img'); // Assuming 'image' is the name of the input field
+            $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
+            $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
+            // $path now contains the path where the file is stored
+            $member->aadhar_img = $path;
+        }
+        if (isset($input['pancard_img']) && $request->hasFile('pancard_img')) {
+            $file = $request->file('pancard_img'); // Assuming 'image' is the name of the input field
+            $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
+            $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
+            // $path now contains the path where the file is stored
+            $member->pancard_img = $path;
+        }
+
+        //nominee
+        if (isset($input['nominee_aadhar_img']) && $request->hasFile('nominee_aadhar_img')) {
+            $file = $request->file('nominee_aadhar_img'); // Assuming 'image' is the name of the input field
+            $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
+            $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
+            // $path now contains the path where the file is stored
+            $member->nominee_aadhar_img = $path;
+        }
+        if (isset($input['nominee_voter_img']) && $request->hasFile('nominee_voter_img')) {
+            $file = $request->file('nominee_voter_img'); // Assuming 'image' is the name of the input field
+            $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
+            $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
+            // $path now contains the path where the file is stored
+            $member->nominee_voter_img = $path;
+        }
+        if (isset($input['nominee_other_img']) && $request->hasFile('nominee_other_img')) {
+            $file = $request->file('nominee_other_img'); // Assuming 'image' is the name of the input field
+            $uniqueFileName = date('YmdHis') . '_' . $file->getClientOriginalName(); // Append original filename to ensure uniqueness
+            $path = $file->storeAs('uploads/images', $uniqueFileName, 'public'); // 'images' is the directory within 'public' disk
+            // $path now contains the path where the file is stored
+            $member->nominee_other_img = $path;
+        }
+        $member->save();
+        admin_toastr('Member updated Successfully', 'success');
+        return redirect('/admin/members');
     }
 }
