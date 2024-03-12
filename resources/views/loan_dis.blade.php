@@ -545,7 +545,7 @@
             // console.log($(this).val(), 'value')
             if ($(this).val() != '' && $(this).val() != null) {
                 const selectedVal = JSON.parse($(this).find(':selected').attr('data-value'));
-                // console.log($(this).find(':selected').attr('data-value'), 'seleceted');
+                console.log($(this).find(':selected').attr('data-value'), 'seleceted');
                 $('#index_date').val(selectedVal.index_date);
                 $('#total_member').val(selectedVal.total_member);
                 $('.total_amount').val(selectedVal.total_amount);

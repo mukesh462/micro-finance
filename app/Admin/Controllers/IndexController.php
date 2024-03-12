@@ -157,7 +157,7 @@ class IndexController extends AdminController
 
         $cacheKey = 'select2_data_' . md5(json_encode($request->all()));
 
-        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($request, $page) {
+        // $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($request, $page) {
             $perPage = 10; // Adjust the number of items per page as needed
             $offset = ($page - 1) * $perPage;
             if ($request->tp == 'employee') {
@@ -206,26 +206,26 @@ class IndexController extends AdminController
                 // dd($request->id);
 
                 $query = Index::query();
-                $query->select('indexes.index_no', 'indexes.id')
+                $query->select('indexes.index_no', 'indexes.id','indexes.total_member','indexes.total_amount','indexes.index_date')
                     ->join('index_members', 'index_members.index_id', '=', 'indexes.id')
                     ->join('centers', 'indexes.center_id', '=', 'centers.id')
                     ->where('index_members.loan_status', 0)
                     ->where('indexes.index_status', 1)
                     ->where('centers.id', $request->id)->orderbydesc('indexes.id')
-                    ->groupBy('indexes.index_no', 'indexes.id');
+                    ->groupBy('indexes.index_no', 'indexes.id','indexes.total_member','indexes.total_amount','indexes.index_date');
 
                 // $query->where('center_id', $request->id)->where('index_status', 1)->orderbydesc('id');
                 $total = 0;
 
                 $results = collect($query->get()->unique('index_no')->toArray())->unique('index_no');
-                dd($results);
+                // dd($results);
             } else if ($request->tp == 'index_member') {
                 $query = IndexMember::query();
                 $query->where('index_id', $request->id)->where('loan_status', 0);
                 $total = $query->count();
 
                 $results = $query->get();
-                dd($results);
+                // dd($results);
                 foreach ($results as $key => $value) {
                     $center = Center::find($value->center_id);
                     $employe = Employee::find($value->staff_id);
@@ -243,9 +243,9 @@ class IndexController extends AdminController
                 'results' => $results,
                 'total_count' => $total,
             ];
-        });
+        // });
 
-        return response()->json($data);
+        // return response()->json($data);
     }
     public function getemployee(Request $request)
     {
