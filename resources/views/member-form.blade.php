@@ -244,7 +244,7 @@
                                     @include('livewire.image-uploader', [
                                     'img' => 'image',
                                     'label' => 'Photo',
-                                    'value' => old('image', isset($data) ? env('APP_URL').'/uploads/'.$data->photo : ''),
+                                    'value' => old('image', isset($data->photo) ? env('APP_URL').'/uploads/'.$data->photo : 'Photo'),
                                     "name" =>"image",
                                     'isRequired' => false,
                                     ])
@@ -400,24 +400,25 @@
                     <div class="tab-pane container" id="tab-form-3" style='max-width:100%!important'>
                         <div class="row">
                             <div class="col-12 col-md-6 col-lg-6">
+                            @include('livewire.text-input', [
+                                'label' => 'Aadhar Card Number',
+                                'name' => 'aadhar_no',
+                                'value' => old('aadhar_no',isset($data) ? $data->aadhar_no : ''),
+                                'isRequired' => true,
+                                ])
                                 @include('livewire.text-input', [
                                 'label' => 'SmartCard No',
                                 'name' => 'smartcard_no',
                                 'value' => old('smartcard_no',isset($data) ? $data->smartcard_no : ''),
-                                'isRequired' => true,
+                                'isRequired' => false,
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Voter ID',
                                 'name' => 'voter_id',
                                 'value' => old('voter_id',isset($data) ? $data->voter_id : ''),
-                                'isRequired' => true,
-                                ])
-                                @include('livewire.text-input', [
-                                'label' => 'Aadhar Card Number',
-                                'name' => 'aadhar_no',
-                                'value' => old('aadhar_no',isset($data) ? $data->aadhar_no : ''),
                                 'isRequired' => false,
                                 ])
+
                                 @include('livewire.text-input', [
                                 'label' => 'Pan No',
                                 'name' => 'pancard_no',
@@ -426,14 +427,22 @@
                                 ])
                             </div>
                             <div class="col-12 col-md-6 col-lg-6" style="margin-top: 5px;">
-
+                            <div class="">
+                                    @include('livewire.image-uploader', [
+                                    'img' => 'aadhar_img',
+                                    'label' => 'Aadhar img',
+                                    'value' => old('aadhar_img', isset($data->aadhar_img) ? env('APP_URL').'/uploads/'.$data->aadhar_img : 'Aadhar img'),
+                                    "name" =>"aadhar_img",
+                                    'isRequired' => true,
+                                    ])
+                                </div>
                                 <div class="">
                                     @include('livewire.image-uploader', [
                                     'img' => 'smartcard_img',
                                     'label' => 'Smart card img',
                                     'value' => old('smartcard_img', isset($data->smartcard_img) ? env('APP_URL').'/uploads/'.$data->smartcard_img : 'Smart card img'),
                                     "name" =>"smartcard_img",
-                                    'isRequired' => true,
+                                    'isRequired' => false,
                                     ])
                                 </div>
 
@@ -443,16 +452,6 @@
                                     'label' => 'voterid img',
                                     'value' => old('voterid_img', isset($data->voterid_img) ? env('APP_URL').'/uploads/'.$data->voterid_img : 'voterid img'),
                                     "name" =>"voterid_img",
-                                    'isRequired' => true,
-                                    ])
-                                </div>
-
-                                <div class="">
-                                    @include('livewire.image-uploader', [
-                                    'img' => 'aadhar_img',
-                                    'label' => 'Aadhar img',
-                                    'value' => old('aadhar_img', isset($data->aadhar_img) ? env('APP_URL').'/uploads/'.$data->aadhar_img : 'Aadhar img'),
-                                    "name" =>"aadhar_img",
                                     'isRequired' => false,
                                     ])
                                 </div>
