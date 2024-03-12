@@ -405,7 +405,12 @@
                         tp: 'index_member'
                     },
                     success: function ({ results }) {
+                        console.log(results,'data')
                         $('#list-table').html('')
+                        const total_amount_table = results.reduce((acc, pre) => acc + pre.plan_amount, 0);
+                        // console.log(total_amount_table, 'amirrr');
+
+                    $('.total').text(total_amount_table);
                         results.forEach((dat, i) => {
                             const rowData = `<tr>
                     <td>${i + 1}</td>
