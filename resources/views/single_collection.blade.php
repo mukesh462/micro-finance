@@ -208,6 +208,53 @@
         //     id: $(this).val(),
         // });
     });
+    $("#member_list").on("change", function() {
+        // $(this).attr("disabled", true);
+        let member_id = $(this).val();
+        console.log(member_id, "ihhxgfh");
+        let postData = {
+            member_id: member_id,
+        };
+
+        // jQuery AJAX POST call
+        $.ajax({
+            url: '/admin/getLoan', // replace with your API endpoint
+            method: 'POST',
+            contentType: 'application/json', // set content type to JSON
+            data: JSON.stringify(postData), // convert data to JSON format
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // include CSRF token in headers
+            },
+            success: function(data) {
+                if (data.results.loan.length > 0) {
+                    $.each(data.results.loan, function(index, option) {
+                        $('#loan_list').append($('<option>', {
+                            value: option.id,
+                            text: option.loan_amount
+                        }));
+                    });
+                } else {
+                    var selectElement = $('#loan_list');
+                    // Remove all existing options
+                    selectElement.find('option[value!=""]').remove();
+                }
+                // if (data.results.employee != null) {
+                //     $('#employee_name').val(data.results.employee.staff_name);
+                // }
+                console.log(data, "respo")
+                // Handle successful response
+                // $('#result').text(JSON.stringify(data, null, 2));
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error('AJAX request failed: ' + status + ', ' + error);
+            }
+        });
+
+        // addSelectData("Center", "center", {
+        //     id: $(this).val(),
+        // });
+    });
 
     function displayValidationMessage(id, message, color) {
         $('#' + id).text(message).css('color', color);
