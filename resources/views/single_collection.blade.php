@@ -45,38 +45,43 @@
                     <label for="member" class="" id="loan_error">Select Loan Acc No</label>
                     <select type="text" class="form-control" placeholder="Select Loan" id="loan_list">
                         <option aria-readonly="true" value="">Select Loan Acc Number</option>
-                        <option  value="2">Example</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="member" class="" id="Product-error">Disbursal Date</label>
-                    <input type="text" class="form-control" id="purpose" placeholder="Disbursal Date" readonly disabled />
+                    <input type="text" class="form-control" id="disbursal_date" placeholder="Disbursal Date" readonly disabled/>
                 </div>
 
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Loan Amount</label>
-                    <input type="text" class="form-control" id="loan-amount" placeholder="Loan Amount" readonly disabled />
-                </div>
-                <div class="col-12 col-md-4 col-lg-4 mb">
-                    <label for="purpose">Due Weeks</label>
-                    <input type="text" class="form-control" id="loan-amount" placeholder="Due Weeks" readonly disabled />
-                </div>
-                <div class="col-12 col-md-4 col-lg-4 mb">
-                    <label for="purpose">Collection Weeks</label>
-                    <input type="text" class="form-control" id="collection-Weeks" placeholder="Collection Weeks" readonly disabled />
-                </div>
-                <div class="col-12 col-md-4 col-lg-4 mb">
-                    <label for="purpose">Opening Arr. Price</label>
-                    <input type="text" class="form-control" id="arr-price" placeholder="Opening Arr. Price" readonly disabled />
-                </div>
-                <div class="col-12 col-md-4 col-lg-4 mb">
-                    <label for="purpose">Opening Arr. Interest</label>
-                    <input type="text" class="form-control" id="arr-int" placeholder="Opening Arr. Interest" readonly disabled />
+                    <input type="text" class="form-control" id="loan_amount" placeholder="Loan Amount" readonly disabled/>
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Loan Outstanding</label>
-                    <input type="text" class="form-control" id="loan-outstanding" placeholder="Loan Outstanding" readonly disabled />
+                    <input type="text" class="form-control" id="loan_outstanding" placeholder="Loan Outstanding" readonly disabled />
                 </div>
+                <!-- <div class="col-12 col-md-4 col-lg-4 mb">
+                    <label for="purpose">Due Weeks</label>
+                    <input type="text" class="form-control" id="due_weeks" placeholder="Due Weeks" readonly disabled/>
+                </div> -->
+
+                <div class="col-12 col-md-4 col-lg-4 mb">
+                    <label for="purpose">Opening Arr. Price</label>
+                    <input type="text" class="form-control" id="arr_price" placeholder="Opening Arr. Price" readonly disabled />
+                </div>
+                <div class="col-12 col-md-4 col-lg-4 mb">
+                    <label for="purpose">Due Amount</label>
+                    <input type="text" class="form-control" id="due_price" placeholder="Due Amount" readonly disabled />
+                </div>
+                <div class="col-12 col-md-4 col-lg-4 mb">
+                    <label for="purpose">Due Interest</label>
+                    <input type="text" class="form-control" id="due_int" placeholder="Due Interest" readonly disabled />
+                </div>
+                <!-- <div class="col-12 col-md-4 col-lg-4 mb">
+                    <label for="purpose">Opening Arr. Interest</label>
+                    <input type="text" class="form-control" id="arr-int" placeholder="Opening Arr. Interest" readonly disabled />
+                </div> -->
+
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="collection-type" id="collection-error">Collection Type</label>
                     <select type="text" class="form-control" id="collection-type" placeholder="Collection Type">
@@ -86,13 +91,13 @@
                     </select>
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
-                    <label for="purpose" id="amount-error">Loan Collected</label>
-                    <input type="text" class="form-control" id="loan-collected" placeholder="Loan Collected" />
+                    <label for="purpose" id="amount-error">Total Collected</label>
+                    <input type="text" class="form-control" id="loan_collected" placeholder="Loan Collected" />
                 </div>
-                <div class="col-12 col-md-4 col-lg-4 mb">
+                <!-- <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Total Collected</label>
                     <input type="text" class="form-control" id="total-collected" placeholder="Total Collected" readonly disabled />
-                </div>
+                </div> -->
                 <div class="col-12 col-md-4 col-lg-4 addbtn" style="">
                     <button type="submit" id="add-btn" class="btn btn-primary mt-2 d-block">
                         <i class="fa fa-save"></i>&nbsp; Save
@@ -255,6 +260,61 @@
         //     id: $(this).val(),
         // });
     });
+    $("#loan_list").on("change", function() {
+        // $(this).attr("disabled", true);
+        let loan_id = $(this).val();
+        console.log(loan_id, "ihhxgfh");
+        let postData = {
+            loan_id: loan_id,
+        };
+
+        // jQuery AJAX POST call
+        $.ajax({
+            url: '/admin/getLoanDetails', // replace with your API endpoint
+            method: 'POST',
+            contentType: 'application/json', // set content type to JSON
+            data: JSON.stringify(postData), // convert data to JSON format
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // include CSRF token in headers
+            },
+            success: function(data) {
+                console.log(data,"loan")
+                $('#disbursal_date').val(data.results.loan.first_due)
+                $('#loan_amount').val(data.results.loan.loan_amount)
+                $('#loan_outstanding').val(data.results.loan.loan_amount)
+                $('#arr_price').val(data.results.balance_amount)
+                $('#due_price').val(data.results.collection.due_amount)
+                $('#due_int').val(data.results.collection.due_interest)
+                $('#loan_collected').val(data.results.total_amount)
+                // if (data.results.loan.length > 0) {
+                //     $.each(data.results.loan, function(index, option) {
+                //         $('#loan_list').append($('<option>', {
+                //             value: option.id,
+                //             text: option.loan_amount
+                //         }));
+                //     });
+                // } else {
+                //     var selectElement = $('#loan_list');
+                //     // Remove all existing options
+                //     selectElement.find('option[value!=""]').remove();
+                // }
+                // if (data.results.employee != null) {
+                //     $('#employee_name').val(data.results.employee.staff_name);
+                // }
+                console.log(data, "respo")
+                // Handle successful response
+                // $('#result').text(JSON.stringify(data, null, 2));
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error('AJAX request failed: ' + status + ', ' + error);
+            }
+        });
+
+        // addSelectData("Center", "center", {
+        //     id: $(this).val(),
+        // });
+    });
 
     function displayValidationMessage(id, message, color) {
         $('#' + id).text(message).css('color', color);
@@ -327,7 +387,7 @@
         // this.submit();
     });
     $('#reset-btn').click(function() {
-          window.location.reload(); 
+          window.location.reload();
         // $('#myForm')[0].reset(); // Reset the form
     });
 </script>

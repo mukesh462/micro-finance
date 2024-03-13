@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\Center;
 use App\Models\CenterOwnerList;
+use App\Models\Collection;
 use App\Models\Employee;
 use App\Models\LoanAccount;
 use App\Models\Member;
@@ -207,27 +208,27 @@ class CenterController extends AdminController
         function getNextDayDate(selectedDay) {
             // Get the current date
             var currentDate = new Date();
-        
+
             // Get the current day of the week (0 for Sunday, 1 for Monday, ..., 6 for Saturday)
             var currentDayOfWeek = currentDate.getDay();
-        
+
             // Calculate the difference in days between the selected day and the current day
             var dayDifference = (selectedDay - currentDayOfWeek + 7) % 7;
-        
+
             // Add the difference to the current date to get the next occurrence of the selected day
             var nextDayDate = new Date(currentDate.getTime() + dayDifference * 24 * 60 * 60 * 1000);
-        
+
             // Format the date to DD-MM-YYYY
             var formattedDate = ("0" + nextDayDate.getDate()).slice(-2) + "-" + ("0" + (nextDayDate.getMonth() + 1)).slice(-2) + "-" + nextDayDate.getFullYear();
-        
+
             return formattedDate;
         }
-        
-        
+
+
         // Example usage:
         var selectedDay = 0; // 0 for Sunday
         var nextSundayDate = getNextDayDate(selectedDay);
-        
+
         // console.log(nextSundayDate.toDateString()); // Output the date of the next Sunday
         $("#day_select").on("change", function () {
             console.log($(this).val(), "ut");
@@ -237,33 +238,33 @@ class CenterController extends AdminController
         function getDateAfterDays(dayOfWeek) {
             // Get the current date
             var currentDate = new Date();
-        
+
             // Calculate the difference in days between the selected day and the current day
             var dayDifference = (dayOfWeek - currentDate.getDay() + 7) % 7;
-        
+
             // Add the difference to the current date to get the next occurrence of the selected day
             var nextDayDate = new Date(currentDate.getTime() + dayDifference * 24 * 60 * 60 * 1000);
-        
+
             // Add 14 days to the next occurrence of the selected day
             nextDayDate.setDate(nextDayDate.getDate() + 14);
-        
+
             // Format the date to DD-MM-YYYY
             var formattedDate = ("0" + nextDayDate.getDate()).slice(-2) + "-" + ("0" + (nextDayDate.getMonth() + 1)).slice(-2) + "-" + nextDayDate.getFullYear();
-        
+
             return formattedDate;
         }
-        
+
         // Example usage:
         var selectedDay = 0; // 0 for Sunday
         var dateAfter14Days = getDateAfterDays(selectedDay);
-        
-        
+
+
         $("#14-day-select").on("change", function () {
             console.log($(this).val(), "ut");
             $("#14day-id").val(getDateAfterDays($(this).val()))
         })
         $("#14day-id").val(dateAfter14Days)
-        
+
         $("#month-id").on("blur", function () {
             var value = $("#month-id").val();
             console.log(value, "aswfwf");
@@ -274,7 +275,7 @@ class CenterController extends AdminController
             var daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             $("#month-day-id").val(daysOfWeek[dayNumber])
         });
-        
+
         $("#day-id").on("blur", function () {
             var clumn = $(this).val();
             console.log($(this).val(), "value");
@@ -347,6 +348,25 @@ class CenterController extends AdminController
         $id = $request->input('member_id'); // Search term
         // $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
         $data['loan'] =   LoanAccount::select('id', 'loan_amount')->where('member_id', $id)->where('loan_status', 0)->get();
+        // Prepare response data
+        $response = [
+            'results' => $data,
+        ];
+        // Return JSON response
+        return response()->json($response);
+    }
+    public function getLoanDetails(Request $request)
+    {
+
+        // Retrieve parameters from the request
+        $id = $request->input('loan_id'); // Search term
+        // $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
+        $data['loan'] = LoanAccount::where('id', $id)->where('loan_status', 0)->first();
+        $data['collection'] = Collection::where('status',1)->first();
+        $last = Collection::where('status', 2)->latest()->first();
+        $data['balance_amount'] = is_object($last)?$last->balance_amount:0;
+        $data['total_amount'] = $data['balance_amount']+$data['collection']->due_amount + $data['collection']->due_interest ;
+
         // Prepare response data
         $response = [
             'results' => $data,
