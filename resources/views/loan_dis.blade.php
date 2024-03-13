@@ -405,7 +405,12 @@
                         tp: 'index_member'
                     },
                     success: function ({ results }) {
+                        console.log(results,'data')
                         $('#list-table').html('')
+                        const total_amount_table = results.reduce((acc, pre) => acc + pre.plan_amount, 0);
+                        // console.log(total_amount_table, 'amirrr');
+
+                    $('.total').text(total_amount_table);
                         results.forEach((dat, i) => {
                             const rowData = `<tr>
                     <td>${i + 1}</td>
@@ -545,7 +550,7 @@
             // console.log($(this).val(), 'value')
             if ($(this).val() != '' && $(this).val() != null) {
                 const selectedVal = JSON.parse($(this).find(':selected').attr('data-value'));
-                // console.log($(this).find(':selected').attr('data-value'), 'seleceted');
+                console.log($(this).find(':selected').attr('data-value'), 'seleceted');
                 $('#index_date').val(selectedVal.index_date);
                 $('#total_member').val(selectedVal.total_member);
                 $('.total_amount').val(selectedVal.total_amount);

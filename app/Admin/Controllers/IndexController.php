@@ -157,7 +157,7 @@ class IndexController extends AdminController
 
         $cacheKey = 'select2_data_' . md5(json_encode($request->all()));
 
-        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($request, $page) {
+        // $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($request, $page) {
             $perPage = 10; // Adjust the number of items per page as needed
             $offset = ($page - 1) * $perPage;
             if ($request->tp == 'employee') {
@@ -206,26 +206,26 @@ class IndexController extends AdminController
                 // dd($request->id);
 
                 $query = Index::query();
-                $query->select('indexes.index_no', 'indexes.id')
+                $query->select('indexes.index_no', 'indexes.id','indexes.total_member','indexes.total_amount','indexes.index_date')
                     ->join('index_members', 'index_members.index_id', '=', 'indexes.id')
                     ->join('centers', 'indexes.center_id', '=', 'centers.id')
                     ->where('index_members.loan_status', 0)
                     ->where('indexes.index_status', 1)
                     ->where('centers.id', $request->id)->orderbydesc('indexes.id')
-                    ->groupBy('indexes.index_no', 'indexes.id');
+                    ->groupBy('indexes.index_no', 'indexes.id','indexes.total_member','indexes.total_amount','indexes.index_date');
 
                 // $query->where('center_id', $request->id)->where('index_status', 1)->orderbydesc('id');
                 $total = 0;
 
                 $results = collect($query->get()->unique('index_no')->toArray())->unique('index_no');
-                dd($results);
+                // dd($results);
             } else if ($request->tp == 'index_member') {
                 $query = IndexMember::query();
                 $query->where('index_id', $request->id)->where('loan_status', 0);
                 $total = $query->count();
 
                 $results = $query->get();
-                dd($results);
+                // dd($results);
                 foreach ($results as $key => $value) {
                     $center = Center::find($value->center_id);
                     $employe = Employee::find($value->staff_id);
@@ -243,9 +243,9 @@ class IndexController extends AdminController
                 'results' => $results,
                 'total_count' => $total,
             ];
-        });
+        // });
 
-        return response()->json($data);
+        // return response()->json($data);
     }
     public function getemployee(Request $request)
     {
@@ -466,12 +466,18 @@ class IndexController extends AdminController
         // dd($first_due);
         $finalData = json_decode($data);
         $inDex = IndexMember::where('index_id', $finalData[0]->index_id)->count();
+        $inDexAprove = IndexMember::where('index_id', $finalData[0]->index_id)->where('loan_status',1)->count();
+        $countAdd = $inDexAprove + count($finalData);
         if (count($finalData) == $inDex) {
             Index::where('id', $finalData[0]->index_id)->update(['index_status' => 2]);
+        }elseif($countAdd == $inDex) {
+            Index::where('id', $finalData[0]->index_id)->update(['index_status' => 2]);
+            
         }
         foreach ($finalData as $key => $value) {
             $planFind = Product::find($value->plan_id);
             if (is_object($planFind)) {
+                $loan_no = LoanAccount::where('member_id',$value->member_id)->count();
                 $addTo = new LoanAccount();
                 $addTo->index_id = $value->index_id;
                 $addTo->index_member_id = $value->id;
@@ -484,12 +490,15 @@ class IndexController extends AdminController
                 $addTo->loan_duration = $planFind->plan_duration;
                 $addTo->loan_type = $planFind->plan_type;
                 $addTo->staff_id = $value->staff_id;
+                $addTo->loan_no = $loan_no == 0 ? date('Ymd').'00'. 1: date('Ymd').'00'.$loan_no +1;
                 $addTo->fund_type = $input['fund'];
                 $addTo->dis_type = $input['dis_mode'];
                 $addTo->first_due = $input['first_due'];
+                $addTo->dis_date =date('d-m-Y');
+                $interest = $planFind->interest_type == 1 ? ($planFind->plan_amount * $planFind->interest_amount / 100) : $planFind->interest_amount;
+                $addTo->outstanding_amount = $planFind->plan_amount + $interest;
                 $addTo->save();
                 IndexMember::where('id', $value->id)->update(['loan_status' => 1]);
-
                 $arr = [];
                 for ($due = 0; $due < $planFind->plan_duration; $due++) {
                     $dayPlus = $due + 1;
@@ -507,12 +516,12 @@ class IndexController extends AdminController
                             'due_date' => date('Y-m-d', strtotime($first_due . '+' . ($dayPlus) . 'week')),
                             'due_interest' => $month_interest,
                             'collection_date' => date('Y-m-d', strtotime($first_due . '+' . ($dayPlus) . 'week')),
-                            'due_amount' => round($loan_amt + $interest, 2),
+                            'due_amount' => round($loan_amt + $month_interest, 2),
                             'collection_price' => round($loan_amt, 2),
-                            'collection_interest' => $interest,
-                            'collection_amount' => round($loan_amt + $interest, 2),
+                            'collection_interest' => $month_interest,
+                            'collection_amount' => round($loan_amt + $month_interest, 2),
                             'due_balance' => 0,
-                            'collection_interest' => $interest,
+                            'collection_interest' => $month_interest,
                         ];
                     } elseif ($planFind->plan_type == 2) { //14 days
                         $arr[] = [
@@ -524,12 +533,12 @@ class IndexController extends AdminController
                             'due_date' => date('Y-m-d', strtotime($first_due . '+' . ($dayPlus * 14) . 'day')),
                             'due_interest' => $month_interest,
                             'collection_date' => date('Y-m-d', strtotime($first_due . '+' . ($dayPlus * 14) . 'day')),
-                            'due_amount' => round($loan_amt + $interest, 2),
+                            'due_amount' => round($loan_amt + $month_interest, 2),
                             'collection_price' => round($loan_amt, 2),
-                            'collection_interest' => $interest,
-                            'collection_amount' => round($loan_amt + $interest, 2),
+                            'collection_interest' => $month_interest,
+                            'collection_amount' => round($loan_amt + $month_interest, 2),
                             'due_balance' => 0,
-                            'collection_interest' => $interest,
+                            'collection_interest' => $month_interest,
                         ];
                     } else { //month
                         $arr[] = [
@@ -541,12 +550,12 @@ class IndexController extends AdminController
                             'due_date' => date('Y-m-d', strtotime($first_due . '+' . ($dayPlus) . 'month')),
                             'due_interest' => $month_interest,
                             'collection_date' => date('Y-m-d', strtotime($first_due . '+' . ($dayPlus) . 'month')),
-                            'due_amount' => round($loan_amt + $interest, 2),
+                            'due_amount' => round($loan_amt + $month_interest, 2),
                             'collection_price' => round($loan_amt, 2),
-                            'collection_interest' => $interest,
-                            'collection_amount' => round($loan_amt + $interest, 2),
+                            'collection_interest' => $month_interest,
+                            'collection_amount' => round($loan_amt + $month_interest, 2),
                             'due_balance' => 0,
-                            'collection_interest' => $interest,
+                            'collection_interest' => $month_interest,
                         ];
                     }
                 }
@@ -554,7 +563,7 @@ class IndexController extends AdminController
                 DB::table('collections')->insert($arr);
             }
         }
-
+            admin_toastr('Loan Disbursement Successfully');
 
         return redirect()->to(admin_url('loan'));
     }
