@@ -64,4 +64,6 @@ Route::group([
     $router->post('member/save', [MemberController::class, 'MemberformSave']);
     $router->post('getLoan', "CenterController@getLoan");
     $router->post('getLoanDetails', "CenterController@getLoanDetails");
+    $router->post('collectionUpdate', "CenterController@collectionUpdate");
+
 });

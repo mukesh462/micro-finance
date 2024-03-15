@@ -22,7 +22,7 @@
 
 <div class="container">
     <div id="container">
-        <form id="myForm">
+        <form id="myForm" action="/admin/collectionUpdate" method="post">
             <div class="row">
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="center" class="" id="center-error">Select Center
@@ -33,7 +33,7 @@
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="employee" class="" id="employee_error">Employee Name</label>
-                    <input type="text" class="form-control" id="employee_name" placeholder="Employee Name" readonly disabled />
+                    <input type="text" class="form-control" id="employee_name" name="employee_name" placeholder="Employee Name" readonly disabled />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="member" class="" id="member_error">Select Member</label>
@@ -43,39 +43,39 @@
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="member" class="" id="loan_error">Select Loan Acc No</label>
-                    <select type="text" class="form-control" placeholder="Select Loan" id="loan_list">
+                    <select type="text" class="form-control" placeholder="Select Loan" id="loan_list" name="loan_id">
                         <option aria-readonly="true" value="">Select Loan Acc Number</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="member" class="" id="Product-error">Disbursal Date</label>
-                    <input type="text" class="form-control" id="disbursal_date" placeholder="Disbursal Date" readonly disabled/>
+                    <input type="text" class="form-control" id="disbursal_date" name="disbursal_date" placeholder="Disbursal Date" readonly disabled/>
                 </div>
-
+                <input type="hidden" name="_token" id="csrf-token" value="{{ csrf_token() }}">
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Loan Amount</label>
-                    <input type="text" class="form-control" id="loan_amount" placeholder="Loan Amount" readonly disabled/>
+                    <input type="text" class="form-control" id="loan_amount" name="loan_amount" placeholder="Loan Amount" readonly/>
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Loan Outstanding</label>
-                    <input type="text" class="form-control" id="loan_outstanding" placeholder="Loan Outstanding" readonly disabled />
+                    <input type="text" class="form-control" id="loan_outstanding" name="loan_outstanding" placeholder="Loan Outstanding" readonly disabled />
                 </div>
-                <!-- <div class="col-12 col-md-4 col-lg-4 mb">
-                    <label for="purpose">Due Weeks</label>
-                    <input type="text" class="form-control" id="due_weeks" placeholder="Due Weeks" readonly disabled/>
-                </div> -->
+                <div class="col-12 col-md-4 col-lg-4 mb">
+                    <label for="purpose">collection Weeks</label>
+                    <input type="text" class="form-control" id="due_weeks" name="collection_weeks" placeholder="collection Weeks" readonly disabled/>
+                </div>
 
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Opening Arr. Price</label>
-                    <input type="text" class="form-control" id="arr_price" placeholder="Opening Arr. Price" readonly disabled />
+                    <input type="text" class="form-control" id="arr_price" name="arr_price" placeholder="Opening Arr. Price" readonly disabled />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Due Amount</label>
-                    <input type="text" class="form-control" id="due_price" placeholder="Due Amount" readonly disabled />
+                    <input type="text" class="form-control" id="due_price" name="due_price" placeholder="Due Amount" readonly disabled />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Due Interest</label>
-                    <input type="text" class="form-control" id="due_int" placeholder="Due Interest" readonly disabled />
+                    <input type="text" class="form-control" id="due_int" name="due_int" placeholder="Due Interest" readonly disabled />
                 </div>
                 <!-- <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Opening Arr. Interest</label>
@@ -84,7 +84,7 @@
 
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="collection-type" id="collection-error">Collection Type</label>
-                    <select type="text" class="form-control" id="collection-type" placeholder="Collection Type">
+                    <select type="text" class="form-control" id="collection-type" placeholder="Collection Type" name="collection-type">
                         <option value="">Collection Type</option>
                         <option value="Cash in hand">Cash in hand</option>
                         <option value="Bank">Bank</option>
@@ -92,7 +92,7 @@
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose" id="amount-error">Total Collected</label>
-                    <input type="text" class="form-control" id="loan_collected" placeholder="Loan Collected" />
+                    <input type="text" class="form-control" id="loan_collected" name="loan_collected" placeholder="Loan Collected" />
                 </div>
                 <!-- <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Total Collected</label>
@@ -235,13 +235,22 @@
                     $.each(data.results.loan, function(index, option) {
                         $('#loan_list').append($('<option>', {
                             value: option.id,
-                            text: option.loan_amount
+                            text: option.loan_no
                         }));
                     });
                 } else {
                     var selectElement = $('#loan_list');
                     // Remove all existing options
                     selectElement.find('option[value!=""]').remove();
+                    toastr.error('No Loan found');
+                $('#disbursal_date').val('')
+                $('#loan_amount').val('')
+                $('#loan_outstanding').val('')
+                $('#arr_price').val('')
+                $('#due_price').val('')
+                $('#due_int').val('')
+                $('#loan_collected').val('')
+                $('#due_weeks').val('')
                 }
                 // if (data.results.employee != null) {
                 //     $('#employee_name').val(data.results.employee.staff_name);
@@ -279,12 +288,13 @@
             },
             success: function(data) {
                 console.log(data,"loan")
-                $('#disbursal_date').val(data.results.loan.first_due)
+                $('#disbursal_date').val(data.results.loan.dis_date)
                 $('#loan_amount').val(data.results.loan.loan_amount)
-                $('#loan_outstanding').val(data.results.loan.loan_amount)
+                $('#loan_outstanding').val(data.results.loan.outstanding_amount)
                 $('#arr_price').val(data.results.balance_amount)
-                $('#due_price').val(data.results.collection.due_amount)
-                $('#due_int').val(data.results.collection.due_interest)
+                $('#due_weeks').val(data.results.collection.due_number)
+                $('#due_price').val(data.results.collection.collection_price)
+                $('#due_int').val(data.results.collection.collection_interest)
                 $('#loan_collected').val(data.results.total_amount)
                 // if (data.results.loan.length > 0) {
                 //     $.each(data.results.loan, function(index, option) {
@@ -366,7 +376,7 @@
             displayValidationMessage('collection-error',"Select Collection Type", 'black');
         }
 
-        let collected = $('#loan-collected').val();
+        let collected = $('#loan_collected').val();
         if (collected == "" || collected == null) {
             $('#amount-error').text('');
             displayValidationMessage('amount-error',"Enter Collected Amount", 'red');
@@ -375,16 +385,52 @@
         {
             displayValidationMessage('amount-error',"Loan Collected", 'black');
         }
-        // if (name === '' || email === '') {
-        //     alert('Please fill in all fields.');
-        //     return false; // Prevent form submission
-        // }
 
-        // If validation passes, submit the form
-        // You can add additional validation checks here if needed
+        // $.ajax({
+
+        //     url: '/admin/collectionUpdate', // replace with your API endpoint
+        //     method: 'POST',
+        //     contentType: 'application/json', // set content type to JSON
+        //     data: JSON.stringify(postData), // convert data to JSON format
+        //     headers: {
+        //         'X-CSRF-TOKEN': '{{ csrf_token() }}' // include CSRF token in headers
+        //     },
+        //     success: function(data) {
+        //         console.log(data,"loan")
+        //         $('#disbursal_date').val(data.results.loan.dis_date)
+        //         $('#loan_amount').val(data.results.loan.loan_amount)
+        //         $('#loan_outstanding').val(data.results.loan.outstanding_amount)
+        //         $('#arr_price').val(data.results.balance_amount)
+        //         $('#due_price').val(data.results.collection.collection_price)
+        //         $('#due_int').val(data.results.collection.collection_interest)
+        //         $('#loan_collected').val(data.results.total_amount)
+        //         // if (data.results.loan.length > 0) {
+        //         //     $.each(data.results.loan, function(index, option) {
+        //         //         $('#loan_list').append($('<option>', {
+        //         //             value: option.id,
+        //         //             text: option.loan_amount
+        //         //         }));
+        //         //     });
+        //         // } else {
+        //         //     var selectElement = $('#loan_list');
+        //         //     // Remove all existing options
+        //         //     selectElement.find('option[value!=""]').remove();
+        //         // }
+        //         // if (data.results.employee != null) {
+        //         //     $('#employee_name').val(data.results.employee.staff_name);
+        //         // }
+        //         console.log(data, "respo")
+        //         // Handle successful response
+        //         // $('#result').text(JSON.stringify(data, null, 2));
+        //     },
+        //     error: function(xhr, status, error) {
+        //         // Handle error
+        //         console.error('AJAX request failed: ' + status + ', ' + error);
+        //     }
+        // });
 
         // Submit the form
-        // this.submit();
+        this.submit();
     });
     $('#reset-btn').click(function() {
           window.location.reload();

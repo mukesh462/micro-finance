@@ -347,7 +347,7 @@ class CenterController extends AdminController
         // Retrieve parameters from the request
         $id = $request->input('member_id'); // Search term
         // $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
-        $data['loan'] =   LoanAccount::select('id', 'loan_amount')->where('member_id', $id)->where('loan_status', 0)->get();
+        $data['loan'] =   LoanAccount::select('id', 'loan_no')->where('member_id', $id)->where('loan_status', 0)->get();
         // Prepare response data
         $response = [
             'results' => $data,
@@ -365,7 +365,7 @@ class CenterController extends AdminController
         $data['collection'] = Collection::where('status',1)->first();
         $last = Collection::where('status', 2)->latest()->first();
         $data['balance_amount'] = is_object($last)?$last->balance_amount:0;
-        $data['total_amount'] = $data['balance_amount']+$data['collection']->due_amount + $data['collection']->due_interest ;
+        $data['total_amount'] = $data['balance_amount']+$data['collection']->collection_price + $data['collection']->collection_interest ;
 
         // Prepare response data
         $response = [
@@ -373,5 +373,10 @@ class CenterController extends AdminController
         ];
         // Return JSON response
         return response()->json($response);
+    }
+    public function collectionUpdate(Request $request)
+    {
+
+       dd($request->all());
     }
 }
