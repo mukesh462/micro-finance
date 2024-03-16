@@ -273,11 +273,9 @@
     $("#loan_list").on("change", function() {
         // $(this).attr("disabled", true);
         let loan_id = $(this).val();
-        console.log(loan_id, "ihhxgfh");
         let postData = {
             loan_id: loan_id,
         };
-
         // jQuery AJAX POST call
         $.ajax({
             url: '/admin/getLoanDetails', // replace with your API endpoint
@@ -412,6 +410,14 @@
             // },
             success: function(data) {
                console.log('data',data)
+               if(data.message == "Collection updated successfully") {
+                toastr.error(data.message);
+                document.getElementById("myForm").reset()
+                $("#add-btn").prop("disabled", false);
+               }else {
+                toastr.error(data.message);
+                $("#add-btn").prop("disabled", false);
+               }
             },
             error: function(xhr, status, error) {
                 // Handle error

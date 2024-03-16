@@ -10,9 +10,12 @@ use App\Models\LoanAccount;
 use App\Models\Member;
 use Encore\Admin\Admin;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin as FacadesAdmin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Encore\Admin\Widgets\Box;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -121,7 +124,7 @@ class CenterController extends AdminController
         // $form->text('')
         // ->when(1, function (Form $form) use ($dayNames) {
         //     $form->select('day_in_number', 'Select Day')->options($dayNames)->attribute(['id' => 'day_select']);
-            $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "date-find"]);
+        $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "date-find"]);
         //     // $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "dagy-id"])->readonly();
         //     $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
         // })->when(2, function (Form $form) use ($dayNames) {
@@ -133,7 +136,7 @@ class CenterController extends AdminController
         //     // $form->select('name', 'Select Day')->options($dayNames)->attribute(['id' => '14-day-select']);
         //     $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->minDate(date('DD-MM-YYYY'))->attribute(['id' => "month-id"]);
         // })->required();
-        
+
         $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "day-find"])->readonly();
         $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
         $form->date('formation_date', __('Formation Date'))->format('DD-MM-YYYY')->default(date('d-m-Y'))->rules(['required', 'date']);
@@ -155,7 +158,7 @@ class CenterController extends AdminController
             // } else if ($form->model()->id == null) {
 
             // }
-           
+
             if ($form->model()->id == null) {
                 // $employee = Employee::where('id', $form->model()->employee_id)->first();
                 // if (is_object($employee)) {
@@ -351,17 +354,16 @@ class CenterController extends AdminController
         // Return JSON response
         return response()->json($response);
     }
-    public function getLoanDetail s(Request $request)
+    public function getLoanDetails(Request $request)
     {
-
         // Retrieve parameters from the request
         $id = $request->input('loan_id'); // Search term
         // $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
         $data['loan'] = LoanAccount::where('id', $id)->where('loan_status', 0)->first();
-        $data['collection'] = Collection::where('status',1)->first();
-        $last = Collection::where('status', 2)->latest()->first();
-        $data['balance_amount'] = is_object($last)?$last->balance_amount:0;
-        $data['total_amount'] = $data['balance_amount']+$data['collection']->collection_price + $data['collection']->collection_interest ;
+        $data['collection'] = Collection::where('status', 1)->where('loan_id', $id)->first();
+        $last = Collection::where('status', 2)->where('loan_id', $id)->latest()->first();
+        $data['balance_amount'] = is_object($last) ? $last->due_balance : 0;
+        $data['total_amount'] = $data['balance_amount'] + $data['collection']->collection_price + $data['collection']->collection_interest;
 
         // Prepare response data
         $response = [
@@ -372,8 +374,96 @@ class CenterController extends AdminController
     }
     public function collectionUpdate(Request $request)
     {
+        $input = $request->all();
+        $data['loan'] = LoanAccount::where('id', $input['loan_id'])->where('loan_status', 0)->first();
+        $last = Collection::where('status', 2)->where('loan_id', $input['loan_id'])->latest()->first();
+        $balance_amount = is_object($last) ? $last->due_balance : 0;
+        $collection =  Collection::where('id', $input['collection_id'])->where('loan_id', $input['loan_id'])->where('status', 1)->first();
+        if (is_object($collection)) {
+            $total_amount =  $balance_amount + $collection->collection_amount;
+            if ($input['loan_collected'] > $total_amount) {
+                $response['message'] = "Collection amount must be equal to due amount";
+                return response()->json($response);
+            } else if ($input['loan_collected'] <= $balance_amount && $balance_amount > 0) {
+                $last->due_balance = $last->due_balance - $input['loan_collected'];
+                $last->collected_amount = $last->collected_amount + $input['loan_collected'];
+                $last->save();
+                $response['message'] = "Collection updated successfully";
+                return response()->json($response);
+            } else {
+                $collected_amount = $input['loan_collected'];
+                if ($balance_amount > 0) {
+                    $collected_amount = $collected_amount - $balance_amount;
+                    $last->due_balance = 0;
+                    $last->collected_amount = $last->collected_amount + $balance_amount;
+                    $last->save();
+                }
+                $collection->collected_amount = $collected_amount;
+                $collection->due_balance = $collection->collection_amount - $collected_amount;
+                $collection->status = 2;
+                $collection->save();
+                $response['message'] = "Collection updated successfully";
+                return response()->json($response);
+            }
+        } else {
+            $total_amount =  $balance_amount;
+            if ($input['loan_collected'] <= $balance_amount && $balance_amount > 0) {
+                $last->due_balance = $last->due_balance - $balance_amount;
+                $last->collected_amount = $last->collected_amount + $balance_amount;
+                $last->save();
+                $response['message'] = "Collection updated successfully";
+                return response()->json($response);
+            } else {
+                $response['message'] = "Amount already collected";
+                return response()->json($response);
+            }
+        }
+    }
 
+    public function collectionList()
+    {
+        return FacadesAdmin::content(function (Content $content) {
 
-    //    dd($request->all());
+            // optional
+            // $content->header(' Collection');
+
+            // $content->description('Single Member collection');
+            // $grid = new Grid(new Collection());
+            $grid = new Grid(new Collection());
+
+            $grid->model()->where('status', 2);
+            $grid->column('id', __('Id'));
+
+            // $grid->column('updated_at', __('Updated at'));
+            $grid->disableBatchActions();
+            $grid->disableColumnSelector();
+            $grid->filter(function ($filter) {
+                // Remove the default id filter
+                $filter->disableIdFilter();
+                // $filter->like('center_name', 'Center Name');
+            });
+            $grid->disableExport();
+            $grid->disableActions();
+            $content->body(new Box('Collection List', $grid->render()));
+        });
+        // $grid = new Grid(new Collection());
+        // $grid->model()->where('status',2);
+        // $grid->column('id', __('Id'));
+
+        // // $grid->column('updated_at', __('Updated at'));
+        // $grid->disableBatchActions();
+        // $grid->disableColumnSelector();
+        // $grid->filter(function ($filter) {
+        //     // Remove the default id filter
+        //     $filter->disableIdFilter();
+        //     // $filter->like('center_name', 'Center Name');
+        // });
+        // $grid->disableExport();
+        // $grid->actions(function ($actions) {
+        //     $actions->disableDelete();
+        //     $actions->disableEdit();
+        //     $actions->disableView();
+        // });
+        // return $grid;
     }
 }
