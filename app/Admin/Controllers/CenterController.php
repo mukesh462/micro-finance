@@ -355,7 +355,7 @@ class CenterController extends AdminController
         // Return JSON response
         return response()->json($response);
     }
-    public function getLoanDetails(Request $request)
+    public function getLoanDetail s(Request $request)
     {
 
         // Retrieve parameters from the request
@@ -377,6 +377,7 @@ class CenterController extends AdminController
     public function collectionUpdate(Request $request)
     {
 
-       dd($request->all());
+
+    //    dd($request->all());
     }
 }

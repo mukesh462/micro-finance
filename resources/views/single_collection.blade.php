@@ -58,24 +58,24 @@
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Loan Outstanding</label>
-                    <input type="text" class="form-control" id="loan_outstanding" name="loan_outstanding" placeholder="Loan Outstanding" readonly disabled />
+                    <input type="text" class="form-control" id="loan_outstanding" name="loan_outstanding" placeholder="Loan Outstanding" readonly  />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">collection Weeks</label>
-                    <input type="text" class="form-control" id="due_weeks" name="collection_weeks" placeholder="collection Weeks" readonly disabled/>
+                    <input type="text" class="form-control" id="due_weeks" name="collection_weeks" placeholder="collection Weeks" readonly />
                 </div>
 
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Opening Arr. Price</label>
-                    <input type="text" class="form-control" id="arr_price" name="arr_price" placeholder="Opening Arr. Price" readonly disabled />
+                    <input type="text" class="form-control" id="arr_price" name="arr_price" placeholder="Opening Arr. Price" readonly />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Due Amount</label>
-                    <input type="text" class="form-control" id="due_price" name="due_price" placeholder="Due Amount" readonly disabled />
+                    <input type="text" class="form-control" id="due_price" name="due_price" placeholder="Due Amount" readonly />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Due Interest</label>
-                    <input type="text" class="form-control" id="due_int" name="due_int" placeholder="Due Interest" readonly disabled />
+                    <input type="text" class="form-control" id="due_int" name="due_int" placeholder="Due Interest" readonly />
                 </div>
                 <!-- <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Opening Arr. Interest</label>
@@ -93,6 +93,7 @@
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose" id="amount-error">Total Collected</label>
                     <input type="text" class="form-control" id="loan_collected" name="loan_collected" placeholder="Loan Collected" />
+                    <input type="hidden" class="form-control" id="collection_id" name="collection_id" />
                 </div>
                 <!-- <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Total Collected</label>
@@ -292,6 +293,7 @@
                 $('#loan_amount').val(data.results.loan.loan_amount)
                 $('#loan_outstanding').val(data.results.loan.outstanding_amount)
                 $('#arr_price').val(data.results.balance_amount)
+                $('#collection_id').val(data.results.collection.id)
                 $('#due_weeks').val(data.results.collection.due_number)
                 $('#due_price').val(data.results.collection.collection_price)
                 $('#due_int').val(data.results.collection.collection_interest)
@@ -331,8 +333,10 @@
     }
 
     $('#myForm').submit(function(event) {
+
         // Prevent the default form submission
         event.preventDefault();
+        $("#add-btn").prop("disabled", true);
         //  console.log(event)
         // Perform validation
         // var name = $('input[name="name"]').val();
@@ -341,6 +345,7 @@
         if (center == "" || center == null) {
             $('#center-error').text('');
             displayValidationMessage('center-error',"Select center", 'red');
+            $("#add-btn").prop("disabled", false);
             return;
         }else
         {
@@ -351,6 +356,7 @@
         if (member == "" || member == null) {
             $('#member_error').text('');
             displayValidationMessage('member_error',"Select Member", 'red');
+            $("#add-btn").prop("disabled", false);
             return;
         }else
         {
@@ -360,6 +366,7 @@
         if (loan == "" || loan == null) {
             $('#loan_error').text('');
             displayValidationMessage('loan_error',"Select Loan Acc No", 'red');
+            $("#add-btn").prop("disabled", false);
             return;
         }else
         {
@@ -370,6 +377,7 @@
         if (colection == "" || colection == null) {
             $('#collection-error').text('');
             displayValidationMessage('collection-error',"Select Collection Type", 'red');
+            $("#add-btn").prop("disabled", false);
             return;
         }else
         {
@@ -380,57 +388,39 @@
         if (collected == "" || collected == null) {
             $('#amount-error').text('');
             displayValidationMessage('amount-error',"Enter Collected Amount", 'red');
+            $("#add-btn").prop("disabled", false);
             return;
         }else
         {
             displayValidationMessage('amount-error',"Loan Collected", 'black');
         }
 
-        // $.ajax({
+        var formData = new FormData(document.getElementById("myForm"));
+        var jsonObject = {};
+        formData.forEach(function(value, key){
+            jsonObject[key] = value;
+        });
+        console.log(jsonObject,"formdata")
 
-        //     url: '/admin/collectionUpdate', // replace with your API endpoint
-        //     method: 'POST',
-        //     contentType: 'application/json', // set content type to JSON
-        //     data: JSON.stringify(postData), // convert data to JSON format
-        //     headers: {
-        //         'X-CSRF-TOKEN': '{{ csrf_token() }}' // include CSRF token in headers
-        //     },
-        //     success: function(data) {
-        //         console.log(data,"loan")
-        //         $('#disbursal_date').val(data.results.loan.dis_date)
-        //         $('#loan_amount').val(data.results.loan.loan_amount)
-        //         $('#loan_outstanding').val(data.results.loan.outstanding_amount)
-        //         $('#arr_price').val(data.results.balance_amount)
-        //         $('#due_price').val(data.results.collection.collection_price)
-        //         $('#due_int').val(data.results.collection.collection_interest)
-        //         $('#loan_collected').val(data.results.total_amount)
-        //         // if (data.results.loan.length > 0) {
-        //         //     $.each(data.results.loan, function(index, option) {
-        //         //         $('#loan_list').append($('<option>', {
-        //         //             value: option.id,
-        //         //             text: option.loan_amount
-        //         //         }));
-        //         //     });
-        //         // } else {
-        //         //     var selectElement = $('#loan_list');
-        //         //     // Remove all existing options
-        //         //     selectElement.find('option[value!=""]').remove();
-        //         // }
-        //         // if (data.results.employee != null) {
-        //         //     $('#employee_name').val(data.results.employee.staff_name);
-        //         // }
-        //         console.log(data, "respo")
-        //         // Handle successful response
-        //         // $('#result').text(JSON.stringify(data, null, 2));
-        //     },
-        //     error: function(xhr, status, error) {
-        //         // Handle error
-        //         console.error('AJAX request failed: ' + status + ', ' + error);
-        //     }
-        // });
+        $.ajax({
+            url: '/admin/collectionUpdate', // replace with your API endpoint
+            method: 'POST',
+            contentType: 'application/json', // set content type to JSON
+            data: JSON.stringify(jsonObject), // convert data to JSON format
+            // headers: {
+            //     'X-CSRF-TOKEN': '{{ csrf_token() }}' // include CSRF token in headers
+            // },
+            success: function(data) {
+               console.log('data',data)
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error('AJAX request failed: ' + status + ', ' + error);
+            }
+        });
 
         // Submit the form
-        this.submit();
+        // this.submit();
     });
     $('#reset-btn').click(function() {
           window.location.reload();
