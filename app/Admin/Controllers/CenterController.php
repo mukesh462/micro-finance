@@ -117,23 +117,25 @@ class CenterController extends AdminController
         } else {
         }
         $form->text('center_name', __('Center Name'))->rules('required');
-        $form->radio('center_type', __('Center type'))->rules('required')->options([1 => 'Week', 2 => '14 Days', 3 => 'Month'])->when(1, function (Form $form) use ($dayNames) {
-            $form->select('day_in_number', 'Select Day')->options($dayNames)->attribute(['id' => 'day_select']);
-            $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "day-id"]);
-            // $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "dagy-id"])->readonly();
-            $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
-        })->when(2, function (Form $form) use ($dayNames) {
-            $form->select('day_in_number', 'Select day')->options($dayNames)->attribute(['id' => '14-day-select']);
-            $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "14day-id"])->readonly();
-            // $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "dagy-id"])->readonly();
-            $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
-        })->when(3, function (Form $form) use ($dayNames) {
-            // $form->select('name', 'Select Day')->options($dayNames)->attribute(['id' => '14-day-select']);
-            $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->minDate(date('DD-MM-YYYY'))->attribute(['id' => "month-id"]);
-            $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "month-day-id"])->readonly();
-            $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
-        })->required();
-
+        $form->radio('center_type', __('Center type'))->rules('required')->options([1 => 'Week', 2 => '14 Days', 3 => 'Month'])->required();
+        // $form->text('')
+        // ->when(1, function (Form $form) use ($dayNames) {
+        //     $form->select('day_in_number', 'Select Day')->options($dayNames)->attribute(['id' => 'day_select']);
+            $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "date-find"]);
+        //     // $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "dagy-id"])->readonly();
+        //     $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
+        // })->when(2, function (Form $form) use ($dayNames) {
+        //     $form->select('day_in_number', 'Select day')->options($dayNames)->attribute(['id' => '14-day-select']);
+        //     $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => "14day-id"])->readonly();
+        //     // $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "dagy-id"])->readonly();
+        //     $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
+        // })->when(3, function (Form $form) use ($dayNames) {
+        //     // $form->select('name', 'Select Day')->options($dayNames)->attribute(['id' => '14-day-select']);
+        //     $form->date('meeting_date', __('Next Meeting Date'))->format('DD-MM-YYYY')->rules(['required', 'date'])->minDate(date('DD-MM-YYYY'))->attribute(['id' => "month-id"]);
+        // })->required();
+        
+        $form->text('meeting_day', __('Meeting Day'))->attribute(['id' => "day-find"])->readonly();
+        $form->time('meeting_time', __('Meeting Time'))->format('h:mm A')->rules('required');
         $form->date('formation_date', __('Formation Date'))->format('DD-MM-YYYY')->default(date('d-m-Y'))->rules(['required', 'date']);
         $form->text('center_address', __('Center Address'))->rules('required');
         $form->select('employee_id', __('Select Employee'))->options($employees)->rules('required');
@@ -153,13 +155,7 @@ class CenterController extends AdminController
             // } else if ($form->model()->id == null) {
 
             // }
-            if ($form->center_type != 3) {
-
-                $form->meeting_day = $dayNames[$form->day_in_number];
-            }
-            if ($form->center_type == 3) {
-                $form->day_in_number = 1;
-            }
+           
             if ($form->model()->id == null) {
                 // $employee = Employee::where('id', $form->model()->employee_id)->first();
                 // if (is_object($employee)) {
@@ -265,15 +261,15 @@ class CenterController extends AdminController
         })
         $("#14day-id").val(dateAfter14Days)
 
-        $("#month-id").on("blur", function () {
-            var value = $("#month-id").val();
-            console.log(value, "aswfwf");
+        $("#date-find").on("blur", function () {
+            var value = $("#date-find").val();
+          
             var dateParts = value.split("-");
             var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
             var date = new Date(formattedDate);
             var dayNumber = date.getDay();
             var daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            $("#month-day-id").val(daysOfWeek[dayNumber])
+            $("#day-find").val(daysOfWeek[dayNumber])
         });
 
         $("#day-id").on("blur", function () {

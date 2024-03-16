@@ -29,7 +29,7 @@
     <a href="{{ admin_url('/indexes') }}" class="btn btn-sm btn-default"><i class="fa fa-list"></i><span
             class="hidden-xs">&nbsp;List</span></a>
     @if ($type == 'view')
-    <a href="/admin/getIndexMember/{{ $data[0]->index_id }}/pdf" class="btn btn-sm btn-info pull-right"><i
+    <a href="/admin/getIndexMember/{{ $data[0]->index_id }}/pdf" target='_blank' class="btn btn-sm btn-info pull-right"><i
             class=" fa fa-file-pdf-o"></i><span class="hidden-xs">&nbsp;Pdf</span></a>
     @endif
 

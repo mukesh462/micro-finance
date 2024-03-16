@@ -235,6 +235,8 @@ class IndexController extends AdminController
                     $results[$key]['employee_name'] = is_object($employe) ? $employe->staff_name : '---';
                     $results[$key]['product_name'] = is_object($product) ? $product->plan_name : '---';
                     $results[$key]['member_name'] = is_object($member) ? $member->client_name : '---';
+                    $results[$key]['member_id'] = is_object($member) ? $member->id : '---';
+
                 }
             }
 
