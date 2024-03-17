@@ -18,11 +18,19 @@
     }
 </style>
 
+<div class="box-header with-border">
+        <h3 class="box-title">Single Collection</h3>
 
+        <div class="box-tools">
+            <div class="btn-group pull-right" style="margin-right: 5px">
+                <a href="/admin/collectionList" class="btn btn-sm btn-default" title="List"><i class="fa fa-list"></i><span class="hidden-xs">&nbsp;List</span></a>
+            </div>
+        </div>
+    </div>
 
 <div class="container">
     <div id="container">
-        <form id="myForm" action="/admin/collectionUpdate" method="post">
+        <form id="myForm" autocomplete="off">
             <div class="row">
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="center" class="" id="center-error">Select Center
@@ -33,7 +41,7 @@
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="employee" class="" id="employee_error">Employee Name</label>
-                    <input type="text" class="form-control" id="employee_name" name="employee_name" placeholder="Employee Name" readonly disabled />
+                    <input type="text" class="form-control" id="employee_name" name="employee_name" placeholder="Employee Name" readonly />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="member" class="" id="member_error">Select Member</label>
@@ -73,10 +81,10 @@
                     <label for="purpose">Due Amount</label>
                     <input type="text" class="form-control" id="due_price" name="due_price" placeholder="Due Amount" readonly />
                 </div>
-                <div class="col-12 col-md-4 col-lg-4 mb">
+                <!-- <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Due Interest</label>
                     <input type="text" class="form-control" id="due_int" name="due_int" placeholder="Due Interest" readonly />
-                </div>
+                </div> -->
                 <!-- <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Opening Arr. Interest</label>
                     <input type="text" class="form-control" id="arr-int" placeholder="Opening Arr. Interest" readonly disabled />
@@ -168,8 +176,12 @@
     });
 
     $("#mySelect").on("change", function() {
+        resetForm();
         // $(this).attr("disabled", true);
         center_id = $(this).val();
+        if(center_id == null){
+            return;
+        }
         console.log(center_id, "ihhxgfh");
         let postData = {
             center_id: center_id,
@@ -200,7 +212,15 @@
                 if (data.results.employee != null) {
                     $('#employee_name').val(data.results.employee.staff_name);
                 }
-                console.log(data, "respo")
+                $('#disbursal_date').val('')
+                $('#loan_amount').val('')
+                $('#loan_outstanding').val('')
+                $('#collection_id').val('')
+                $('#arr_price').val('')
+                $('#due_price').val('')
+                // $('#due_int').val('')
+                $('#loan_collected').val('')
+                $('#due_weeks').val('')
                 // Handle successful response
                 // $('#result').text(JSON.stringify(data, null, 2));
             },
@@ -247,9 +267,10 @@
                 $('#disbursal_date').val('')
                 $('#loan_amount').val('')
                 $('#loan_outstanding').val('')
+                $('#collection_id').val('')
                 $('#arr_price').val('')
                 $('#due_price').val('')
-                $('#due_int').val('')
+                // $('#due_int').val('')
                 $('#loan_collected').val('')
                 $('#due_weeks').val('')
                 }
@@ -287,15 +308,25 @@
             },
             success: function(data) {
                 console.log(data,"loan")
+                if(data.message == ""){
+
                 $('#disbursal_date').val(data.results.loan.dis_date)
                 $('#loan_amount').val(data.results.loan.loan_amount)
                 $('#loan_outstanding').val(data.results.loan.outstanding_amount)
                 $('#arr_price').val(data.results.balance_amount)
                 $('#collection_id').val(data.results.collection.id)
                 $('#due_weeks').val(data.results.collection.due_number)
-                $('#due_price').val(data.results.collection.collection_price)
-                $('#due_int').val(data.results.collection.collection_interest)
+                $('#due_price').val(data.results.collection.collection_amount)
+                // $('#due_int').val(data.results.collection.collection_interest)
                 $('#loan_collected').val(data.results.total_amount)
+                }else{
+                    toastr.error(data.message);
+                    document.getElementById("myForm").reset()
+                    var centerElement = $('#mySelect');
+                    // Programmatically remove the selected option
+                    centerElement.val(null).trigger('change');
+                    resetForm();
+                }
                 // if (data.results.loan.length > 0) {
                 //     $.each(data.results.loan, function(index, option) {
                 //         $('#loan_list').append($('<option>', {
@@ -411,8 +442,13 @@
             success: function(data) {
                console.log('data',data)
                if(data.message == "Collection updated successfully") {
-                toastr.error(data.message);
+                toastr.success(data.message);
                 document.getElementById("myForm").reset()
+                var centerElement = $('#mySelect');
+                // Programmatically remove the selected option
+                centerElement.val(null).trigger('change');
+                resetForm();
+
                 $("#add-btn").prop("disabled", false);
                }else {
                 toastr.error(data.message);
@@ -429,7 +465,24 @@
         // this.submit();
     });
     $('#reset-btn').click(function() {
-          window.location.reload();
+        document.getElementById("myForm").reset()
+        var centerElement = $('#mySelect');
+        // Programmatically remove the selected option
+        centerElement.val(null).trigger('change');
+        resetForm();
+        //   window.location.reload();
         // $('#myForm')[0].reset(); // Reset the form
     });
+    function resetForm() {
+        var selectElement = document.getElementById("member_list");
+        var emptyOption = selectElement.querySelector('option[value=""]');
+        var clonedEmptyOption = emptyOption.cloneNode(true);
+        selectElement.innerHTML = ''; // Clear all options
+        selectElement.appendChild(clonedEmptyOption);
+        var loanElement = document.getElementById("loan_list");
+        var emptyLoan= loanElement.querySelector('option[value=""]');
+        var clonedEmptyLoan = emptyLoan.cloneNode(true);
+        loanElement.innerHTML = ''; // Clear all options
+        loanElement.appendChild(clonedEmptyLoan);
+    }
 </script>

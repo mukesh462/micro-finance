@@ -40,7 +40,7 @@
                 style='text-align:left;   white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;color:grey;font-size:small'>
-            {{ last(explode("/", $value)) }}
+            {{ $value!=''?last(explode("/", $value)):$label }}
             </label>
             <input type="file" style="display: none;" id="up-{{ $img }}" wire:model="{{ $img }}"
                 class="form-control" name="{{ $img }}" accept="image/*">
@@ -49,14 +49,11 @@
                 @else style='display:none;' @endif
                 id="dis-{{ $img }}" data-target="#{{ $img }}"> Preview</button>
         </div>
-
         @error($img)
             <label class="control-label" style='color:red;'><i class="fa fa-times-circle-o"></i>
                 {{ $message }}</label>
         @enderror
-
     </div>
-
 </div>
 
 <script>

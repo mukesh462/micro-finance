@@ -266,7 +266,7 @@ class CenterController extends AdminController
 
         $("#date-find").on("blur", function () {
             var value = $("#date-find").val();
-          
+
             var dateParts = value.split("-");
             var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
             var date = new Date(formattedDate);
@@ -361,21 +361,28 @@ class CenterController extends AdminController
         // $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
         $data['loan'] = LoanAccount::where('id', $id)->where('loan_status', 0)->first();
         $data['collection'] = Collection::where('status', 1)->where('loan_id', $id)->first();
-        $last = Collection::where('status', 2)->where('loan_id', $id)->latest()->first();
-        $data['balance_amount'] = is_object($last) ? $last->due_balance : 0;
-        $data['total_amount'] = $data['balance_amount'] + $data['collection']->collection_price + $data['collection']->collection_interest;
-
+        if(is_object($data['collection'])){
+            $last = Collection::where('status', 2)->where('loan_id', $id)->latest()->first();
+            $data['balance_amount'] = is_object($last) ? $last->due_balance : 0;
+            $data['total_amount'] = $data['balance_amount'] + $data['collection']->collection_price + $data['collection']->collection_interest;
+            $response = [
+                'message'=>'data Found',
+                'results' => $data,
+           ];
+        }else{
+            $response = [
+                'message'=>'No collection to pay',
+                'results' => [],
+           ];
+        }
         // Prepare response data
-        $response = [
-            'results' => $data,
-        ];
         // Return JSON response
         return response()->json($response);
     }
     public function collectionUpdate(Request $request)
     {
         $input = $request->all();
-        $data['loan'] = LoanAccount::where('id', $input['loan_id'])->where('loan_status', 0)->first();
+        $loan = LoanAccount::where('id', $input['loan_id'])->where('loan_status', 0)->first();
         $last = Collection::where('status', 2)->where('loan_id', $input['loan_id'])->latest()->first();
         $balance_amount = is_object($last) ? $last->due_balance : 0;
         $collection =  Collection::where('id', $input['collection_id'])->where('loan_id', $input['loan_id'])->where('status', 1)->first();
@@ -385,6 +392,8 @@ class CenterController extends AdminController
                 $response['message'] = "Collection amount must be equal to due amount";
                 return response()->json($response);
             } else if ($input['loan_collected'] <= $balance_amount && $balance_amount > 0) {
+                $loan->outstanding_amount = $loan->outstanding_amount - $input['loan_collected'];
+                $loan->save();
                 $last->due_balance = $last->due_balance - $input['loan_collected'];
                 $last->collected_amount = $last->collected_amount + $input['loan_collected'];
                 $last->save();
@@ -392,31 +401,43 @@ class CenterController extends AdminController
                 return response()->json($response);
             } else {
                 $collected_amount = $input['loan_collected'];
+                $loan->outstanding_amount = $loan->outstanding_amount - $input['loan_collected'];
+                $loan->save();
                 if ($balance_amount > 0) {
                     $collected_amount = $collected_amount - $balance_amount;
                     $last->due_balance = 0;
                     $last->collected_amount = $last->collected_amount + $balance_amount;
+                    $last->status = 3;
+                    $last->save();
+                }else if(is_object($last)){
+                    $last->status = 3;
                     $last->save();
                 }
                 $collection->collected_amount = $collected_amount;
                 $collection->due_balance = $collection->collection_amount - $collected_amount;
+                $collection->collection_type = $input['collection-type'];
                 $collection->status = 2;
+                if($loan->outstanding_amount == 0){
+                    $collection->status = 3;
+                }
                 $collection->save();
                 $response['message'] = "Collection updated successfully";
                 return response()->json($response);
             }
         } else {
-            $total_amount =  $balance_amount;
-            if ($input['loan_collected'] <= $balance_amount && $balance_amount > 0) {
-                $last->due_balance = $last->due_balance - $balance_amount;
-                $last->collected_amount = $last->collected_amount + $balance_amount;
-                $last->save();
-                $response['message'] = "Collection updated successfully";
-                return response()->json($response);
-            } else {
+            // $total_amount =  $balance_amount;
+            // if ($input['loan_collected'] <= $balance_amount && $balance_amount > 0) {
+            //     $loan->outstanding_amount = $loan->outstanding_amount - $input['loan_collected'];
+            //     $loan->save();
+            //     $last->due_balance = $last->due_balance - $balance_amount;
+            //     $last->collected_amount = $last->collected_amount + $balance_amount;
+            //     $last->save();
+            //     $response['message'] = "Collection updated successfully";
+            //     return response()->json($response);
+            // } else {
                 $response['message'] = "Amount already collected";
                 return response()->json($response);
-            }
+            // }
         }
     }
 
@@ -430,40 +451,112 @@ class CenterController extends AdminController
             // $content->description('Single Member collection');
             // $grid = new Grid(new Collection());
             $grid = new Grid(new Collection());
-
-            $grid->model()->where('status', 2);
+            $grid->model()->whereIn('status', [2,3]);
             $grid->column('id', __('Id'));
+            $grid->column('center_id', __('Center'))->display(function($center_id){
+               $center = Center::where('id',$center_id)->first();
+               return "00".$center_id."-".$center->center_name;
+             });
+            $grid->column('member_id', __('Member'))->display(function($member_id){
+               return Member::where('id',$member_id)->first()->client_name;
+            });
+            $grid->column('due_number', __('Collection Week'));
+            $grid->column('due_date', __('Due Date'));
+            $grid->column('collection_amount', __('Collection Amount'));
+            $grid->column('collected_amount', __('Collected Amount'));
+            $grid->column('due_balance', __('Due Balance'));
+            $grid->column('collection_type', __('Collection Type'));
+            $grid->column('Action')->display(function () {
+                if($this->status == 3) {
+                    return "<span class='btn btn-success'>Paid</span>";
+                }else{
+                    return "<a href='/admin/collectionEdit/$this->id'>Edit</a>";
+                }
+            });
+
+
 
             // $grid->column('updated_at', __('Updated at'));
             $grid->disableBatchActions();
             $grid->disableColumnSelector();
-            $grid->filter(function ($filter) {
-                // Remove the default id filter
-                $filter->disableIdFilter();
-                // $filter->like('center_name', 'Center Name');
-            });
+            // $grid->filter(function ($filter) {
+            //     // Remove the default id filter
+            //     $filter->disableIdFilter();
+            //     // $filter->like('center_name', 'Center Name');
+            // });
+            $grid->disableFilter();
+            $grid->disableCreateButton();
             $grid->disableExport();
             $grid->disableActions();
             $content->body(new Box('Collection List', $grid->render()));
         });
-        // $grid = new Grid(new Collection());
-        // $grid->model()->where('status',2);
-        // $grid->column('id', __('Id'));
+    }
 
-        // // $grid->column('updated_at', __('Updated at'));
-        // $grid->disableBatchActions();
-        // $grid->disableColumnSelector();
-        // $grid->filter(function ($filter) {
-        //     // Remove the default id filter
-        //     $filter->disableIdFilter();
-        //     // $filter->like('center_name', 'Center Name');
-        // });
-        // $grid->disableExport();
-        // $grid->actions(function ($actions) {
-        //     $actions->disableDelete();
-        //     $actions->disableEdit();
-        //     $actions->disableView();
-        // });
-        // return $grid;
+    public function collectionEdit(Request $request) {
+        $id = $request->segment('3');
+        $collection = Collection::where('id',$id)->where('status',2)->first();
+        if(!is_object($collection)) {
+            abort(404);
+        }
+        return FacadesAdmin::content(function (Content $content) use ($collection) {
+            $data['collection'] = $collection;
+            $data['loan'] = LoanAccount::where('id',$collection->loan_id)->first();
+            $data['employee'] = Employee::select('id','staff_name')->where('id', $collection->staff_id)->first();
+            $data['Center'] = Center::select('id','center_name')->where('id', $collection->center_id)->first();
+            $data['Member'] = Member::select('id','client_name')->where('id', $collection->member_id)->first();
+            // optional
+            // $content->header('Collection');
+            // $content->description('Single Member collection');
+            $content->body( new Box('',view('collection_edit',['data'=>$data])));
+        });
+    }
+
+    public function editCollection(Request $request)
+    {
+        $input = $request->all();
+        $loan = LoanAccount::where('id', $input['loan_id'])->where('loan_status', 0)->first();
+        // $last = Collection::where('status', 2)->where('loan_id', $input['loan_id'])->latest()->first();
+        // $balance_amount = is_object($last) ? $last->due_balance : 0;
+        $collection =  Collection::where('id', $input['collection_id'])->where('loan_id', $input['loan_id'])->where('status', 2)->first();
+        if (is_object($collection)) {
+            $total_amount = $collection->collection_amount;
+            if ($input['loan_collected'] > $total_amount) {
+                $response['message'] = "Collection amount must be equal to due amount";
+                return response()->json($response);
+            }else if($input['loan_collected'] == 0){
+                $collected_amount = $input['loan_collected'];
+                $loan->outstanding_amount = $loan->outstanding_amount + $collection->collected_amount;
+                $loan->save();
+                $collection->collected_amount = $collected_amount;
+                $collection->due_balance = 0;
+                $collection->status = 1;
+                $collection->save();
+                $last = Collection::where('status', 3)->where('loan_id', $input['loan_id'])->latest()->first();
+                $last->status = 2;
+                $last->save();
+                // $loan->outstanding_amount = $loan->outstanding_amount - $collected_amount;
+                // $loan->save();
+                $response['message'] = "Collection updated successfully";
+                return response()->json($response);
+            }else {
+                $collected_amount = $input['loan_collected'];
+                $loan->outstanding_amount = $loan->outstanding_amount + $collection->collected_amount;
+                $loan->save();
+                $collection->collected_amount = $collected_amount;
+                $collection->due_balance = $collection->collection_amount - $collected_amount;
+                $collection->status = 2;
+                $loan->outstanding_amount = $loan->outstanding_amount - $collected_amount;
+                $loan->save();
+                if($loan->outstanding_amount == 0){
+                    $collection->status = 3;
+                }
+                $collection->save();
+                $response['message'] = "Collection updated successfully";
+                return response()->json($response);
+            }
+        } else {
+            $response['message'] = "Amount already collected";
+            return response()->json($response);
+        }
     }
 }

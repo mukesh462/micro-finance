@@ -158,7 +158,7 @@ class DayBookController extends AdminController
             // $content->header(' Collection');
 
             // $content->description('Single Member collection');
-            $content->body( new Box('Single Collection',view('single_collection')));
+            $content->body( new Box('',view('single_collection')));
         });
     }
 

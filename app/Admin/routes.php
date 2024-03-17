@@ -66,5 +66,7 @@ Route::group([
     $router->post('getLoan', "CenterController@getLoan");
     $router->post('getLoanDetails', "CenterController@getLoanDetails");
     $router->post('collectionUpdate', "CenterController@collectionUpdate");
+    $router->get('collectionEdit/{id}', "CenterController@collectionEdit");
+    $router->post('editCollection', "CenterController@editCollection");
 
 });
