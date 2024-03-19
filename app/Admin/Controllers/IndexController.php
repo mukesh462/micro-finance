@@ -238,6 +238,10 @@ class IndexController extends AdminController
                     $results[$key]['member_id'] = is_object($member) ? $member->id : '---';
 
                 }
+            }else if ($request->tp =='center_details') {
+
+               $results = Center::find($request->id);
+               $total =0;
             }
 
 
@@ -510,7 +514,7 @@ class IndexController extends AdminController
                     // dd(($planFind->plan_amount * $planFind->loan_interest));
                     if ($planFind->plan_type == 1) { //week
                         $arr[] = [
-                            'loan_id' => 1,
+                            'loan_id' =>$addTo->id ,
                             'member_id' => $value->member_id,
                             'center_id' => $value->center_id,
                             'staff_id' => $value->staff_id,
@@ -527,7 +531,7 @@ class IndexController extends AdminController
                         ];
                     } elseif ($planFind->plan_type == 2) { //14 days
                         $arr[] = [
-                            'loan_id' => 1,
+                            'loan_id' =>$addTo->id ,
                             'member_id' => $value->member_id,
                             'center_id' => $value->center_id,
                             'staff_id' => $value->staff_id,
@@ -544,7 +548,7 @@ class IndexController extends AdminController
                         ];
                     } else { //month
                         $arr[] = [
-                            'loan_id' => 1,
+                            'loan_id' =>$addTo->id ,
                             'member_id' => $value->member_id,
                             'center_id' => $value->center_id,
                             'staff_id' => $value->staff_id,

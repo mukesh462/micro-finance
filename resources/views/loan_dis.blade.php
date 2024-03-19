@@ -343,7 +343,7 @@
             <tbody id="list-table"></tbody>
             <tfoot>
                 <tr>
-                    <td colspan="6"></td>
+                    <td colspan="7"></td>
                     <td class="total">0</td>
                     <td colspan="">
                         <button class="btn btn-warning" id="submit-button">
@@ -562,6 +562,19 @@
                         });
                     },
                 });
+                if ($(this).val() != "") {
+                    $.ajax({
+                        url: "/get-data",
+                        data: {
+                            id: $(this).val(),
+                            tp: "center_details",
+                        },
+                        success: function ({ results }) {
+                            console.log(results, "center");
+                            $("#Due").val(results.meeting_date);
+                        },
+                    });
+                }
             }
         });
         addSelectData("Center", "center");
@@ -576,8 +589,6 @@
             return data.every((e) => e.value === "" || e.value !== null);
         };
         const removeError = (e) => {
-          
-
             $("#" + e.id + "-error").css({
                 color: "black",
             });
@@ -634,6 +645,9 @@
             $("#index_date").val("");
             $("#total_member").val("");
             $(".total_amount").val("");
+            $("#approve-amount").val("");
+            $('#Due').val('')
+
             $("#myModal").modal("hide");
             $("#list-table").html("");
             $(".total").text("0");
@@ -657,7 +671,13 @@
         $(document).on("change", ".selected_value", function () {
             let checkCount = $(".selected_value:checked").length;
             let NoncheckCount = $(".selected_value").not(":checked").length;
-
+            var approve = 0;
+            $(".selected_value:checked").each(function () {
+                var elementValue = JSON.parse($(this).val()); // or $(this).html() if you want HTML content
+                // console.log(elementValue.plan_amount);
+                approve += elementValue.plan_amount;
+            });
+            $("#approve-amount").val(approve);
             $("#masterCheckbox").prop("checked", !NoncheckCount > 0);
             $("#approve").val(checkCount);
         });
