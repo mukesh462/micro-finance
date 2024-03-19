@@ -253,6 +253,11 @@
             },
             success: function(data) {
                 if (data.results.loan.length > 0) {
+                    var loanElement = document.getElementById("loan_list");
+                    var emptyLoan= loanElement.querySelector('option[value=""]');
+                    var clonedEmptyLoan = emptyLoan.cloneNode(true);
+                    loanElement.innerHTML = ''; // Clear all options
+                    loanElement.appendChild(clonedEmptyLoan);
                     $.each(data.results.loan, function(index, option) {
                         $('#loan_list').append($('<option>', {
                             value: option.id,
@@ -308,8 +313,7 @@
             },
             success: function(data) {
                 console.log(data,"loan")
-                if(data.message == ""){
-
+                if(data.message == "data Found"){
                 $('#disbursal_date').val(data.results.loan.dis_date)
                 $('#loan_amount').val(data.results.loan.loan_amount)
                 $('#loan_outstanding').val(data.results.loan.outstanding_amount)

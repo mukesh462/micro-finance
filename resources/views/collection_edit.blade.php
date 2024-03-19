@@ -137,7 +137,7 @@
 
         // Prevent the default form submission
         event.preventDefault();
-        $("#add-btn").prop("", true);
+        $("#add-btn").prop("disabled", true);
         //  console.log(event)
         // Perform validation
         // var name = $('input[name="name"]').val();
@@ -146,7 +146,7 @@
         if (center == "" || center == null) {
             $('#center-error').text('');
             displayValidationMessage('center-error',"Select center", 'red');
-            $("#add-btn").prop("", false);
+            $("#add-btn").prop("disabled", false);
             return;
         }else
         {
@@ -157,7 +157,7 @@
         if (member == "" || member == null) {
             $('#member_error').text('');
             displayValidationMessage('member_error',"Select Member", 'red');
-            $("#add-btn").prop("", false);
+            $("#add-btn").prop("disabled", false);
             return;
         }else
         {
@@ -167,7 +167,7 @@
         if (loan == "" || loan == null) {
             $('#loan_error').text('');
             displayValidationMessage('loan_error',"Select Loan Acc No", 'red');
-            $("#add-btn").prop("", false);
+            $("#add-btn").prop("disabled", false);
             return;
         }else
         {
@@ -178,7 +178,7 @@
         if (colection == "" || colection == null) {
             $('#collection-error').text('');
             displayValidationMessage('collection-error',"Select Collection Type", 'red');
-            $("#add-btn").prop("", false);
+            $("#add-btn").prop("disabled", false);
             return;
         }else
         {
@@ -189,7 +189,7 @@
         if (collected == "" || collected == null) {
             $('#amount-error').text('');
             displayValidationMessage('amount-error',"Enter Collected Amount", 'red');
-            $("#add-btn").prop("", false);
+            $("#add-btn").prop("disabled", false);
             return;
         }else
         {
@@ -215,12 +215,14 @@
                console.log('data',data)
                if(data.message == "Collection updated successfully") {
                 // document.getElementById("myForm").reset()
-                $("#add-btn").prop("", false);
-                window.location.href = '/admin/collectionList';
                 toastr.success(data.message);
+                setTimeout(()=>{
+                window.location.href = '/admin/collectionList';
+                // $("#add-btn").prop("disabled", false);
+                },2000)
                }else {
                 toastr.error(data.message);
-                $("#add-btn").prop("", false);
+                $("#add-btn").prop("disabled", false);
                }
             },
             error: function(xhr, status, error) {
