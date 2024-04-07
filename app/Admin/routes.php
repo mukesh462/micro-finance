@@ -45,7 +45,7 @@ Route::group([
     $router->get('getReason', "ReasonController@getReason");
     $router->resource('reasons', ReasonController::class);
     $router->get('singleCollection', "DayBookController@singleCollection");
-    $router->get('bulkCollection', "DayBookController@bulkCollection");
+    $router->get('multipleCollection', "DayBookController@bulkCollection");
     $router->get('getCenter', "CenterController@getCenter");
     $router->post('getDetails', "CenterController@getDetails");
     // $router->get('pens/create', [IndexController::class, 'Disbursement']);
@@ -68,5 +68,8 @@ Route::group([
     $router->post('collectionUpdate', "CenterController@collectionUpdate");
     $router->get('collectionEdit/{id}', "CenterController@collectionEdit");
     $router->post('editCollection', "CenterController@editCollection");
+    $router->post('getMultipleDetails', "CenterController@getMultipleDetails");
+    $router->post('multipleCollectionUpdate', "CenterController@multipleCollectionUpdate");
+
 
 });

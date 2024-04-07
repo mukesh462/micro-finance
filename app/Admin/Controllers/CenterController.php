@@ -8,6 +8,7 @@ use App\Models\Collection;
 use App\Models\Employee;
 use App\Models\LoanAccount;
 use App\Models\Member;
+use Carbon\Carbon;
 use Encore\Admin\Admin;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin as FacadesAdmin;
@@ -458,14 +459,15 @@ class CenterController extends AdminController
                return "00".$center_id."-".$center->center_name;
              });
             $grid->column('member_id', __('Member'))->display(function($member_id){
-               return Member::where('id',$member_id)->first()->client_name;
+               $member = Member::where('id',$member_id)->first();
+               return is_object($member)?'00'.$member->id.'-'.$member->client_name:"---";
             });
             $grid->column('due_number', __('Collection Week'));
             $grid->column('due_date', __('Due Date'));
             $grid->column('collection_amount', __('Collection Amount'));
             $grid->column('collected_amount', __('Collected Amount'));
             $grid->column('due_balance', __('Due Balance'));
-            $grid->column('collection_type', __('Collection Type'));
+            // $grid->column('collection_type', __('Collection Type'));
             $grid->column('Action')->display(function () {
                 if($this->status == 3) {
                     return "<span class='btn btn-success'>Paid</span>";
@@ -558,5 +560,131 @@ class CenterController extends AdminController
             $response['message'] = "Amount already collected";
             return response()->json($response);
         }
+    }
+    public function getMultipleDetails(Request $request)
+    {
+
+        // Retrieve parameters from the request
+        $id = $request->input('center_id'); // Search term
+        $date = $request->input('date'); // Search term
+        $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
+        // $date = "2024-04-28";
+        // $id = $request->input('loan_id'); // Search term
+        // $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
+        // $data['loan'] = LoanAccount::where('id', $id)->where('loan_status', 0)->first();
+        $collections = Collection::where('status', 1)->where('center_id', $id)->where('due_date', $date)->get();
+        $loan_outstanding = 0;
+        $total_balance = 0;
+        $total_amount = 0;
+        foreach($collections as $key=>$collection){
+            $lasts = Collection::where('loan_id',$collection->loan_id)->where('status','!=',3)->where('center_id', $id)->where('due_date','<', $date)->get();
+            $balance_amount = 0;
+            if(count($lasts) > 0) {
+                foreach($lasts as $last){
+                    if($last->status == 2) {
+                        $balance_amount =($last->collection_amount - $last->collected_amount) + $balance_amount;
+                    }else if($last->status ==1) {
+                        $balance_amount = $balance_amount + $last->collection_amount;
+                    }
+                }
+            }
+            $collections[$key]['balance_amount'] = $balance_amount;
+            $collections[$key]['total_amount'] = $collection->collection_amount + $balance_amount;
+            $collections[$key]['member'] = Member::where('id',$collection->member_id)->first();
+            $loan = LoanAccount::where('id', $collection->loan_id)->where('loan_status', 0)->first();
+            $loan_outstanding = $loan->outstanding_amount + $loan_outstanding;
+            $total_balance = $balance_amount + $total_balance;
+            $total_amount = $total_amount + $collection->collection_amount;
+            $collections[$key]['loan'] = $loan;
+        }
+        $data['collections'] = $collections;
+        $data['total_balance'] = $total_balance;
+        $data['total_amount'] = $total_amount;
+        $data['total_demand'] = $total_amount + $total_balance;
+        $data['loan_outstanding'] = $loan_outstanding;
+
+        // if(is_object($collections)){
+        //     $last = Collection::where('status', 2)->where('loan_id', $id)->latest()->first();
+        //     $data['balance_amount'] = is_object($last) ? $last->due_balance : 0;
+        //     $data['total_amount'] = $data['balance_amount'] + $data['collection']->collection_price + $data['collection']->collection_interest;
+            $response = [
+                'message'=>'data Found',
+                'results' => $data,
+           ];
+        // }else{
+        //     $response = [
+        //         'message'=>'No collection to pay',
+        //         'results' => [],
+        //    ];
+        // }
+        // Prepare response data
+        // Return JSON response
+        return response()->json($response);
+    }
+
+    public function multipleCollectionUpdate(Request $request)
+    {
+
+        // // Retrieve parameters from the request
+        $id = $request->input('center'); // Search term
+        $collection_id = $request->input('collection'); // Search term
+        $date = $request->input('due_date'); // Search term
+        $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
+        // $date = "2024-04-28";
+        // for($i=0;$i<count($collection_id);$i++){
+            $collections = Collection::whereIn('id',$collection_id)->where('status', 1)->where('center_id', $id)->where('due_date', $date)->get();
+            if(count($collections) > 0) {
+
+            foreach($collections as $key=>$collection){
+                $lasts = Collection::where('loan_id',$collection->loan_id)->where('status','!=',3)->where('center_id', $id)->where('due_date','<', $date)->get();
+                $balance_amount = 0;
+                if(count($lasts) > 0) {
+                    foreach($lasts as $last){
+                        if($last->status == 2) {
+                            $balance_amount =($last->collection_amount - $last->collected_amount) + $balance_amount;
+                            $last->due_balance = 0;
+                            $last->collected_amount = $last->collection_amount;
+                            $last->status =3;
+                            $last->save();
+                        }else if($last->status == 1) {
+                            $balance_amount = $balance_amount + $last->collection_amount;
+                            $last->due_balance = 0;
+                            $last->collected_amount = $last->collection_amount;
+                            $last->status =3;
+                            $last->save();
+                        }
+                    }
+                }
+                $collection->collected_amount = $collection->collection_amount;
+                $collection->status = 2;
+                // $collections[$key]['balance_amount'] = $balance_amount;
+                $total_amount = $collection->collection_amount + $balance_amount;
+                // $collections[$key]['member'] = Member::where('id',$collection->member_id)->first();
+                $loan = LoanAccount::where('id', $collection->loan_id)->where('loan_status', 0)->first();
+                $loan->outstanding_amount = $loan->outstanding_amount - $total_amount;
+                $loan->save();
+                 if($loan->outstanding_amount == 0){
+                    $collection->status = 3;
+                }
+                $collection->save();
+                // $total_balance = $balance_amount + $total_balance;
+                // $total_amount = $total_amount + $collection->collection_amount;
+                // $collections[$key]['loan'] = $loan;
+            }
+
+            $response = [
+                'message'=>'Collection Updated',
+                'results' => $collections,
+           ];
+        }
+        else{
+            $response = [
+                'message'=>'No collection to pay',
+                'results' => [],
+           ];
+        }
+        // Prepare response data
+        // Return JSON response
+        return response()->json($response);
     }
 }
