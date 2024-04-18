@@ -70,6 +70,8 @@ Route::group([
     $router->post('editCollection', "CenterController@editCollection");
     $router->post('getMultipleDetails', "CenterController@getMultipleDetails");
     $router->post('multipleCollectionUpdate', "CenterController@multipleCollectionUpdate");
+    $router->get('collectionsList', "CenterController@collectionsList");
+    $router->post('singleCollectionList', "CenterController@singleCollectionList");
 
 
 });

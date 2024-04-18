@@ -533,9 +533,12 @@ class CenterController extends AdminController
                 $collection->due_balance = 0;
                 $collection->status = 1;
                 $collection->save();
-                $last = Collection::where('status', 3)->where('loan_id', $input['loan_id'])->latest()->first();
-                $last->status = 2;
-                $last->save();
+                $last = Collection::where('status', 3)->where('loan_id', $input['loan_id'])->where('due_number',$collection->due_number - 1)->first();
+                if(is_object($last)){
+                    $last->status = 2;
+                    $last->save();
+                }
+
                 // $loan->outstanding_amount = $loan->outstanding_amount - $collected_amount;
                 // $loan->save();
                 $response['message'] = "Collection updated successfully";
@@ -568,7 +571,7 @@ class CenterController extends AdminController
         $id = $request->input('center_id'); // Search term
         $date = $request->input('date'); // Search term
         $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
-        // $date = "2024-04-28";
+        $date = "2024-04-21";
         // $id = $request->input('loan_id'); // Search term
         // $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
         // $data['loan'] = LoanAccount::where('id', $id)->where('loan_status', 0)->first();
@@ -630,7 +633,7 @@ class CenterController extends AdminController
         $collection_id = $request->input('collection'); // Search term
         $date = $request->input('due_date'); // Search term
         $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
-        // $date = "2024-04-28";
+        $date = "2024-04-21";
         // for($i=0;$i<count($collection_id);$i++){
             $collections = Collection::whereIn('id',$collection_id)->where('status', 1)->where('center_id', $id)->where('due_date', $date)->get();
             if(count($collections) > 0) {
@@ -683,6 +686,51 @@ class CenterController extends AdminController
                 'results' => [],
            ];
         }
+        // Prepare response data
+        // Return JSON response
+        return response()->json($response);
+    }
+
+    public function collectionsList(){
+        // $id = $request->segment('3');
+        // $collection = Collection::where('id',$id)->where('status',2)->first();
+        // if(!is_object($collection)) {
+        //     abort(404);
+        // }
+        return FacadesAdmin::content(function (Content $content) {
+            // $data['collection'] = $collection;
+            // $data['loan'] = LoanAccount::where('id',$collection->loan_id)->first();
+            // $data['employee'] = Employee::select('id','staff_name')->where('id', $collection->staff_id)->first();
+            // $data['Center'] = Center::select('id','center_name')->where('id', $collection->center_id)->first();
+            // $data['Member'] = Member::select('id','client_name')->where('id', $collection->member_id)->first();
+            // optional
+            // $content->header('Collection');
+            // $content->description('Single Member collection');
+            $content->body( new Box('',view('collection_list')));
+        });
+    }
+
+    public function singleCollectionList(Request $request)
+    {
+        $input = $request->all();
+        // return $input;
+        // // Retrieve parameters from the request
+        $data['collections'] = Collection::where('loan_id',$input['loan_id'])->where('member_id',$input['member'])->whereIn('status',[2,3])->get();
+        $data['member'] = Member::where('id',$input['member'])->first();
+        $data['center'] = Center::where('id',$input['center'])->first();
+        if(count( $data['collections']) > 0){
+            $response = [
+                'message'=>'Collection Found',
+                'results' => $data,
+           ];
+        }else{
+            $response = [
+                'message'=>'No Collections found',
+                'results' => [],
+           ];
+        }
+
+
         // Prepare response data
         // Return JSON response
         return response()->json($response);

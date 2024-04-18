@@ -25,7 +25,7 @@
         <h3 class="box-title">Collection Edit</h3>
         <div class="box-tools">
             <div class="btn-group pull-right" style="margin-right: 5px">
-                <a href="/admin/collectionList" class="btn btn-sm btn-default" title="List"><i class="fa fa-list"></i><span class="hidden-xs">&nbsp;List</span></a>
+                <a href="/admin/collectionsList" class="btn btn-sm btn-default" title="List"><i class="fa fa-list"></i><span class="hidden-xs">&nbsp;List</span></a>
             </div>
         </div>
     </div>
@@ -217,7 +217,7 @@
                 // document.getElementById("myForm").reset()
                 toastr.success(data.message);
                 setTimeout(()=>{
-                window.location.href = '/admin/collectionList';
+                window.location.href = '/admin/collectionsList';
                 // $("#add-btn").prop("disabled", false);
                 },2000)
                }else {
