@@ -92,11 +92,11 @@ class IndexController extends AdminController
 
         $grid->tools(function ($tools) {
             $tools->prepend('
-           
+
                 <a href="http://localhost:8000/admin/indexes/create"  class="btn btn-sm btn-success " title="New">
                     <i class="fa fa-plus"></i><span class="hidden-xs">&nbsp;&nbsp;New</span>
                 </a>
-        
+
                   ');
         });
         return $grid;
@@ -448,7 +448,7 @@ class IndexController extends AdminController
             // $content->description('Ln Disbursement');
 
 
-            $content->body(new Box('', view('loan_dis')));
+            $content->body(new Box('Loan Disbursement', view('loan_dis')));
         });
     }
     public function editt($id)
@@ -478,7 +478,7 @@ class IndexController extends AdminController
             Index::where('id', $finalData[0]->index_id)->update(['index_status' => 2]);
         }elseif($countAdd == $inDex) {
             Index::where('id', $finalData[0]->index_id)->update(['index_status' => 2]);
-            
+
         }
         foreach ($finalData as $key => $value) {
             $planFind = Product::find($value->plan_id);
@@ -512,7 +512,7 @@ class IndexController extends AdminController
                     $interest = $planFind->interest_type == 1 ? ($planFind->plan_amount * $planFind->interest_amount / 100) : $planFind->interest_amount;
                     $month_interest = $interest / $planFind->plan_duration;
                     // dd(($planFind->plan_amount * $planFind->loan_interest));
-                    if ($planFind->plan_type == 1) { //week
+                if ($planFind->plan_type == 1) { //week
                         $arr[] = [
                             'loan_id' =>$addTo->id ,
                             'member_id' => $value->member_id,

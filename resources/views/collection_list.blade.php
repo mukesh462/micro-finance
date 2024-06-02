@@ -222,7 +222,7 @@
                     $.each(data.results.member, function(index, option) {
                         $('#member_list').append($('<option>', {
                             value: option.id,
-                            text: option.client_name
+                            text:"00"+option.id+"-"+option.client_name
                         }));
                     });
                 } else {
