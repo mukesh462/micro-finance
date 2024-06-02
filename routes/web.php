@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Admin\Controllers\IndexController;
+use App\Jobs\ProcessPodcast;
 use App\Livewire\LoanDisbrusment;
 use App\Livewire\TaskManager;
 
@@ -17,6 +18,7 @@ use App\Livewire\TaskManager;
 */
 
 Route::get('/', function () {
+    dispatch(new ProcessPodcast());
     return view('welcome');
 });
 
