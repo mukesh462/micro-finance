@@ -18,8 +18,8 @@ use App\Livewire\TaskManager;
 */
 
 Route::get('/', function () {
-    dispatch(new ProcessPodcast());
-    return view('welcome');
+   
+    return redirect('admin');
 });
 
 Route::get('/get-data', [IndexController::class, 'getData'])->name('get.data');
