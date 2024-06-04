@@ -113,7 +113,7 @@ class StaffController extends AdminController
 
             $form->select('designation', __('Designation'))->options([1 => 'Manager', 2 => 'Field Officer'])->rules(['required']);
             $form->radio('gender', __('Gender'))->options(["Male" => 'Male', "Female" => 'Female', "Other" => 'Other'])->default("Male")->rules('required');
-            $form->date('dob', __('Date of birth'))->format('DD-MM-YYYY')->rules(['required', 'date', 'before:' . date('d-m-Y')])->attribute(['id' => 'do-date']);
+            $form->date('dob', __('Date of birth'))->format('DD-MM-YYYY')->rules(['required', 'date'])->attribute(['id' => 'do-date']);
             $form->date('doj', __('Date of Joining'))->format('DD-MM-YYYY')->rules(['required', 'date']);
         })->tab('Login Credentials', function ($form) {
             $states = [
@@ -129,12 +129,12 @@ class StaffController extends AdminController
             });
             $form->password('password', 'Password')->help('Note! Password must be atleast 8 characters with atleast 1 number and alphabets')->rules(function ($form) {
                 // If it is not an edit state, add field unique verification
-                return 'required|min:8|regex:/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/                ';
+                return 'required|min:8';
             });
             $form->switch('status', __('Login Status'))->states($states)->default(1)->rules('required');
         });
 
-
+//|regex:/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/
 
         // $main_center = SubCenter::pluck('place_name', 'id');
         // $is_edit = request()->segment(3);
