@@ -664,7 +664,8 @@ class CenterController extends AdminController
                         }
                     }
                     if($collected_amount > 0){
-                        $collection->collected_amount = $collection->collection_amount;
+                        $collection->collected_amount = $collected_amount;
+                        $collection->due_balance = $collection->collection_amount - $collected_amount;
                         $collection->status = 2;
                     }
 
