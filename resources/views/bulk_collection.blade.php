@@ -36,7 +36,7 @@
                 <div class="col-12 col-md-4 col-lg-4 mb">
 
                     <label for="datepicker">Due Date:</label>
-                    <input type="text" class="form-control" id="datepicker" name="due_date" placeholder="Select date" readonly>
+                    <input type="text" class="form-control" id="datepicker" name="due_date" placeholder="Select date">
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="center" class="" id="center-error">Select Center
@@ -136,9 +136,25 @@
             </thead>
             <tbody id="table-body">
                 <!-- Table body content will be inserted dynamically -->
+                <tr id="default-row">
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>Total Collected</th>
+                    <th id="total-collected-amount">0</th>
+                    <th></th>
+                </tr>
             </tbody>
-
         </table>
+        <table class="table table-hover grid-table">
+            <thead>
+
+            </thead>
+        </table>
+
         <div class="col-12 col-md-4 col-lg-4 addbtn">
             <button type="submit" id="add-btn" class="btn btn-primary mt-2 d-block">
                 <i class="fa fa-save"></i>&nbsp; Save
@@ -172,13 +188,34 @@
         //     dateFormat: 'dd-mm-yy', // Set the date format
         //     defaultDate: formattedDate // Set the default date in the desired format
         //   });
-        $('#datepicker').val(formattedDate);
+        // $('#datepicker').val(formattedDate);
         // console.log(formattedDate, "formatted")
+
+        var today = moment().startOf('day');
+
+        $('#datepicker').val(today.format('DD-MM-YYYY')).datetimepicker({
+            format: 'DD-MM-YYYY',
+            minDate: today,
+            useCurrent: true // Sets the current date as default
+        });
+        $('#datepicker').on('keydown', function(e) {
+            e.preventDefault();
+        });
+        $('#datepicker').on('dp.change', function(e) {
+            let defaultRow = $('#data-table tbody #default-row').detach();
+            clearForm();
+            $('#data-table tbody').append(defaultRow);
+            $('#total-collected-amount').text(0);
+        });
     });
     $(document).on('change', 'input[type="checkbox"]', function() {
         var checkboxValue = $(this).val();
+        var amountInput = $(this).closest('tr').find('.total-amount-input');
+        var amount = parseFloat(amountInput.val());
         if (this.checked) {
             collection.push(checkboxValue);
+            updateTotalAmount(amount, true);
+            amountInput.prop('readonly', true);
             // Checkbox is checked, get its value
             // console.log('Checkbox with value ' + checkboxValue + ' is checked.');
             // console.log(collection, "cc")
@@ -188,12 +225,25 @@
             if (index !== -1) {
                 collection.splice(index, 1);
             }
+            updateTotalAmount(amount, false);
+            amountInput.prop('readonly', false);
             // console.log('Checkbox with value ' + checkboxValue + ' is unchecked.');
             // Checkbox is unchecked
             // console.log('Checkbox ' + checkboxValue + ' is unchecked.');
             // console.log(collection, "cs")
         }
     });
+
+    function updateTotalAmount(amount, isAdding) {
+        var total = parseFloat($('#total-collected-amount').text()) || 0;
+        if (isAdding) {
+            total += amount;
+        } else {
+            total -= amount;
+        }
+        $('#total-collected-amount').text(total.toFixed(2));
+    }
+
     // Initialize Select2 with AJAX
     $(document).ready(function() {
         // Initialize Select2 with AJAX and pagination
@@ -262,7 +312,7 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}' // include CSRF token in headers
             },
             success: function(data) {
-
+                var defaultRow = $('#data-table tbody #default-row').detach();
                 // console.log(data, 'collection list')
                 if (data.results.collections.length > 0) {
                     $('#data-table tbody').empty();
@@ -285,6 +335,8 @@
                             '</tr>';
                         $('#data-table tbody').append(newRow);
                     }
+                    $('#data-table tbody').append(defaultRow);
+
                     $('.total-amount-input').on('input', function() {
                         var value = $(this).val();
                         var max = parseFloat($(this).data('max'));
@@ -297,6 +349,8 @@
                 } else {
                     toastr.error("No collection to pay");
                     clearForm();
+                    $('#data-table tbody').append(defaultRow);
+                    $('#total-collected-amount').text(0);
                 }
             },
             error: function(xhr, status, error) {
@@ -362,12 +416,18 @@
                 // console.log('data', data)
                 if (data.message == "Collection Updated") {
                     toastr.success(data.message);
+                    let defaultRow = $('#data-table tbody #default-row').detach();
                     clearForm();
                     $("#add-btn").prop("disabled", false);
+                    $('#data-table tbody').append(defaultRow);
+                    $('#total-collected-amount').text(0);
                 } else {
                     toastr.error("Collection already updated");
+                    let defaultRow = $('#data-table tbody #default-row').detach();
                     clearForm();
                     $("#add-btn").prop("disabled", false);
+                    $('#data-table tbody').append(defaultRow);
+                    $('#total-collected-amount').text(0);
                 }
             },
             error: function(xhr, status, error) {
