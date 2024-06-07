@@ -345,14 +345,14 @@
                                 'label' => 'Father Name',
                                 'name' => 'father_name',
                                 'value' => old('father_name',isset($data) ? $data->father_name : ''),
-                                'isRequired' => true,
+                                'isRequired' => false,
 
                                 ])
                                 @include('livewire.text-input', [
                                 'label' => 'Mother Name',
                                 'name' => 'mother_name',
                                 'value' => old('mother_name',isset($data) ? $data->mother_name : ''),
-                                'isRequired' => true,
+                                'isRequired' => false,
                                 ])
                             </div>
                             <div class="col-12 col-md-6 col-lg-6"> @include('livewire.text-input', [

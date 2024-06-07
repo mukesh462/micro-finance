@@ -93,7 +93,7 @@ class IndexController extends AdminController
         $grid->tools(function ($tools) {
             $tools->prepend('
 
-                <a href="http://localhost:8000/admin/indexes/create"  class="btn btn-sm btn-success " title="New">
+                <a href="https://thulirfinance.in/admin/indexes/create"  class="btn btn-sm btn-success " title="New">
                     <i class="fa fa-plus"></i><span class="hidden-xs">&nbsp;&nbsp;New</span>
                 </a>
 
