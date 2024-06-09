@@ -156,7 +156,7 @@
         // Initialize Select2 with AJAX and pagination
         $('#mySelect').select2({
             placeholder: 'Search for Center',
-            minimumInputLength: 3, // Minimum number of characters before making the AJAX call
+            minimumInputLength: 1, // Minimum number of characters before making the AJAX call
             ajax: {
                 url: '/admin/getCenter', // Replace with your actual API endpoint
                 dataType: 'json',

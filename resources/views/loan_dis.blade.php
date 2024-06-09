@@ -523,7 +523,7 @@
                     },
                     cache: true, // Enable caching on the client side
                 },
-                minimumInputLength: 2,
+                minimumInputLength: 1,
                 placeholder: "Select " + id,
                 // templateResult: function (data) {
                 //     if (!data.id) {

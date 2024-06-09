@@ -332,7 +332,11 @@ class CenterController extends AdminController
 
         // Retrieve parameters from the request
         $id = $request->input('center_id'); // Search term
-        $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
+        $data['employee'] = Center::select('centers.*', 'employees.id as employee_id', 'employees.staff_name')
+        ->join('employees', 'employees.id', '=', 'centers.employee_id')
+        ->where('centers.id', $id)
+        ->first();
+
         $data['member'] = Member::select('id', 'client_name')->where('center_id', $id)->get();
         // Prepare response data
         $response = [

@@ -8,6 +8,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use Illuminate\Http\Request;
+use Encore\Admin\Admin;
 
 class ProductController extends AdminController
 {
@@ -35,6 +36,13 @@ class ProductController extends AdminController
                 return $interest_amount . " %";
             } else {
                 return "Rs " . $interest_amount;
+            }
+        });
+        $grid->column('interest_value', __('Interest Percentage Amount'))->display(function ($interest_value) {
+            if ($this->interest_type == 1) {
+                return $interest_value;
+            } else {
+                return "---";
             }
         });
         // $grid->column('plan_type', __('Plan type'));
@@ -93,13 +101,13 @@ class ProductController extends AdminController
         $form->number('plan_duration', __('Loan duration'))->min(1)->required();
 
         // $form->text('plan_name', __('Product name'))->rules('required');
-        $form->decimal('plan_amount', __('Loan amount'))->rules(['required', 'numeric', 'min:1']);
+        $form->decimal('plan_amount', __('Loan amount'))->rules(['required', 'numeric', 'min:1'])->attribute(['id' => 'loan-amount']);
         // $form->radio('interest_type', __('Interest type'))->required()->options([1 => 'Percentage', 2 => 'Fixed'])->when(1, function (Form $form) {
         //     $form->decimal('interest_amount', __('Interest Value'))->rules(['required', 'numeric', 'min:0.1', 'max:100']);
         // })->when(2, function (Form $form) {
         //     $form->decimal('interest_amount', __('Interest Value'))->rules(['required', 'numeric', 'min:1']);
         // });
-        $form->radio('interest_type', __('Interest type'))->required()->options([1 => 'Percentage', 2 => 'Fixed']);
+        $form->select('interest_type', __('Interest type'))->required()->options([1 => 'Percentage', 2 => 'Fixed'])->attribute(['id' => 'interest-type']);
 
         $form->decimal('interest_amount', __('Interest Value'))->rules([
             'required',
@@ -119,7 +127,8 @@ class ProductController extends AdminController
                     }
                 }
             }
-        ]);
+        ])->attribute(['id' => 'interest-amount']);
+        $form->decimal('interest_value', __('Interest'))->attribute(['id' => "interest-value"]);
 
         // $form->text('plan_description', __('Product description'));
         // $form->select('plan_status', __(' status'))->options([1 => 'Active', 2 => 'Inactive'])->default(1);
@@ -168,6 +177,52 @@ class ProductController extends AdminController
                 $loan->save();
             }
         });
+
+        Admin::script('
+            $("#interest-value").closest("div.form-group").css("display", "none");
+
+             $("#interest-type").on("change", function() {
+        if ($(this).val() == 1) {
+            $("#interest-value").closest("div.form-group").css("display", "block");
+            $("#interest-value").prop("readonly", true);
+            $("#interest-value").val("0");
+            $("#interest-amount").val("0");
+        } else {
+            $("#interest-value").closest("div.form-group").css("display", "none");
+            $("#interest-value").prop("readonly", false);
+            $("#interest-value").val("0");
+            $("#interest-amount").val("0");
+        }
+    });
+ $(".interest-amount").on("input", function() {
+        var value = $(this).val();
+        if (!/^\d*\.?\d{0,2}$/.test(value)) {
+            $(this).val(value.slice(0, -1)); // remove last character if not valid
+        }
+    });
+    $("#interest-amount").on("keyup", function() {
+
+            if($("#interest-type").val() == 1) {
+
+    var interestRate = parseFloat($(this).val());
+
+    var totalAmount = $("#loan-amount").val();
+    var calculatedInterest = totalAmount * (interestRate / 100);
+
+    $("#interest-value").val(calculatedInterest.toFixed(2)); // Displaying with two decimal places
+    }
+});
+
+
+    $(document).ready(function(){
+            if($("#interest-type").val() == 1) {
+            $("#interest-value").closest("div.form-group").css("display", "block");
+            $("#interest-value").prop("readonly", true);
+    }
+
+    })
+
+        ');
 
         return $form;
     }

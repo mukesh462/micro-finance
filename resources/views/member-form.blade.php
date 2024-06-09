@@ -139,7 +139,7 @@
                                 </div>
                                 <div class="">
                                     @include('livewire.text-input', [
-                                    'label' => 'State',
+                                    'label' => 'District',
                                     'name' => 'state',
                                     'value'=> old('state', isset($data) ? $data->state : ''),
                                     'isRequired' => false,
