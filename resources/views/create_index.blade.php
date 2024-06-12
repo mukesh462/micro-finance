@@ -22,15 +22,14 @@
     .container {
         max-width: 100%;
     }
+
 </style>
 <!-- <div class="mb" style="width: 100%;margin: auto;"> -->
 
 <div class="">
-    <a href="{{ admin_url('/indexes') }}" class="btn btn-sm btn-default"><i class="fa fa-list"></i><span
-            class="hidden-xs">&nbsp;List</span></a>
+    <a href="{{ admin_url('/indexes') }}" class="btn btn-sm btn-default"><i class="fa fa-list"></i><span class="hidden-xs">&nbsp;List</span></a>
     @if ($type == 'view')
-    <a href="/admin/getIndexMember/{{ $data[0]->index_id }}/pdf" target='_blank' class="btn btn-sm btn-info pull-right"><i
-            class=" fa fa-file-pdf-o"></i><span class="hidden-xs">&nbsp;Pdf</span></a>
+    <a href="/admin/getIndexMember/{{ $data[0]->index_id }}/pdf" target='_blank' class="btn btn-sm btn-info pull-right"><i class=" fa fa-file-pdf-o"></i><span class="hidden-xs">&nbsp;Pdf</span></a>
     @endif
 
 </div>
@@ -80,8 +79,7 @@
                 @if ($type == 'create')
                 <select class="form-control" id="Center" placeholder="Select Member"></select>
                 @else
-                <input class="form-control" id="Center" disabled data-id="{{ $data[0]->center_id }}"
-                    value="{{ $data[0]->center_name }}" placeholder="Select Member"></i>
+                <input class="form-control" id="Center" disabled data-id="{{ $data[0]->center_id }}" value="{{ $data[0]->center_name }}" placeholder="Select Member"></i>
                 @endif
             </div>
             <div class="col-12 col-md-4 col-lg-4 mb">
@@ -90,8 +88,7 @@
                 @if ($type == 'create')
                 <input type="text" class="form-control" id="Employee" disabled placeholder=" Employee"></>
                 @else
-                <input type="text" class="form-control" value="{{ $data[0]->emp_name }}"
-                    data-id="{{ $data[0]->staff_id }}" id="Employee" disabled placeholder=" Employee"></>
+                <input type="text" class="form-control" value="{{ $data[0]->emp_name }}" data-id="{{ $data[0]->staff_id }}" id="Employee" disabled placeholder=" Employee"></>
                 @endif
             </div>
             <div class="col-12 col-md-4 col-lg-4 mb">
@@ -113,8 +110,7 @@
             </div>
             <div class="col-12 col-md-4 col-lg-4">
                 <label for="product_amount">Product Amount</label>
-                <input type="text" class="purpose-field form-control" id="product_amount" disabled
-                    placeholder="Product Amount" />
+                <input type="text" class="purpose-field form-control" id="product_amount" disabled placeholder="Product Amount" />
             </div>
 
             <div class="col-12 col-md-4 col-lg-4">
@@ -146,8 +142,8 @@
             <tr>
                 <th>S.no</th>
                 <th>Center</th>
-                <!-- <th>Employee</th> -->
-                <th>Member</th>
+                <th>Member ID</th>
+                <th>Member </th>
                 <th>Nominee </th>
                 <th>Product</th>
                 <th>Purpose</th>
@@ -162,12 +158,11 @@
         </tbody>
         <tfoot id="table-foot">
             <tr>
-                <td colspan="{{ $type != 'view' ? '5' : '5' }}"></td>
+                <td colspan="{{ $type != 'view' ? '6' : '6' }}"></td>
                 <td colspan="">Total Product Amount</td>
                 <th colspan="" id="total_amount"> 0</th>
                 <th>
-                    <form action="{{ $type == 'create' ? '/admin/addIndex' : '/admin/editIndex' }}" method="post"
-                        id="final-form" style="display: none;">
+                    <form action="{{ $type == 'create' ? '/admin/addIndex' : '/admin/editIndex' }}" method="post" id="final-form" style="display: none;">
                         <input type="hidden" name="data" value="" id="data-bind">
                         @csrf
                         @if ($type == 'edit')
@@ -211,14 +206,14 @@
         console.log(e.id, "sdsds");
 
         $("#" + e.id + "-error").css({
-            color: "black",
-        });
+            color: "black"
+        , });
         $("#" + e.id + "-error").text("Select " + e.id);
     };
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         // Add button click event
-        $("#add-btn").click(function () {
+        $("#add-btn").click(function() {
             var center = $("#Center").val();
             var employee = $("#Employee").val();
             var member = $("#Member").val();
@@ -228,46 +223,46 @@
 
             // console.log(employee, 'emp');
             const valObj = [{
-                value: center,
-                id: "Center",
-            },
+                    value: center
+                    , id: "Center"
+                , },
 
-            {
-                value: member,
-                id: "Member",
-            }, {
-                value: plan,
-                id: "Product",
-            },
-            ];
+                {
+                    value: member
+                    , id: "Member"
+                , }, {
+                    value: plan
+                    , id: "Product"
+                , }
+            , ];
             $.ajax({
-                url: "{{ route('checkIndex') }}",
-                dataType: "json",
-                data: {
+                url: "{{ route('checkIndex') }}"
+                , dataType: "json"
+                , data: {
 
                     member_id: member, // search term
                     plan_id: plan
 
-                },
-                success: (e) => {
+                }
+                , success: (e) => {
                     if (checkField(valObj) && e) {
 
                         let onblur = {
-                            sn: row_id,
-                            center: type == 'create' ? center : $('#Center').data('id'),
-                            plan,
-                            purpose,
-                            employee,
-                            member,
-                            amount,
-                            employee_id: $('#Employee').data('id'),
-                            center_name: type == 'create' ? $(
+                            sn: row_id
+                            , center: type == 'create' ? center : $('#Center').data('id')
+                            , plan
+                            , purpose
+                            , employee
+                            , member
+                            , amount
+                            , employee_id: $('#Employee').data('id')
+                            , center_name: type == 'create' ? $(
                                 "#Center  option:selected").text() : $(
-                                    '#Center').val(),
-                            member_name: $("#Member option:selected").text(),
-                            product_name: $("#Product option:selected").text(),
-                            emp_name: $("#Employee").val(),
-                            nominee_name: $('#nominee').val()
+                                '#Center').val()
+                            , member_name: $("#Member option:selected").text()
+                            , product_name: $("#Product option:selected").text()
+                            , emp_name: $("#Employee").val()
+                            , nominee_name: $('#nominee').val()
                         };
                         const validateRecord = finalObj.find((e) => e.plan == plan && e
                             .member == member);
@@ -305,8 +300,8 @@
 
 
 
-                },
-                error: (e) => toastr.error(e)
+                }
+                , error: (e) => toastr.error(e)
             })
 
 
@@ -317,12 +312,12 @@
         $('#Member').on('change', () => {
             console.log($('#Member').val(), 'sfsfsf');
             $.ajax({
-                url: "{{ route('get.member') }}",
-                dataType: "json",
-                data: {
+                url: "{{ route('get.member') }}"
+                , dataType: "json"
+                , data: {
                     id: $('#Member').val(), // search term
-                },
-                success: (e) => {
+                }
+                , success: (e) => {
                     $('#nominee').val(e.nominee_name);
                     //console.log(e, 'memver_c');
                 }
@@ -330,7 +325,7 @@
         })
         // Remove button click event
     });
-    $("#staff").on("change", function (event) {
+    $("#staff").on("change", function(event) {
         const selected = $(this).val();
 
         $("#member").removeAttr("disabled");
@@ -340,32 +335,32 @@
     const addSelectData = (id, type = "staff", data = {}) => {
         $("#" + id).select2({
             ajax: {
-                url: "{{ route('get.data') }}",
-                dataType: "json",
-                delay: 250,
-                data: function (params) {
+                url: "{{ route('get.data') }}"
+                , dataType: "json"
+                , delay: 250
+                , data: function(params) {
                     return {
                         q: params.term, // search term
                         page: params.page || 1, // page number
-                        tp: type,
-                        data,
-                    };
-                },
-                processResults: function (data, params) {
+                        tp: type
+                        , data
+                    , };
+                }
+                , processResults: function(data, params) {
                     params.page = params.page || 1;
 
                     return {
-                        results: data.results,
-                        pagination: {
+                        results: data.results
+                        , pagination: {
                             more: params.page * 10 < data
                                 .total_count, // Adjust the limit per page as needed
-                        },
-                    };
-                },
-                cache: true, // Enable caching on the client side
-            },
-            minimumInputLength: 1,
-            placeholder: "Select " + id,
+                        }
+                    , };
+                }
+                , cache: true, // Enable caching on the client side
+            }
+            , minimumInputLength: 1
+            , placeholder: "Select " + id,
             // templateResult: function (data) {
             //     if (!data.id) {
             //         return data.text;
@@ -389,8 +384,8 @@
     } else {
         console.log('efefe');
         addSelectData("Member", "member", {
-            id: '@json(isset($data) ? $data[0]->member_id : 0)',
-        });
+            id: '@json(isset($data) ? $data[0]->member_id : 0)'
+        , });
     }
 
 
@@ -398,15 +393,15 @@
     var dispalyErrorMessage = (errorMessageId) => {
         var errorMessageNewId = "#" + errorMessageId;
         $(errorMessageNewId + "-error").css({
-            color: "red",
-        });
+            color: "red"
+        , });
         console.log(errorMessageId, "erferf");
 
         $(errorMessageNewId + "-error").text(
             "Select  " + errorMessageId + " is required"
         );
     };
-    $("#reset-btn").click(function () {
+    $("#reset-btn").click(function() {
         $("#myModal").modal("show");
     });
     $(document).on("select2:open", (e) => {
@@ -418,7 +413,7 @@
             )
             .focus();
     });
-    $("#Center").on("change", function () {
+    $("#Center").on("change", function() {
         center_id = $(this).val();
         if (center_id != null) {
             $(this).attr("disabled", true);
@@ -426,43 +421,43 @@
         console.log(center_id, "ihhxgfh");
         // $("#Employee").removeAttr("disabled");
         $.ajax({
-            url: "{{ route('get.employee') }}",
-            dataType: "json",
-            delay: 250,
-            data: {
+            url: "{{ route('get.employee') }}"
+            , dataType: "json"
+            , delay: 250
+            , data: {
 
                 id: center_id, // search term
 
-            },
-            success: (e) => {
+            }
+            , success: (e) => {
                 console.log('dataEmp', e);
                 $('#Employee').val(e.staff_name);
                 $('#Employee').attr('data-id', e.id);
 
                 addSelectData("Member", "member", {
-                    id: e.id,
-                });
+                    id: e.id
+                , });
             }
         })
 
     });
-    $('#Product').on('change', function () {
+    $('#Product').on('change', function() {
         // $("#Employee").removeAttr("disabled");
         $.ajax({
-            url: "{{ route('get.product') }}",
-            dataType: "json",
-            data: {
+            url: "{{ route('get.product') }}"
+            , dataType: "json"
+            , data: {
 
                 id: $(this).val(), // search term
 
-            },
-            success: (e) => {
+            }
+            , success: (e) => {
                 console.log('dataEmp', e);
                 $('#product_amount').val(e.plan_amount);
             }
         })
     })
-    $("#reset-form").on("click", function () {
+    $("#reset-form").on("click", function() {
         $("#myModal").modal("hide");
         $("#Center").val("");
         $("#Employee").val("");
@@ -498,7 +493,8 @@
                 <tr>
                     <td>${e.sn}</td>
                     <td>${e.center_name}</td>
-                    <td>${e.member}-${e.member_name}</td>
+                    <td>#${e.member}</td>
+                    <td>${e.member_name}</td>
                     <td>${e.nominee_name}</td>
                     <td>${e.product_name}</td>
                     <td>${e.purpose}</td>
@@ -509,7 +505,8 @@
                 <tr>
                     <td>${e.sn}</td>
                     <td>${e.center_name}</td>
-                    <td>${e.member}-${e.member_name}</td>
+                    <td>#${e.member}</td>
+                    <td>${e.member_name}</td>
                     <td>${e.nominee_name}</td>
                     <td>${e.product_name}</td>
                     <td>${e.purpose}</td>
@@ -531,7 +528,7 @@
         }
     }
 
-    $("#data-table").on("click", ".remove-btn", function () {
+    $("#data-table").on("click", ".remove-btn", function() {
         // $(this).closest("tr").remove(); // Remove the closest table row
         console.log('removeid');
         var fl = $(this).data("id"); // Use data() method to get the value of data-id
@@ -547,4 +544,5 @@
     });
 
     changeUi()
+
 </script>

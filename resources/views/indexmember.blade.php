@@ -3,33 +3,12 @@
 
 <head>
     <style>
-        h1,
-        h2,
-        h3 {
-            text-align: center;
+     @page {
+            margin: 10px; /* Adjust the margin as needed */
+            padding:15px;
+            
         }
-
-        /* Add your CSS styles for the PDF here */
-        h1 {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        h2 {
-            margin-top: 10px;
-            color: #555;
-            font-size: 20px;
-            /* margin-bottom: 8px; */
-        }
-
-        h3 {
-            color: #777;
-            font-size: 18px;
-            margin-bottom: 6px;
-        }
-
+       
         .header {
             /* text-align: center; */
             position: relative;
@@ -57,6 +36,7 @@
             /* border: 1px solid #000; */
             padding: 8px;
             text-align: left;
+            font-size:15px
         }
 
         th {
@@ -77,9 +57,10 @@
         }
 
         body {
-            border: 1px solid #000;
+        
+            
             /* Set the border style, adjust color and width as needed */
-            padding: 20px;
+        
             /* Optional: Add padding to give some space between the content and the border */
             font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
         }
@@ -111,6 +92,10 @@
             text-transform: uppercase;
             font-size: 15px;
         }
+        .title-description{
+            text-align:center
+        }
+        
     </style>
 </head>
 
@@ -119,7 +104,7 @@
         <img src="https://media.istockphoto.com/id/490736905/photo/meenakshi-hindu-temple-in-madurai-tamil-nadu-south-india.jpg?s=612x612&w=0&k=20&c=OlOLvdryIdkdyKcY9gRPsM1RZa5HiP6QBr2JVAIvPb0="
             alt="Header Image" />
         <div class="title-description">
-            <h1>MF</h1>
+            <h1>Thulir Finance</h1>
 
         </div>
     </div>
@@ -129,7 +114,7 @@
             <tr>
                 <th>S.no</th>
                 <th>Center</th>
-                <!-- <th>Employee</th> -->
+                 <th>Member ID</th>
                 <th>Member</th>
                 <th>Nominee </th>
                 <th>Product</th>
@@ -143,6 +128,7 @@
             <tr>
                 <td>{{ $ke + 1 }}</td>
                 <td>{{ $list->center_name }}</td>
+                <td>#{{ $list->member_id }}</td>
                 <td>{{ $list->member_name }}</td>
                 <td>{{ $list->nominee_name }}</td>
                 <td>{{ $list->product_name }}</td>
@@ -154,8 +140,10 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="6"></td>
-                <td>{{collect($data)->sum('amount')}}</td>
+                <th colspan="6"></th>
+            
+                <th  colspan="">Total</th>
+                <th>{{collect($data)->sum('amount')}}</th>
             </tr>
         </tfoot>
     </table>
