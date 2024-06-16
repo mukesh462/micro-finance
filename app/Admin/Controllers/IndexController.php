@@ -457,7 +457,7 @@ class IndexController extends AdminController
         return Admin::content(function (Content $content) use ($id) {
 
             $content->header(' Loan');
-            $content->description('Laon Disbursement end');
+            $content->description('Loan Disbursement end');
 
 
 

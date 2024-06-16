@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Admin\Controllers\IndexController;
+use App\Http\Controllers\CronController;
 use App\Jobs\ProcessPodcast;
 use App\Livewire\LoanDisbrusment;
 use App\Livewire\TaskManager;
@@ -28,3 +29,6 @@ Route::get('/get-employee', [IndexController::class, 'getemployee'])->name('get.
 Route::get('/get-member', [IndexController::class, 'getmember'])->name('get.member');
 Route::get('/get-product', [IndexController::class, 'getproduct'])->name('get.product');
 Route::get('/admin/per', TaskManager::class);
+Route::get('testCron', [CronController::class, 'testCron']);
+
+
