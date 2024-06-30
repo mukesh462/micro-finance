@@ -72,6 +72,6 @@ Route::group([
     $router->post('multipleCollectionUpdate', "CenterController@multipleCollectionUpdate");
     $router->get('collectionsList', "CenterController@collectionsList");
     $router->post('singleCollectionList', "CenterController@singleCollectionList");
-
-
+    $router->get('foreclosure', [MainController::class, 'preClose']);
+    $router->post('getLoanForeclose', "CenterController@getLoanForeclose");
 });
