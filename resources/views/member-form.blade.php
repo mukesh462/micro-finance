@@ -16,6 +16,7 @@
         .form-group {
             margin: 0;
         }
+
     </style>
 
     @php
@@ -30,6 +31,46 @@
     $member_id = 1;
     }
     $dat = $data->dob ?? '';
+    $array = json_decode($errors, true);
+    function compare_arrays($required_keys, $data_keys) {
+    return !empty(array_intersect($required_keys, $data_keys));
+    }
+
+    // Get all the keys from the array
+    $array_error = array_keys($array);
+    $tab1 = [
+    "client_name",
+    "dob",
+    "gender",
+    "address",
+    "community",
+    "qualification",
+    "monthly_income",
+    "home_status",
+    "status",
+    "center_id",
+    "phone_number",
+    "religion",
+    "marital_status",
+    "monthly_expenses",
+    "date_of_joined"
+    ];
+    $tab2=['spouse_occupation',
+    'spouse_name',
+    'no_of_adult',
+    'no_of_children',
+    'total_family_members'];
+    $tab3=['aadhar_no',
+'aadhar_img'];
+$tab4=[
+    "nominee_name",
+    "relation_with_client",
+    "nominee_aadhar",
+    "nominee_dob",
+    "nominee_aadhar_img"
+];
+$tab5=[];
+
     @endphp
     <div class="box-header with-border">
         <h3 class="box-title">{{$type}}</h3>
@@ -47,27 +88,37 @@
                 <ul class="nav nav-tabs">
                     <li class="active tab-link">
                         <a href="#tab-form-1" id="tab-form-1-tab" data-toggle="tab">
-                            Member Details <i class="fa fa-exclamation-circle text-red hide"></i>
+                            Member Details @if(compare_arrays($tab1, $array_error))
+                            <i class="fa fa-exclamation-circle text-red "></i>
+                            @endif
                         </a>
                     </li>
                     <li class="tab-link">
                         <a href="#tab-form-2 " id="tab-form-2-tab" data-toggle="tab">
-                            Member Family Details <i class="fa fa-exclamation-circle text-red hide"></i>
+                            Member Family Details  @if(compare_arrays($tab2, $array_error))
+                            <i class="fa fa-exclamation-circle text-red "></i>
+                            @endif
                         </a>
                     </li>
                     <li class="tab-link">
                         <a href="#tab-form-3 " id="tab-form-3-tab" data-toggle="tab">
-                            Member Document <i class="fa fa-exclamation-circle text-red hide"></i>
+                            Member Document @if(compare_arrays($tab3, $array_error))
+                            <i class="fa fa-exclamation-circle text-red "></i>
+                            @endif
                         </a>
                     </li>
                     <li class="tab-link">
                         <a href="#tab-form-4 " id="tab-form-4-tab" data-toggle="tab">
-                            Nominee Details <i class="fa fa-exclamation-circle text-red hide"></i>
+                            Nominee Details @if(compare_arrays($tab4, $array_error))
+                            <i class="fa fa-exclamation-circle text-red "></i>
+                            @endif
                         </a>
                     </li>
                     <li class="tab-link">
                         <a href="#tab-form-5 " id="tab-form-5-tab" data-toggle="tab">
-                            Bank Details <i class="fa fa-exclamation-circle text-red hide"></i>
+                            Bank Details @if(compare_arrays($tab5, $array_error))
+                            <i class="fa fa-exclamation-circle text-red "></i>
+                            @endif
                         </a>
                     </li>
 
@@ -90,7 +141,7 @@
                                         </div><!-- /.box-body -->
                                     </div>
                                 </div>
-                                <input hidden  value="{{(isset($data->id) ? $data->id : '')}}" name="create"/>
+                                <input hidden value="{{(isset($data->id) ? $data->id : '')}}" name="create" />
                                 <div class="">
                                     @include('livewire.text-input', [
                                     'label' => 'Member name',
@@ -400,7 +451,7 @@
                     <div class="tab-pane container" id="tab-form-3" style='max-width:100%!important'>
                         <div class="row">
                             <div class="col-12 col-md-6 col-lg-6">
-                            @include('livewire.text-input', [
+                                @include('livewire.text-input', [
                                 'label' => 'Aadhar Card Number',
                                 'name' => 'aadhar_no',
                                 'value' => old('aadhar_no',isset($data) ? $data->aadhar_no : ''),
@@ -427,7 +478,7 @@
                                 ])
                             </div>
                             <div class="col-12 col-md-6 col-lg-6" style="margin-top: 5px;">
-                            <div class="">
+                                <div class="">
                                     @include('livewire.image-uploader', [
                                     'img' => 'aadhar_img',
                                     'label' => 'Aadhar img',
@@ -630,23 +681,23 @@
 
     <script>
         $('#no_of_adult').bootstrapNumber({
-            upClass: 'success',
-            downClass: 'default',
-            center: true
+            upClass: 'success'
+            , downClass: 'default'
+            , center: true
         });
         $('#no_of_children').bootstrapNumber({
-            upClass: 'success',
-            downClass: 'default',
-            center: true
+            upClass: 'success'
+            , downClass: 'default'
+            , center: true
         });
         var today = moment();
         var minDate = today.clone().subtract(60, 'years').startOf('day');
         var maxDate = today.clone().subtract(18, 'years').endOf('day');
 
-        $('#dob').val('').datetimepicker({
-            format: 'DD-MM-YYYY',
-            minDate: minDate,
-            useCurrent: false // Prevents setting the current date as default
+        $('#dob').datetimepicker({
+            format: 'DD-MM-YYYY'
+            , minDate: minDate
+            , useCurrent: false // Prevents setting the current date as default
         }).on('dp.show', function() {
             // Update maxDate on datepicker show
             $(this).data('DateTimePicker').maxDate(maxDate);
@@ -656,14 +707,14 @@
             $('#dob').val(dat)
         }
         $('#nominee_dob').datetimepicker({
-            format: 'DD-MM-YYYY',
-            minDate: minDate,
-            maxDate: maxDate
+            format: 'DD-MM-YYYY'
+            , minDate: minDate
+            , maxDate: maxDate
 
         })
         $('#date_of_joined').datetimepicker({
-            format: 'DD-MM-YYYY',
-            maxDate: moment()
+            format: 'DD-MM-YYYY'
+            , maxDate: moment()
         })
         $('#gender').select2()
         $('#commu').select2()
@@ -707,9 +758,13 @@
         $(function() {
             $("#dob").on("blur", function(e) {
                 var dateParts = $(this).val().split("-");
-                var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
-                const current = new Date(formattedDate).getFullYear() - new Date().getFullYear();
-                $("#age").val(Math.abs(current));
+                console.log(dateParts, 'date')
+                if (dateParts.length > 1) {
+                    var formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+                    const current = new Date(formattedDate).getFullYear() - new Date().getFullYear();
+                    $("#age").val(Math.abs(current));
+                }
+
             });
 
 
@@ -746,6 +801,7 @@
 
 
         });
+
     </script>
 
     <!-- /.box-footer -->

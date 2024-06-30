@@ -746,4 +746,29 @@ class CenterController extends AdminController
         // Return JSON response
         return response()->json($response);
     }
+    public function getLoanForeclose(Request $request)
+    {
+        // Retrieve parameters from the request
+        $id = $request->input('loan_id'); // Search term
+        // $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
+        $data['loan'] = LoanAccount::where('id', $id)->where('loan_status', 0)->first();
+        $data['collection'] = Collection::where('status', 1)->where('loan_id', $id)->first();
+        if (is_object($data['collection'])) {
+            $last = Collection::where('status', 2)->where('loan_id', $id)->latest()->first();
+            $data['balance_amount'] = is_object($last) ? $last->due_balance : 0;
+            $data['total_amount'] = $data['balance_amount'] + $data['collection']->collection_price + $data['collection']->collection_interest;
+            $response = [
+                'message' => 'data Found',
+                'results' => $data,
+            ];
+        } else {
+            $response = [
+                'message' => 'No collection to pay',
+                'results' => [],
+            ];
+        }
+        // Prepare response data
+        // Return JSON response
+        return response()->json($response);
+    }
 }

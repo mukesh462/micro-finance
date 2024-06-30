@@ -72,9 +72,13 @@ Route::group([
     $router->post('multipleCollectionUpdate', "CenterController@multipleCollectionUpdate");
     $router->get('collectionsList', "CenterController@collectionsList");
     $router->post('singleCollectionList', "CenterController@singleCollectionList");
+
     $router->get('demandSheet', "DayBookController@demandSheet");
     $router->get('getEmployee', "StaffController@getEmployee");
     $router->post('getDemandSheet', "DayBookController@getDemandSheet");
     $router->get('getCenterByEmployee', "StaffController@getCenterByEmployee");
 
+
+    $router->get('foreclosure', [MainController::class, 'preClose']);
+    $router->post('getLoanForeclose', "CenterController@getLoanForeclose");
 });

@@ -4,9 +4,12 @@ namespace App\Admin\Controllers;
 
 use App\Models\MainCenter;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Encore\Admin\Widgets\Box;
 
 class MainController extends AdminController
 {
@@ -84,5 +87,16 @@ class MainController extends AdminController
             $footer->disableCreatingCheck();
         });
         return $form;
+    }
+    public function preClose()
+    {
+        return Admin::content(function (Content $content) {
+
+            // $content->header(' Loan');
+            // $content->description('Ln Disbursement');
+
+            $content->title('Foreclose');
+            $content->body(new Box('', view('preClose')));
+        });
     }
 }

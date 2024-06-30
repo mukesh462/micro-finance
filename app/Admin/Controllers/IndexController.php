@@ -243,6 +243,16 @@ class IndexController extends AdminController
 
                $results = Center::find($request->id);
                $total =0;
+            } elseif ($request->tp == 'member_all') {
+                $query = Member::query();
+                // dd($request->input('data'));
+                if ($request->has('id')) {
+                    $query->where('center_id', $request->id);
+                }
+
+                $total = $query->count();
+
+                $results = $query->select('id', 'client_name as text')->get();
             }
 
 
@@ -457,7 +467,7 @@ class IndexController extends AdminController
         return Admin::content(function (Content $content) use ($id) {
 
             $content->header(' Loan');
-            $content->description('Laon Disbursement end');
+            $content->description('Loan Disbursement end');
 
 
 
