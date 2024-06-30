@@ -14,6 +14,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StaffController extends AdminController
 {
@@ -251,6 +252,45 @@ class StaffController extends AdminController
         $query = Employee::where('staff_name', 'like', '%' . $q . '%');
         $totalCount = $query->count();
         $data = $query->offset(($page - 1) * $limit)->limit($limit)->get();
+
+        // Prepare response data
+        $response = [
+            'results' => $data,
+            'total_count' => $totalCount
+        ];
+
+        // Return JSON response
+        return response()->json($response);
+    }
+
+    public function getCenterByEmployee(Request $request)
+    {
+
+        // Retrieve parameters from the request
+        $q = $request->input('q', ''); // Search term
+        $page = $request->input('page', 1); // Current page number
+        $limit = 10; // Number of records per page
+        $employee_id = $request->input('employee_id');
+
+        // Calculate the offset
+        $offset = ($page - 1) * $limit;
+
+        // Query data with limit and offset
+        //  $data = Employee::where('staff_name', 'like', '%' . $q . '%')
+        //      ->offset($offset)
+        //      ->limit($limit)
+        //      ->get();
+
+        //  // Count total records for pagination
+        //  $totalCount = Employee::where('column', 'like', '%' . $q . '%')->count();
+        // $query = Center::where('center_name', 'like', '%' . $q . '%')->join('employees', 'centers.employee_id', '=', 'employees.center_id')->select('centers.id as centerId', 'centers.center_name', 'employees.id as employeeId', 'employees.staff_name');
+        $query = Center::select(DB::raw('CONCAT("00",id, " - ", center_name) as center_name'), 'id')->where('center_name', 'like', '%' . $q . '%')->where('employee_id',$employee_id);
+        $totalCount = $query->count();
+        $data = $query->offset(($page - 1) * $limit)->limit($limit)->get();
+
+        // foreach($data as $key=>$value) {
+        //     $data[$key]['member'] = Member::select('id','client_name')->where('center_id',$value->centerId)->get();
+        // }
 
         // Prepare response data
         $response = [
