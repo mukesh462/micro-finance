@@ -412,7 +412,7 @@ class IndexController extends AdminController
         foreach ($getIndexMember as $key => $value) {
             # code...
             $center = Center::where('id', $value->center_id)->first();
-            $getemp = Employee::where('id', $value->center_id)->first();
+            $getemp = Employee::where('id', $value->staff_id)->first();
             $plan = Product::where('id', $value->plan_id)->first();
             $member = Member::where('id', $value->member_id)->first();
             $getIndexMember[$key]['sn'] = $key + 1;
@@ -420,7 +420,7 @@ class IndexController extends AdminController
             $getIndexMember[$key]['center_name'] = '00' . $center->id . '-' . $center->center_name;
             $getIndexMember[$key]['product_name'] = $plan->plan_name;
             $getIndexMember[$key]['member_name'] = $member->client_name;
-            $getIndexMember[$key]['emp_name'] = $getemp->staff_name;
+            $getIndexMember[$key]['emp_name'] = $getemp?->staff_name;
             $getIndexMember[$key]['purpose'] = $value->loan_purpose;
             $getIndexMember[$key]['amount'] = $value->plan_amount;
             $getIndexMember[$key]['plan'] = $plan->id;
