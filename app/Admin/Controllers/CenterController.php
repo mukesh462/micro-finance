@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Center;
+use App\Models\PrecloseList;
 use App\Models\CenterOwnerList;
 use App\Models\Collection;
 use App\Models\Employee;
@@ -36,6 +37,7 @@ class CenterController extends AdminController
      */
     protected function grid()
     {
+
         $grid = new Grid(new Center());
 
         $grid->column('id', __('Center Id'))->display(function ($id) {
@@ -748,15 +750,35 @@ class CenterController extends AdminController
     }
     public function getLoanForeclose(Request $request)
     {
+        // return $request;
         // Retrieve parameters from the request
         $id = $request->input('loan_id'); // Search term
         // $data['employee'] = Employee::select('id', 'staff_name')->where('center_id', $id)->first();
         $data['loan'] = LoanAccount::where('id', $id)->where('loan_status', 0)->first();
-        $data['collection'] = Collection::where('status', 1)->where('loan_id', $id)->first();
-        if (is_object($data['collection'])) {
+        $collections = Collection::where('loan_id', $id)->get();
+
+        $collected_collections = $collections->filter(function($collection) {
+            return in_array($collection->status, [2, 3]);
+        });
+
+        $due_collections = $collections->filter(function($collection) {
+            return $collection->status == 1;
+        });
+        $data['total_collection_amount'] = $due_collections->sum('collection_price');
+        $data['total_collection_interest'] = $due_collections->sum('due_interest');
+
+        // return array_values($due_collections);
+
+        $data['due_collection'] = array_values($due_collections->toArray());
+        $data['collected_collection'] = $collected_collections;
+
+
+        if (count($data['due_collection']) > 0) {
             $last = Collection::where('status', 2)->where('loan_id', $id)->latest()->first();
             $data['balance_amount'] = is_object($last) ? $last->due_balance : 0;
-            $data['total_amount'] = $data['balance_amount'] + $data['collection']->collection_price + $data['collection']->collection_interest;
+            $data['total_collection_amount'] = $data['total_collection_amount'] + $data['balance_amount'];
+            $data['total_amount_collect'] = $data['total_collection_amount'] + $data['total_collection_interest'];
+            // $data['total_amount'] = $data['balance_amount'] + $data['collection']->collection_price + $data['collection']->collection_interest;
             $response = [
                 'message' => 'data Found',
                 'results' => $data,

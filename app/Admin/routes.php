@@ -14,6 +14,7 @@ use App\Admin\Controllers\StaffController;
 use App\Admin\Controllers\SubController;
 use App\Admin\Controllers\UsersController;
 use App\Admin\Controllers\VoucherController;
+use App\Admin\Controllers\PrecloseListController;
 
 use Illuminate\Routing\Router;
 
@@ -81,4 +82,10 @@ Route::group([
 
     $router->get('foreclosure', [MainController::class, 'preClose']);
     $router->post('getLoanForeclose', "CenterController@getLoanForeclose");
+    $router->resource('foreclosureList', PrecloseListController::class);
+    $router->post('createPreclose', "PrecloseListController@createPreclose");
+    $router->get('foreclose/{id}', [PrecloseListController::class, 'viewForeClose']);
+
+
+
 });

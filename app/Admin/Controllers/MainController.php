@@ -95,7 +95,8 @@ class MainController extends AdminController
             // $content->header(' Loan');
             // $content->description('Ln Disbursement');
 
-            $content->title('Foreclose');
+            $content->title('Foreclosure');
+            $content->description('Create');
             $content->body(new Box('', view('preClose')));
         });
     }

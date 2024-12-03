@@ -22,7 +22,7 @@
 
     <div class="box-tools">
         <div class="btn-group pull-right" style="margin-right: 5px">
-            <a href="/admin/collectionsList" class="btn btn-sm btn-default" title="List"><i class="fa fa-list"></i><span class="hidden-xs">&nbsp;List</span></a>
+            <a href="/admin/foreclosureList" class="btn btn-sm btn-default" title="List"><i class="fa fa-list"></i><span class="hidden-xs">&nbsp;List</span></a>
         </div>
     </div>
 </div>
@@ -45,7 +45,7 @@
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="member" class="" id="member_error">Select Member</label>
                     <select type="text" class="form-control" placeholder="Select Member" id="member_list" name="member">
-                        <option aria-readonly="true" disabled value="">---Select Member---</option>
+                        <option aria-readonly="true" value="">---Select Member---</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
@@ -64,29 +64,39 @@
                     <input type="text" class="form-control" id="loan_amount" name="loan_amount" placeholder="Loan Amount" readonly />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
-                    <label for="purpose">Loan Outstanding</label>
-                    <input type="text" class="form-control" id="loan_outstanding" name="loan_outstanding" placeholder="Loan Outstanding" readonly />
+                    <label for="purpose">Loan Interest</label>
+                    <input type="text" class="form-control" id="loan_interest" name="loan_interest" placeholder="Loan Interest" readonly />
                 </div>
+
+
                  <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Due Weeks</label>
-                    <input type="text" class="form-control" id="due_weeks" name="collection_weeks" placeholder="collection Weeks" readonly />
+                    <input type="text" class="form-control" id="due_weeks" name="collection_weeks" placeholder="Due Weeks" readonly />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">collected Weeks</label>
-                    <input type="text" class="form-control" id="due_weeks" name="collection_weeks" placeholder="collection Weeks" readonly />
+                    <input type="text" class="form-control" id="collected_weeks" name="collection_weeks" placeholder="collected Weeks" readonly />
                 </div>
 
                 <div class="col-12 col-md-4 col-lg-4 mb">
+                    <label for="purpose">O/S Loan Principle</label>
+                    <input type="text" class="form-control" id="loan_outstanding_principle" name="loan_outstanding_principle" placeholder="Loan Outstanding" readonly />
+                </div>
+                <div class="col-12 col-md-4 col-lg-4 mb">
+                    <label for="purpose">O/S Loan interest</label>
+                    <input type="text" class="form-control" id="loan_outstanding_interest" name="loan_outstanding_interest" placeholder="Loan Outstanding" readonly />
+                </div>
+                <!-- <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">To be collect Principle</label>
                     <input type="text" class="form-control" id="arr_price" name="arr_price" placeholder="Opening Arr. Price" readonly />
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">To be collect Interest</label>
                     <input type="text" class="form-control" id="due_price" name="due_price" placeholder="Due Amount" readonly />
-                </div>
+                </div> -->
                  <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">To be collect Total</label>
-                    <input type="text" class="form-control" id="due_price" name="due_price" placeholder="Due Amount" readonly />
+                    <input type="text" class="form-control" id="total_collect" name="total_collect" placeholder="Total collection" readonly />
                 </div>
                 <!-- <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Due Interest</label>
@@ -97,11 +107,11 @@
                     <input type="text" class="form-control" id="arr-int" placeholder="Opening Arr. Interest" readonly disabled />
                 </div> -->
 
-           
+
                 <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose" id="amount-error">Total Collected</label>
                     <input type="text" class="form-control total-amount-input" id="loan_collected" name="loan_collected" placeholder="Loan Collected" />
-                    <input type="hidden" class="form-control" id="collection_id" name="collection_id" />
+                    <!-- <input type="hidden" class="form-control" id="collection_id" name="collection_id" /> -->
                 </div>
                 <!-- <div class="col-12 col-md-4 col-lg-4 mb">
                     <label for="purpose">Total Collected</label>
@@ -128,7 +138,7 @@
 <script>
     $(document).ready(function() {
         $('.select2').select2();
-        $('#member_list').select2();
+        // $('#member_list').select2();
 
     });
 
@@ -191,7 +201,6 @@
         if (center_id == null) {
             return;
         }
-        console.log(center_id, "ihhxgfh");
         let postData = {
             center_id: center_id,
         };
@@ -217,21 +226,20 @@
                     var selectElement = $('#member_list');
                     // Remove all existing options
                     selectElement.find('option[value!=""]').remove();
+                    toastr.error('No Member found');
                 }
                 if (data.results.employee != null) {
                     $('#employee_name').val(data.results.employee.staff_name);
                 }
                 $('#disbursal_date').val('')
                 $('#loan_amount').val('')
-                $('#loan_outstanding').val('')
-                $('#collection_id').val('')
-                $('#arr_price').val('')
-                $('#due_price').val('')
-                // $('#due_int').val('')
-                $('#loan_collected').val('')
+                $('#loan_interest').val('')
                 $('#due_weeks').val('')
-                // Handle successful response
-                // $('#result').text(JSON.stringify(data, null, 2));
+                $('#collected_weeks').val('')
+                $('#loan_outstanding_principle').val('')
+                $('#loan_outstanding_interest').val('')
+                $('#total_collect').val('')
+                $('#loan_collected').val('')
             },
             error: function(xhr, status, error) {
                 // Handle error
@@ -250,7 +258,6 @@
         let postData = {
             member_id: member_id,
         };
-
         // jQuery AJAX POST call
         $.ajax({
             url: '/admin/getLoan', // replace with your API endpoint
@@ -280,20 +287,14 @@
                     toastr.error('No Loan found');
                     $('#disbursal_date').val('')
                     $('#loan_amount').val('')
-                    $('#loan_outstanding').val('')
-                    $('#collection_id').val('')
-                    $('#arr_price').val('')
-                    $('#due_price').val('')
-                    // $('#due_int').val('')
-                    $('#loan_collected').val('')
+                    $('#loan_interest').val('')
                     $('#due_weeks').val('')
+                    $('#collected_weeks').val('')
+                    $('#loan_outstanding_principle').val('')
+                    $('#loan_outstanding_interest').val('')
+                    $('#total_collect').val('')
+                    $('#loan_collected').val('')
                 }
-                // if (data.results.employee != null) {
-                //     $('#employee_name').val(data.results.employee.staff_name);
-                // }
-                console.log(data, "respo")
-                // Handle successful response
-                // $('#result').text(JSON.stringify(data, null, 2));
             },
             error: function(xhr, status, error) {
                 // Handle error
@@ -308,6 +309,8 @@
     $("#loan_list").on("change", function() {
         // $(this).attr("disabled", true);
         let loan_id = $(this).val();
+        if(loan_id) {
+
         let postData = {
             loan_id: loan_id,
         };
@@ -325,13 +328,14 @@
                 if (data.message == "data Found") {
                     $('#disbursal_date').val(data.results.loan.dis_date)
                     $('#loan_amount').val(data.results.loan.loan_amount)
-                    $('#loan_outstanding').val(data.results.loan.outstanding_amount)
-                    $('#arr_price').val(data.results.balance_amount)
-                    $('#collection_id').val(data.results.collection.id)
-                    $('#due_weeks').val(data.results.collection.due_number)
-                    $('#due_price').val(data.results.collection.collection_amount)
-                    // $('#due_int').val(data.results.collection.collection_interest)
-                    $('#loan_collected').val(data.results.total_amount)
+                    $('#loan_interest').val(data.results.loan.loan_interest)
+                    $('#due_weeks').val(data.results.due_collection.length)
+                    $('#collected_weeks').val(data.results.collected_collection.length)
+                    $('#loan_outstanding_principle').val(data.results.total_collection_amount)
+                    $('#loan_outstanding_interest').val(data.results.total_collection_interest)
+                    $('#total_collect').val(data.results.total_amount_collect)
+                    $('#loan_collected').val(data.results.total_amount_collect)
+
                 } else {
                     toastr.error(data.message);
                     document.getElementById("myForm").reset()
@@ -340,24 +344,6 @@
                     centerElement.val(null).trigger('change');
                     resetForm();
                 }
-                // if (data.results.loan.length > 0) {
-                //     $.each(data.results.loan, function(index, option) {
-                //         $('#loan_list').append($('<option>', {
-                //             value: option.id,
-                //             text: option.loan_amount
-                //         }));
-                //     });
-                // } else {
-                //     var selectElement = $('#loan_list');
-                //     // Remove all existing options
-                //     selectElement.find('option[value!=""]').remove();
-                // }
-                // if (data.results.employee != null) {
-                //     $('#employee_name').val(data.results.employee.staff_name);
-                // }
-                console.log(data, "respo")
-                // Handle successful response
-                // $('#result').text(JSON.stringify(data, null, 2));
             },
             error: function(xhr, status, error) {
                 // Handle error
@@ -365,9 +351,17 @@
             }
         });
 
-        // addSelectData("Center", "center", {
-        //     id: $(this).val(),
-        // });
+    }else {
+        $('#disbursal_date').val('')
+        $('#loan_amount').val('')
+        $('#loan_interest').val('')
+        $('#due_weeks').val('')
+        $('#collected_weeks').val('')
+        $('#loan_outstanding_principle').val('')
+        $('#loan_outstanding_interest').val('')
+        $('#total_collect').val('')
+        $('#loan_collected').val('')
+    }
     });
 
     function displayValidationMessage(id, message, color) {
@@ -412,15 +406,15 @@
             displayValidationMessage('loan_error', "Select Loan Acc No", 'black');
         }
 
-        let colection = $('#collection-type').val();
-        if (colection == "" || colection == null) {
-            $('#collection-error').text('');
-            displayValidationMessage('collection-error', "Select Collection Type", 'red');
-            $("#add-btn").prop("disabled", false);
-            return;
-        } else {
-            displayValidationMessage('collection-error', "Select Collection Type", 'black');
-        }
+        // let colection = $('#collection-type').val();
+        // if (colection == "" || colection == null) {
+        //     $('#collection-error').text('');
+        //     displayValidationMessage('collection-error', "Select Collection Type", 'red');
+        //     $("#add-btn").prop("disabled", false);
+        //     return;
+        // } else {
+        //     displayValidationMessage('collection-error', "Select Collection Type", 'black');
+        // }
 
         let collected = $('#loan_collected').val();
         if (collected == "" || collected == null) {
@@ -432,6 +426,8 @@
             displayValidationMessage('amount-error', "Loan Collected", 'black');
         }
 
+        // console.log('hiiiiiiiiiiiiii')
+
         var formData = new FormData(document.getElementById("myForm"));
         var jsonObject = {};
         formData.forEach(function(value, key) {
@@ -440,20 +436,19 @@
         console.log(jsonObject, "formdata")
 
         $.ajax({
-            url: '/admin/collectionUpdate', // replace with your API endpoint
+            url: '/admin/createPreclose', // replace with your API endpoint
             method: 'POST',
             contentType: 'application/json', // set content type to JSON
             data: JSON.stringify(jsonObject), // convert data to JSON format
-            // headers: {
-            //     'X-CSRF-TOKEN': '{{ csrf_token() }}' // include CSRF token in headers
-            // },
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // include CSRF token in headers
+            },
             success: function(data) {
-                console.log('data', data)
-                if (data.message == "Collection updated successfully") {
+                // console.log('data', data)
+                if (data.message == "Loan Foreclose request updated successfully.") {
                     toastr.success(data.message);
                     document.getElementById("myForm").reset()
                     var centerElement = $('#mySelect');
-                    // Programmatically remove the selected option
                     centerElement.val(null).trigger('change');
                     resetForm();
 
@@ -464,13 +459,9 @@
                 }
             },
             error: function(xhr, status, error) {
-                // Handle error
                 console.error('AJAX request failed: ' + status + ', ' + error);
             }
         });
-
-        // Submit the form
-        // this.submit();
     });
     $('#reset-btn').click(function() {
         document.getElementById("myForm").reset()
